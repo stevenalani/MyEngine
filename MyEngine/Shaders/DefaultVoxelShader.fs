@@ -17,6 +17,7 @@ vec3 diffuselight(vec3 fragpos,vec3 normal, vec3 lightpos){
     return diffuse;
 }
 vec3 spec(){
+    return vec3(0);
 }
 void main()
 {

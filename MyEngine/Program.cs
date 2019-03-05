@@ -25,6 +25,7 @@ namespace MyEngine
             //}
             //engine.AddModel(model2);
             //engine.LoadModelFromFile("C:\\Users\\Steven\\3D Objects\\AxisMat.vox");
+            //engine.LoadModelFromFile("C:\\Users\\Steven\\3D Objects\\blocksalongx.vox");
             engine.Run(60.0);
         }
     }

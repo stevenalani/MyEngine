@@ -96,6 +96,8 @@ namespace MyEngine
         {
             base.OnLoad(e);
             
+            //GL.PolygonMode(MaterialFace.FrontAndBack,PolygonMode.Line);
+
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Front);
             GL.FrontFace(FrontFaceDirection.Cw);
@@ -126,9 +128,9 @@ namespace MyEngine
             shader.SetUniformMatrix4X4("projection", projection);
             var view = Camera.GetView();
             shader.SetUniformMatrix4X4("view", view);
-            shader.SetUniformVector4("ambientLight",new Vector4(0.1f,0.3f,1f,0.5f));
-            shader.SetUniformVector4("diffuseLight",new Vector4(0.1f,0.2f,0.3f,0.7f));
-            shader.SetUniformVector3("diffuseLightpos",new Vector3(1f,10f,-10f));
+            shader.SetUniformVector4("ambientLight",new Vector4(0.5f,0.5f,0.5f,0.1f));
+            shader.SetUniformVector4("diffuseLight",new Vector4(0.5f,0.5f,0.5f,0.1f));
+            shader.SetUniformVector3("diffuseLightpos",new Vector3(1f,10f,15f));
             modelManager.DrawModels(shader);
             //ShaderProgram.unuse();
             CrossHair?.Draw();
