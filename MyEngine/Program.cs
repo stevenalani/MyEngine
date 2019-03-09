@@ -15,17 +15,14 @@ namespace MyEngine
             engine.AddShader("Shaders\\DefaultVoxelShader.vs", "Shaders\\DefaultVoxelShader.fs");
             engine.enableCrossHair(new Vector4(1f,1f,1f,0.5f));
             engine.LoadModelFromFile("C:\\Users\\Steven\\3D Objects\\chr_rain.vox");
-            //Cube model = new Cube();
-            //engine.AddModel(model);
-            //Cube model2 = new Cube();
-            //model2.MoveToVector(new Vector3(5f,5f,5f));
-            //for (var i = 0; i<model2.Vertices.Length;i++)
-            //{
-            //    model2.Vertices[i].color = new Vector4(0,255f,0,1f);
-            //}
-            //engine.AddModel(model2);
-            //engine.LoadModelFromFile("C:\\Users\\Steven\\3D Objects\\AxisMat.vox");
-            //engine.LoadModelFromFile("C:\\Users\\Steven\\3D Objects\\blocksalongx.vox");
+            
+            engine.LoadModelFromFile("C:\\Users\\Steven\\3D Objects\\AxisMat.vox");
+            engine.LoadModelFromFile("C:\\Users\\Steven\\3D Objects\\blocksalongx.vox");
+            var testgetmodel = engine.GetModel("chr_rain");
+            var model = testgetmodel.First();
+            //model.rotateX(15f);
+            model.MoveForward(10f);
+            
             engine.Run(60.0);
         }
     }

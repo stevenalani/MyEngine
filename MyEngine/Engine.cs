@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using MyEngine.Assets;
+using System.Linq;
 using MyEngine.Assets.Models;
 using MyEngine.Logging;
 using MyEngine.ShaderImporter;
@@ -14,42 +14,43 @@ namespace MyEngine
 {
     internal class Engine : GameWindow
     {
-        private ModelManager modelManager = new ModelManager();
-        internal ShaderManager shaderManager = new ShaderManager();
+        private double lasttime = 0f;
+        private bool _firstMouse = true;
 
         private MousePositionState _lastPositionState;
-        
-        public Camera Camera { get; set; }
-        private bool _firstMouse = true;
-        private readonly float lasttime = 0f;
+
+        public Camera Camera;
         private CrossHair CrossHair;
-        public ShaderProgram Shader;
+        private readonly ModelManager modelManager = new ModelManager();
+        internal ShaderManager shaderManager = new ShaderManager();
 
 
         public Engine() : base(
             600,
             400,
             GraphicsMode.Default,
-            "OpenGl Version:", GameWindowFlags.Default, DisplayDevice.GetDisplay(DisplayIndex.Second),
+            "OpenGl Version:", 
+            GameWindowFlags.Default,
+            DisplayDevice.GetDisplay(DisplayIndex.Second),
             4,
             0,
             GraphicsContextFlags.ForwardCompatible)
         {
             Title += GL.GetString(StringName.Version);
             VSync = VSyncMode.Off;
-            _lastPositionState = new MousePositionState(Width/2,Height/2);
+            _lastPositionState = new MousePositionState(Width / 2, Height / 2);
             CursorVisible = false;
             EngineLogger = new Logger();
             EngineLogger.Start();
         }
 
-        public static Logger EngineLogger { get; set; }
-
         public Engine(int height, int width, Camera camera = null) : base(
             height,
             width,
             GraphicsMode.Default,
-            "OpenGl Version:", GameWindowFlags.Default, DisplayDevice.GetDisplay(DisplayIndex.Second),
+            "OpenGl Version:", 
+            GameWindowFlags.Default,
+            DisplayDevice.GetDisplay(DisplayIndex.Second),
             4,
             0,
             GraphicsContextFlags.ForwardCompatible)
@@ -59,25 +60,23 @@ namespace MyEngine
             _lastPositionState = new MousePositionState(Width / 2f, Height / 2f);
             CursorVisible = false;
             if (camera == null)
-            {
-                Camera = new Camera(Width,Height);
-            }
+                Camera = new Camera(Width, Height);
             else
-            {
                 Camera = camera;
-            }
-            
+
             Load += modelManager.Update;
             Load += shaderManager.Update;
             UpdateFrame += modelManager.Update;
             UpdateFrame += shaderManager.Update;
             EngineLogger = new Logger();
-            EngineLogger.Start();
+            //EngineLogger.Start();
         }
+
+        public static Logger EngineLogger { get; set; }
 
         public void AddShader(string vsShaderPath, string fsShaderPath = "")
         {
-            shaderManager.AddShader(vsShaderPath,fsShaderPath);
+            shaderManager.AddShader(vsShaderPath, fsShaderPath);
         }
 
         public void AddModel(Model model)
@@ -85,7 +84,7 @@ namespace MyEngine
             modelManager.AddModel(model);
         }
 
-        
+
         protected override void OnClosing(CancelEventArgs e)
         {
             base.OnClosing(e);
@@ -95,7 +94,7 @@ namespace MyEngine
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            
+
             //GL.PolygonMode(MaterialFace.FrontAndBack,PolygonMode.Line);
 
             GL.Enable(EnableCap.CullFace);
@@ -128,9 +127,13 @@ namespace MyEngine
             shader.SetUniformMatrix4X4("projection", projection);
             var view = Camera.GetView();
             shader.SetUniformMatrix4X4("view", view);
-            shader.SetUniformVector4("ambientLight",new Vector4(0.5f,0.5f,0.5f,0.1f));
-            shader.SetUniformVector4("diffuseLight",new Vector4(0.5f,0.5f,0.5f,0.1f));
-            shader.SetUniformVector3("diffuseLightpos",new Vector3(1f,10f,15f));
+            shader.SetUniformVector3("lightPos", Camera.Position);
+            shader.SetUniformVector3("lightColor", new Vector3(1, 1, 1));
+            shader.SetUniformVector3("viewpos", Camera.Position);
+            shader.SetUniformFloat("ambientStrength", 1);
+            shader.SetUniformFloat("diffuseStrength", 1f);
+            shader.SetUniformFloat("specularStrength", 1f);
+            
             modelManager.DrawModels(shader);
             //ShaderProgram.unuse();
             CrossHair?.Draw();
@@ -138,20 +141,29 @@ namespace MyEngine
         }
 
 
-
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            HandleKeyboard((float) (e.Time - lasttime));
+            base.OnUpdateFrame(e);
+            HandleKeyboard((float) (e.Time));
+            lasttime = e.Time;
         }
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
+            Random rand = new Random(DateTime.Now.Millisecond);
             base.OnMouseDown(e);
+            var model = modelManager.GetModel("chr_rain").First();
+            model.rotateX(rand.Next(-1,1)*(float)rand.NextDouble() * 5f);
+            model.MoveForward((float) rand.NextDouble()*20f);
+            
         }
 
         protected override void OnMouseUp(MouseButtonEventArgs e)
         {
             base.OnMouseUp(e);
+            var ray = new VisualRay(Camera);
+            AddModel(ray);
+            CheckHit();
         }
 
         protected override void OnMouseMove(MouseMoveEventArgs e)
@@ -163,18 +175,19 @@ namespace MyEngine
                 _lastPositionState.Y = Mouse.GetState().Y;
                 _firstMouse = false;
             }
-            
+
             var xoffset = Mouse.GetState().X - _lastPositionState.X;
             var yoffset = _lastPositionState.Y - Mouse.GetState().Y;
-            
+
             Camera.ProcessMouseMovement(xoffset, yoffset);
             _lastPositionState.X = Mouse.GetState().X;
             _lastPositionState.Y = Mouse.GetState().Y;
-            Mouse.SetPosition(X + Width/2f,Y + Height/2f);
+            Mouse.SetPosition(X + Width / 2f, Y + Height / 2f);
         }
 
         protected override void OnMouseWheel(MouseWheelEventArgs e)
         {
+            base.OnMouseWheel(e);
             Camera.ProcessMouseScroll(e.Y);
         }
 
@@ -192,18 +205,35 @@ namespace MyEngine
                 Camera.ProcessKeyboard(CameraMovement.BACKWARD, deltaTime);
             if (keyState.IsKeyDown(Key.D))
                 Camera.ProcessKeyboard(CameraMovement.RIGHT, deltaTime);
+            if (keyState.IsKeyDown(Key.Space))
+                Camera.ProcessKeyboard(CameraMovement.UP, deltaTime);
+            if (keyState.IsKeyDown(Key.ControlLeft))
+                Camera.ProcessKeyboard(CameraMovement.DOWN, deltaTime);
         }
 
         public void enableCrossHair(Vector4 color)
         {
-
-            this.CrossHair = new CrossHair(this, color);
-            
+            CrossHair = new CrossHair(this, color);
         }
 
-        public void LoadModelFromFile(string modelPath)
+        public void LoadModelFromFile(string modelPath,string name = "")
         {
-            modelManager.LoadModelFromFile(modelPath);
+            modelManager.LoadModelFromFile(modelPath,name);
+        }
+
+        public bool CheckHit()
+        {
+            var BoundingBoxes = modelManager.GetModels().Where(x => x is PositionColorModel && !(x is VisualRay)).Select(x =>
+            {
+                var bb =  new BoundingBox((PositionColorModel) x);
+                return BoundingBox.TransformBoundingBox(bb, x.model);
+            });
+            return true;
+        }
+
+        public List<Model> GetModel(string name)
+        {
+            return modelManager.GetModel(name);
         }
     }
 
@@ -229,6 +259,8 @@ namespace MyEngine
         FORWARD,
         BACKWARD,
         LEFT,
-        RIGHT
+        RIGHT,
+        UP,
+        DOWN
     }
 }

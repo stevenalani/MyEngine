@@ -1,29 +1,30 @@
-﻿#version 330 core
-out vec4 FragColor; 
+#version 330 core
+out vec4 FragColor;
 
-uniform vec4 ambientLight;
-uniform vec4 diffuseLight;
-uniform vec3 diffuseLightpos;
-uniform vec4 specular;
+uniform vec3 lightPos;
+uniform vec3 lightColor;
+uniform float ambientStrength;
+uniform float diffuseStrength;
+uniform float specularStrength;
+uniform vec3 viewpos;
 
 in vec4 fragcol;
-in vec3 anormal;
+in vec3 apos;
 
-vec3 diffuselight(vec3 fragpos,vec3 normal, vec3 lightpos){
-    vec3 lightdir = lightpos - fragpos;
-
-    float diff = max(dot(normal, lightdir), 0.0);
-    vec3 diffuse = diff * diffuseLight.xyz;
-    return diffuse;
-}
-vec3 spec(){
-    return vec3(0);
-}
 void main()
 {
-    vec3 normal = cross(dFdy(anormal.xyz), dFdx(anormal.xyz));
-	normal = normalize(normal);
-    vec3 ambient = ambientLight.xyz * ambientLight.w;
-    vec3 diffuse = diffuselight(anormal, normal, diffuseLightpos);
-    FragColor = vec4(fragcol.xyz * (ambient + diffuse),fragcol.w);
+    vec3 ambient = lightColor * ambientStrength;
+    vec3 norm = normalize(cross(dFdy(apos.xyz), dFdx(apos.xyz)));
+    vec3 lightDir = normalize(lightPos - apos);
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = diff * lightColor;
+
+    vec3 viewDir = normalize(viewpos - apos);
+    vec3 reflectDir = reflect(-lightDir, norm);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+    vec3 specular = specularStrength * spec * lightColor;
+
+    vec3 result = (ambient + diffuse + specular) * fragcol;
+    FragColor = vec4(result, fragcol.w);
+
 }

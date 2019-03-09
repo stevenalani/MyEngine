@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\ModelImporter.cs" />
+    <Compile Include="Assets\Models\BoundingBox.cs" />
     <Compile Include="Assets\Models\CrossHair.cs" />
     <Compile Include="Assets\Models\Cube.cs" />
     <Compile Include="Assets\Models\Model.cs" />
@@ -113,6 +114,7 @@
     <Compile Include="ShaderImporter\ShaderProgram.cs" />
     <Compile Include="PositionColorNormalVertex.cs" />
     <Compile Include="ShaderManager.cs" />
+    <Compile Include="VisualRay.cs" />
     <Compile Include="VoxelImporter\Chunk.cs" />
     <Compile Include="VoxelImporter\VoxelImporter.cs" />
   </ItemGroup>

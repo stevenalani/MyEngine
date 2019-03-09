@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using MyEngine.Assets;
 using MyEngine.ShaderImporter;
@@ -67,11 +68,14 @@ namespace MyEngine
             
         }
 
-        public void LoadModelFromFile(string modelpath)
+        public void LoadModelFromFile(string modelpath,string name)
         {
+            if (name == "") name = Path.GetFileNameWithoutExtension(modelpath);
             var models = ModelImporter.LoadFromFile(modelpath);
+            int i = 0;
             foreach (var model in models)
             {
+                model.name = i > 0 ? name + i : name;
                 UninitializedModels.Enqueue(model);
                 HasModelUpdates = true;
             }
@@ -85,5 +89,12 @@ namespace MyEngine
         }
 
 
+        public List<Model> GetModel(string name)
+        {
+            var l1 = _models.Values.Where(x => x.name == name).ToList();
+            var l2 = UninitializedModels.Where(x => x.name == name).ToList();
+            l1.AddRange(l2);
+            return l1;
+        }
     }
 }

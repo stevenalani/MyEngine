@@ -30,7 +30,6 @@ namespace MyEngine
         {
             if (vertexshaderpath == "")
                 return;
-
             var filename = Path.GetFileNameWithoutExtension(vertexshaderpath);
             if (shaderModelMapping.ContainsKey(filename)) shaderModelMapping[filename].Add(model_id);
         }

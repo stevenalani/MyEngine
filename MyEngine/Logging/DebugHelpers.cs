@@ -44,6 +44,7 @@ namespace MyEngine.Logging
 
         public void Stop()
         {
+            if(!_doLog) return;
             _doLog = false;
             LoggingTask.Join();
         }

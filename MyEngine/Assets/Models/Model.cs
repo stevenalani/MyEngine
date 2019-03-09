@@ -1,5 +1,6 @@
 ﻿using System;
 using GlmNet;
+using MyEngine.Assets.Models;
 using MyEngine.ShaderImporter;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -10,6 +11,7 @@ namespace MyEngine
     {
         private static int nextid = 0;
         public readonly int ID;
+        public string name;
         public int VAO;
 
         protected int VBO;
@@ -21,7 +23,7 @@ namespace MyEngine
 
         private Vector3 Direction = Vector3.UnitZ;
 
-        public Matrix4 model =>  MathHelpers.getRotation(Rotations.X, Rotations.Y,Rotations.Z) * Matrix4.CreateTranslation(Position)*  Matrix4.CreateScale(Scales);
+        public Matrix4 model =>  Matrix4.CreateScale(Scales) * MathHelpers.getRotation(Rotations.X, Rotations.Y,Rotations.Z) *  Matrix4.CreateTranslation(Position);
             
         
 
@@ -67,17 +69,20 @@ namespace MyEngine
         {
             var rotationMatrix4 = MathHelpers.getRotation(yaw, 0f, 0f);
             this.Direction = Vector3.TransformNormal(Direction, rotationMatrix4);
+            Rotations.X += yaw;
         }
 
         public void rotateY(float pitch)
         {
             var rotationMatrix4 = MathHelpers.getRotation(0f,pitch, 0f);
             this.Direction = Vector3.TransformNormal(Direction, rotationMatrix4);
+            Rotations.Y += pitch;
         }
         public void rotateZ(float roll)
         {
             var rotationMatrix4 = MathHelpers.getRotation(0f,0f, roll);
             this.Direction = Vector3.TransformNormal(Direction, rotationMatrix4);
+            Rotations.Z = roll;
         }
 
         public void rotate(float yaw, float pitch, float roll)
@@ -90,6 +95,5 @@ namespace MyEngine
             var rotationMatrix4 = MathHelpers.getRotation(yawpitchroll.X,yawpitchroll.Y,yawpitchroll.Z);
             this.Direction = Vector3.TransformNormal(Direction, rotationMatrix4);
         }
-
     }
 }

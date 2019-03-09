@@ -9,6 +9,7 @@ namespace MyEngine
         Perspective,
         Orthogonal
     }
+
     internal partial class Camera
     {
         
@@ -106,6 +107,12 @@ namespace MyEngine
                     break;
                 case CameraMovement.LEFT:
                     Position -= Vector3.Cross(ViewDirection, Up) * deltaTime * Speed;
+                    break;
+                case CameraMovement.UP:
+                    Position += Up * deltaTime * Speed;
+                    break;
+                case CameraMovement.DOWN:
+                    Position -= Up * deltaTime * Speed;
                     break;
             }
             Update();
