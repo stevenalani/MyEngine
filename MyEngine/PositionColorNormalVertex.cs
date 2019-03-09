@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Assimp;
 
 namespace MyEngine
 {
@@ -24,6 +25,20 @@ namespace MyEngine
             this.nx = nx;
             this.ny = ny;
             this.nz = nz;
+        }
+
+        public PositionColorNormalVertex(Vector3D position, Color4D color, Vector3D normal)
+        {
+            this.x = position.X;
+            this.y = position.Y;
+            this.z = position.Z;
+            this.r = color.R;
+            this.g = color.G;
+            this.b = color.B;
+            this.a = color.A;
+            this.nx = normal.X;
+            this.ny = normal.Y;
+            this.nz = normal.Z;
         }
 
         public const int Size = sizeof(float) * 10;

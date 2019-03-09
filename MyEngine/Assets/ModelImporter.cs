@@ -28,9 +28,18 @@ namespace MyEngine.Assets
                     var scene = importer.ImportFile(file);
                     foreach (var sceneMesh in scene.Meshes)
                     {
-                        /*var vertices = sceneMesh.Vertices.Select(x => new PositionColorNormalVertex(x.X, x.Y, x.Z))
-                            .Orgin();
-                        importResult.Add(new DefaultModel(sceneMesh.Vertices.Orgin(),sceneMesh.Indices,sceneMesh.Normals));*/
+                        if (!sceneMesh.HasVertices)
+                            return null;
+
+                        Vector3D[] vertices = sceneMesh.Vertices.ToArray();
+                        int[] indices = sceneMesh.GetIndices();
+                        Vector3D[] normals = sceneMesh.Normals.ToArray();
+                        
+                        for (int i = 0; i < sceneMesh.Vertices.Count; i++)
+                        {
+                            var cc = sceneMesh.VertexColorChannels;
+                            PositionColorNormalVertex positionColorVertex = new PositionColorNormalVertex(vertices[i],new Color4D(0,0.5f,0.7f),normals[i]);
+                        }
                     }
                 }
             }

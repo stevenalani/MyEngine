@@ -98,6 +98,7 @@
     <Compile Include="Assets\Models\Cube.cs" />
     <Compile Include="Assets\Models\Model.cs" />
     <Compile Include="Assets\Models\PositionColorVertex2.cs" />
+    <Compile Include="Assets\Models\Voxel\HugeVolume.cs" />
     <Compile Include="Assets\Models\Voxel\Volume.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="CameraAngles.cs" />
@@ -121,7 +122,9 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="OpenTK.dll.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Shaders\DefaultCrosshairShader.fs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

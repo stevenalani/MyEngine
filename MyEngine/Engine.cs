@@ -150,12 +150,7 @@ namespace MyEngine
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
-            Random rand = new Random(DateTime.Now.Millisecond);
             base.OnMouseDown(e);
-            var model = modelManager.GetModel("chr_rain").First();
-            model.rotateX(rand.Next(-1,1)*(float)rand.NextDouble() * 5f);
-            model.MoveForward((float) rand.NextDouble()*20f);
-            
         }
 
         protected override void OnMouseUp(MouseButtonEventArgs e)
