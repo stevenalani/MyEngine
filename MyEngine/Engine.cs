@@ -50,8 +50,8 @@ namespace MyEngine
             GraphicsMode.Default,
             "OpenGl Version:", 
             GameWindowFlags.Default,
-            DisplayDevice.GetDisplay(DisplayIndex.Second),
-            4,
+            DisplayDevice.GetDisplay(DisplayIndex.Default),
+            3,
             0,
             GraphicsContextFlags.ForwardCompatible)
         {
