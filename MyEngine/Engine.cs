@@ -32,7 +32,7 @@ namespace MyEngine
             "OpenGl Version:",
             GameWindowFlags.Default,
             DisplayDevice.GetDisplay(DisplayIndex.Second),
-            4,
+            2,
             0,
             GraphicsContextFlags.ForwardCompatible)
         {
@@ -222,7 +222,8 @@ namespace MyEngine
                 .Select(x =>
                 {
                     var bb = new BoundingBox((PositionColorModel) x);
-                    return BoundingBox.TransformBoundingBox(bb, x.model);
+                    modelManager.AddModel(bb);
+                    return bb;
                 });
             return true;
         }

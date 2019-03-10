@@ -17,11 +17,13 @@ namespace MyEngine
         protected int VBO;
         protected int EBO;
 
-        protected Vector3 Position = Vector3.Zero;
-        protected Vector3 Scales = Vector3.One;
-        protected Vector3 Rotations = Vector3.Zero;
+        protected internal Vector3 Position = Vector3.Zero;
+        protected internal Vector3 Scales = Vector3.One;
+        protected internal Vector3 Rotations = Vector3.Zero;
 
-        private Vector3 Direction = Vector3.UnitZ;
+        protected IVertextype[] Vertices;
+
+        private Vector3 Direction = -Vector3.UnitZ;
 
         public Matrix4 model =>  Matrix4.CreateScale(Scales) * MathHelpers.getRotation(Rotations.X, Rotations.Y,Rotations.Z) *  Matrix4.CreateTranslation(Position);
             

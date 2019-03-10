@@ -5,4 +5,5 @@
 /.vs/MyEngine/v15
 /MyEngine/bin
 /MyEngine/obj
+/MyEngine/Program.cs
 /packages
