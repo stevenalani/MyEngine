@@ -21,8 +21,8 @@ namespace MyEngine
             engine.enableCrossHair(new Vector4(1f,1f,1f,0.5f));
             engine.LoadModelFromFile(Path.Combine(userprofilePath,"3D Objects\\chr_rain.vox"));
             
-            engine.LoadModelFromFile("C:\\Users\\Steven\\3D Objects\\AxisMat.vox");
-            engine.LoadModelFromFile("C:\\Users\\Steven\\3D Objects\\blocksalongx.vox");
+            //engine.LoadModelFromFile("C:\\Users\\Steven\\3D Objects\\AxisMat.vox");
+            //engine.LoadModelFromFile("C:\\Users\\Steven\\3D Objects\\blocksalongx.vox");
             var testgetmodel = engine.GetModel("chr_rain");
             var model = testgetmodel.First();
             //model.rotateX(15f);
