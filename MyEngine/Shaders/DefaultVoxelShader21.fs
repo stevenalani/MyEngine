@@ -1,6 +1,3 @@
-#version 330 core
-out vec4 FragColor;
-
 uniform vec3 lightPos;
 uniform vec3 lightColor;
 uniform float ambientStrength;
@@ -8,8 +5,8 @@ uniform float diffuseStrength;
 uniform float specularStrength;
 uniform vec3 viewpos;
 
-in vec4 fragcol;
-in vec3 apos;
+varying vec4 fragcol;
+varying vec3 apos;
 
 void main()
 {
@@ -25,6 +22,6 @@ void main()
     vec3 specular = specularStrength * spec * lightColor;
 
     vec3 result = (ambient + diffuse + specular) * fragcol;
-    FragColor = vec4(result, fragcol.w);
+    gl_FragColor = vec4(result, fragcol.w);
 
 }

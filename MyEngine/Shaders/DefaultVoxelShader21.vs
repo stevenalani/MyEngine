@@ -1,8 +1,8 @@
 ﻿attribute vec3 aPos;
- vec4 aColor;
+attribute vec4 aColor;
  
-out vec4 fragcol; 
-out vec3 apos;
+varying vec4 fragcol; 
+varying vec3 apos;
 
 uniform mat4 model;
 uniform mat4 view;
