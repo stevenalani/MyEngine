@@ -25,25 +25,6 @@ namespace MyEngine
         internal ShaderManager shaderManager = new ShaderManager();
 
 
-        public Engine() : base(
-            600,
-            400,
-            GraphicsMode.Default,
-            "OpenGl Version:",
-            GameWindowFlags.Default,
-            DisplayDevice.GetDisplay(DisplayIndex.Second),
-            2,
-            0,
-            GraphicsContextFlags.ForwardCompatible)
-        {
-            Title += GL.GetString(StringName.Version);
-            VSync = VSyncMode.Off;
-            _lastPositionState = new MousePositionState(Width / 2, Height / 2);
-            CursorVisible = false;
-            EngineLogger = new Logger();
-            EngineLogger.Start();
-        }
-
         public Engine(int height, int width, Camera camera = null) : base(
             height,
             width,
@@ -51,7 +32,7 @@ namespace MyEngine
             "OpenGl Version:",
             GameWindowFlags.Default,
             DisplayDevice.GetDisplay(DisplayIndex.Default),
-            3,
+            4,
             0,
             GraphicsContextFlags.ForwardCompatible)
         {
@@ -95,7 +76,7 @@ namespace MyEngine
         {
             base.OnLoad(e);
 
-            //GL.PolygonMode(MaterialFace.FrontAndBack,PolygonMode.Line);
+            GL.PolygonMode(MaterialFace.FrontAndBack,PolygonMode.Line);
 
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Front);
@@ -134,8 +115,7 @@ namespace MyEngine
             shader.SetUniformFloat("diffuseStrength", 1f);
             shader.SetUniformFloat("specularStrength", 1f);
 
-            modelManager.DrawModels(shader);
-            //ShaderProgram.unuse();
+            modelManager.DrawModels(shader);;
             CrossHair?.Draw();
             SwapBuffers();
         }

@@ -58,13 +58,15 @@ namespace MyEngine
             this.far = far;
             this._projectionType = projection;
             Update();
-            pProjection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(fov), aspect, near, far);
+            pProjection = Matrix4.CreatePerspectiveFieldOfView((float)(fov * (Math.PI / 180)), aspect, near, far);
             oProjection = Matrix4.CreateOrthographic(width, height, near, far);
         }
 
         public Matrix4 GetView()
         {
+            if (_projectionType == PROJECTIONTYPE.Perspective)
             return Matrix4.LookAt(Position,Target,Up);
+            return Matrix4.Identity * Matrix4.CreateTranslation(Position);
         }
         public Matrix4 GetProjection(PROJECTIONTYPE projectiontype)
         {

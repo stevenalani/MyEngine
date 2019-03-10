@@ -13,17 +13,18 @@ namespace MyEngine
         private static void Main(string[] args)
         {
             var userprofilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            Camera cam = new Camera(1400, 900);
-            cam.Position = new Vector3(0,0,-25);
+            Camera cam = new Camera(1400, 900,0.1f,100f,PROJECTIONTYPE.Perspective);
+            cam.Position = new Vector3(0,0,100);
             Engine engine = new Engine(1400,900,cam);
+            
             //HeightmapImporter hi = new HeightmapImporter();
             engine.AddShader("Shaders\\DefaultVoxelShader.vs", "Shaders\\DefaultVoxelShader.fs");
             engine.enableCrossHair(new Vector4(1f,1f,1f,0.5f));
-            engine.LoadModelFromFile(Path.Combine(userprofilePath,"3D Objects\\chr_rain.vox"));
+            engine.LoadModelFromFile(Path.Combine(userprofilePath,"3D Objects\\fuckgreedy.vox"));
             
             //engine.LoadModelFromFile("C:\\Users\\Steven\\3D Objects\\AxisMat.vox");
             //engine.LoadModelFromFile("C:\\Users\\Steven\\3D Objects\\blocksalongx.vox");
-            var testgetmodel = engine.GetModel("chr_rain");
+            var testgetmodel = engine.GetModel("fuckgreedy");
             var model = testgetmodel.First();
             model.rotateX(15f);
             model.MoveForward(10f);

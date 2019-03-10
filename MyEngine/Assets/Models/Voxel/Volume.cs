@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using OpenTK;
 
@@ -117,9 +118,10 @@ namespace MyEngine.Assets.Models.Voxel
                             countZ = voxelsInfront;
                     }
                 else if (countZ >= countX && countZ >= countY)
-                    for (var i = (int) currentvoxel.Posindices.X; i <= currentvoxel.Posindices.X + countX; i++)
+                    for (var i = (int) currentvoxel.Posindices.Z; i <= currentvoxel.Posindices.Z + countZ; i++)
                     {
-                        var voxel = VolumeData[i, currentY, currentZ];
+                        var voxel = VolumeData[currentX, currentY, i];
+                        //Console.WriteLine(voxel.Color);
                         var voxelsAbove = GetNeighborsY(voxel);
                         var voxelsRight = GetNeighborsX(voxel);
                         if (voxelsAbove < countY || countY == -1)
@@ -154,7 +156,7 @@ namespace MyEngine.Assets.Models.Voxel
                 posxColorVertex.position.X = currentvoxel.Posindices.X;
                 poscolresult.Add(posxColorVertex);
 
-                currentX += countX;
+               // currentX += countX;
 
                 checkin(currentvoxel.Posindices,
                     new Vector3(currentvoxel.Posindices.X + countX + 1, currentvoxel.Posindices.Y + countY + 1,
@@ -191,7 +193,7 @@ namespace MyEngine.Assets.Models.Voxel
         {
             var next = new VoxelInformation(start.Posindices, start.Color);
             var neighborsY = 0;
-            while (next.Posindices.Y < dimensions.Y - 1 && IsSameColorUp(next))
+            while (next.Posindices.Y < dimensions.Y - 1 && IsSameColorUp(next) && !VolumeData[(int) next.Posindices.X,(int) next.Posindices.Y,(int) next.Posindices.Z].checkedin)
             {
                 next.Posindices.Y++;
                 neighborsY++;
