@@ -10,6 +10,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 
 namespace MyEngine
+
 {
     internal class Engine : GameWindow
     {

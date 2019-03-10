@@ -80,7 +80,6 @@ namespace MyEngine.Assets.Models.Voxel
 
         public void ComputeVertices()
         {
-            var spacecenter = dimensions / 2;
             VoxelInformation currentvoxel;
 
             int countX = -1, countY = -1, countZ = -1;
