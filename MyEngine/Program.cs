@@ -17,7 +17,7 @@ namespace MyEngine
             cam.Position = new Vector3(0,0,-25);
             Engine engine = new Engine(1400,900,cam);
             //HeightmapImporter hi = new HeightmapImporter();
-            engine.AddShader("Shaders\\DefaultVoxelShader21.vs", "Shaders\\DefaultVoxelShader21.fs");
+            engine.AddShader("Shaders\\DefaultVoxelShader.vs", "Shaders\\DefaultVoxelShader.fs");
             engine.enableCrossHair(new Vector4(1f,1f,1f,0.5f));
             engine.LoadModelFromFile(Path.Combine(userprofilePath,"3D Objects\\chr_rain.vox"));
             
@@ -25,8 +25,10 @@ namespace MyEngine
             //engine.LoadModelFromFile("C:\\Users\\Steven\\3D Objects\\blocksalongx.vox");
             var testgetmodel = engine.GetModel("chr_rain");
             var model = testgetmodel.First();
-            //model.rotateX(15f);
+            model.rotateX(15f);
             model.MoveForward(10f);
+            BoundingBox boundingBox = new BoundingBox(model);
+            engine.AddModel(boundingBox);
             engine.Run(60.0);
 
         }

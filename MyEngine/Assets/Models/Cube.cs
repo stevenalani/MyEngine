@@ -47,6 +47,11 @@ namespace MyEngine.Assets.Models
             Vertices = CubeData.Vertices.Select(x => new PositionColorVertex
                 {position = x, color = new Vector4(0.1f, 0.5f, 0.2f, 0.4f)}).ToArray();
         }
+        public Cube(BoundingBox boundingBox) : base(null, CubeData.Indices)
+        {
+            Vertices = boundingBox.ToArray().Select(x => new PositionColorVertex
+                {position = x, color = new Vector4(0.1f, 0.5f, 0.2f, 0.2f)}).ToArray();
+        }
 
         public override void Draw(ShaderProgram shaderProgram)
         {
