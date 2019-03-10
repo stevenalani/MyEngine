@@ -29,8 +29,11 @@ namespace MyEngine
         {
             /*left minlon.            bottom minlat.            right maxlon.            top maxlat.*/
             
-            string filepath = "";
-            string path = filePath == ""?"openStreet":filepath;
+            string fileName = "openStreetresultTest.xml";
+            string folderName = @"C:\Users\Chantal\GitProjects\MyEngine\MyEngine\XMLMaps";
+            string pathString = System.IO.Path.Combine(folderName, "City1");
+            pathString = System.IO.Path.Combine(pathString, fileName);
+
             string url = "https://api.openstreetmap.org/api/0.6/map?bbox=" + leftBottom.X + "," + leftBottom.Y + "," + rightTop.X +", " + rightTop.Y+"";
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
 

@@ -147,6 +147,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ConsoleLog\" />
+    <Folder Include="XMLMaps\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
