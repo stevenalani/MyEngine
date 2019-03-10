@@ -102,6 +102,7 @@
     <Compile Include="Assets\Models\Voxel\Volume.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="CameraAngles.cs" />
+    <Compile Include="HeightmapImporter.cs" />
     <Compile Include="Logging\DebugHelpers.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Assets\Models\DefaultModel.cs" />
