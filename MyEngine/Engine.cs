@@ -4,24 +4,24 @@ using System.ComponentModel;
 using System.Linq;
 using MyEngine.Assets.Models;
 using MyEngine.Logging;
-using MyEngine.ShaderImporter;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 
 namespace MyEngine
+
 {
     internal class Engine : GameWindow
     {
-        private double lasttime = 0f;
+        private readonly ModelManager modelManager = new ModelManager();
         private bool _firstMouse = true;
 
         private MousePositionState _lastPositionState;
 
         public Camera Camera;
         private CrossHair CrossHair;
-        private readonly ModelManager modelManager = new ModelManager();
+        private double lasttime;
         internal ShaderManager shaderManager = new ShaderManager();
 
 
@@ -29,7 +29,7 @@ namespace MyEngine
             600,
             400,
             GraphicsMode.Default,
-            "OpenGl Version:", 
+            "OpenGl Version:",
             GameWindowFlags.Default,
             DisplayDevice.GetDisplay(DisplayIndex.Second),
             4,
@@ -48,7 +48,7 @@ namespace MyEngine
             height,
             width,
             GraphicsMode.Default,
-            "OpenGl Version:", 
+            "OpenGl Version:",
             GameWindowFlags.Default,
             DisplayDevice.GetDisplay(DisplayIndex.Default),
             3,
@@ -133,7 +133,7 @@ namespace MyEngine
             shader.SetUniformFloat("ambientStrength", 1);
             shader.SetUniformFloat("diffuseStrength", 1f);
             shader.SetUniformFloat("specularStrength", 1f);
-            
+
             modelManager.DrawModels(shader);
             //ShaderProgram.unuse();
             CrossHair?.Draw();
@@ -144,7 +144,7 @@ namespace MyEngine
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             base.OnUpdateFrame(e);
-            HandleKeyboard((float) (e.Time));
+            HandleKeyboard((float) e.Time);
             lasttime = e.Time;
         }
 
@@ -211,18 +211,19 @@ namespace MyEngine
             CrossHair = new CrossHair(this, color);
         }
 
-        public void LoadModelFromFile(string modelPath,string name = "")
+        public void LoadModelFromFile(string modelPath, string name = "")
         {
-            modelManager.LoadModelFromFile(modelPath,name);
+            modelManager.LoadModelFromFile(modelPath, name);
         }
 
         public bool CheckHit()
         {
-            var BoundingBoxes = modelManager.GetModels().Where(x => x is PositionColorModel && !(x is VisualRay)).Select(x =>
-            {
-                var bb =  new BoundingBox((PositionColorModel) x);
-                return BoundingBox.TransformBoundingBox(bb, x.model);
-            });
+            var BoundingBoxes = modelManager.GetModels().Where(x => x is PositionColorModel && !(x is VisualRay))
+                .Select(x =>
+                {
+                    var bb = new BoundingBox((PositionColorModel) x);
+                    return BoundingBox.TransformBoundingBox(bb, x.model);
+                });
             return true;
         }
 

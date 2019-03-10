@@ -3,7 +3,7 @@ using System.IO;
 using GlmNet;
 using MyEngine.Logging;
 using OpenTK;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.OpenGL;
 
 namespace MyEngine.ShaderImporter
 {
@@ -30,7 +30,7 @@ namespace MyEngine.ShaderImporter
         private int CompileVertexShader(string vertexPath)
         {
             var vertexShader = GL.CreateShader(ShaderType.VertexShader);
-            var shaderString = File.ReadAllText(vertexPath);
+            var shaderString = File.ReadAllText(vertexPath).Replace("\n","\n ");
             GL.ShaderSource(vertexShader, shaderString);
             GL.CompileShader(vertexShader);
             int vsSuccess;
