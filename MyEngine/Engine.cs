@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.Remoting.Lifetime;
 using MyEngine.Assets.Models;
 using MyEngine.Logging;
 using OpenTK;
@@ -149,7 +150,10 @@ namespace MyEngine
             var ray = new VisualRay(Camera);
             AddModel(ray);
 
-            CheckHit();
+            var results = CheckHit();
+            var hitinobjectspace =
+                results.Select(x => Vector3.TransformPosition(x.hitPosition, x.model.Modelmatrix.Inverted()));
+            
         }
 
         protected override void OnMouseMove(MouseMoveEventArgs e)
@@ -223,7 +227,7 @@ namespace MyEngine
             modelManager.LoadModelFromFile(modelPath, name);
         }
 
-        public List<Model> CheckHit()
+        public List<RayHitResult> CheckHit()
         {
             List<RayHitResult> hitResults = new List<RayHitResult>();
             var BoundingBoxes = modelManager.GetModels().Where(x => x is PositionColorModel && !(x is IEngineModel))
@@ -246,7 +250,14 @@ namespace MyEngine
                     if ( isinx && isiny && isinz)
                     {
                         BoundingBox bb2 = new BoundingBox(values.Key, new Vector4(0.8f, 0.2f, 0.2f, 0.1f));
+                        bb2.purgesiblings = true;
                         modelManager.AddModel(bb2);
+                        var hit = new RayHitResult()
+                        {
+                            model = values.Key,
+                            hitPosition = Target
+                        };
+                        hitResults.Add(hit);
                         break;
                     }
 
@@ -254,7 +265,7 @@ namespace MyEngine
             }
 
 
-            return null;
+            return hitResults;
         }
 
         public List<Model> GetModel(string name)
@@ -263,14 +274,17 @@ namespace MyEngine
         }
     }
 
-    internal struct RayHitResult
+    public struct RayHitResult
     {
-        Model model;
-        
+        public Model model;
+        public Vector3 hitPosition;
+
     }
 
     public interface IEngineModel
     {
+        string series { get; set; }
+        bool purgesiblings { get; set; }
     }
 
     internal struct MousePositionState

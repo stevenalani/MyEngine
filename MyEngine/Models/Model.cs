@@ -26,7 +26,7 @@ namespace MyEngine
 
         private Vector3 Direction = -Vector3.UnitZ;
 
-        public Matrix4 model =>  Matrix4.CreateScale(Scales) * MathHelpers.getRotation(Rotations.X, Rotations.Y,Rotations.Z) *  Matrix4.CreateTranslation(Position);
+        public Matrix4 Modelmatrix =>  Matrix4.CreateScale(Scales) * MathHelpers.getRotation(Rotations.X, Rotations.Y,Rotations.Z) *  Matrix4.CreateTranslation(Position);
             
         
 

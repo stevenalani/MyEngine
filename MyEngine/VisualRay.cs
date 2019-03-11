@@ -58,5 +58,8 @@ namespace MyEngine
         {
             base.Draw(shaderProgram);
         }
+
+        public string series { get; set; } = "default";
+        public bool purgesiblings { get; set; } = false;
     }
 }

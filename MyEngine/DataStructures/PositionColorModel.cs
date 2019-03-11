@@ -65,7 +65,7 @@ namespace MyEngine
         public override void Draw(ShaderProgram shader)
         {
             if (IsInitialized){ 
-                shader.SetUniformMatrix4X4("model",model);
+                shader.SetUniformMatrix4X4("model",Modelmatrix);
                 GL.BindVertexArray(VAO);
                 GL.DrawElements(BeginMode.Triangles, Indices.Length, DrawElementsType.UnsignedInt, 0);
             }

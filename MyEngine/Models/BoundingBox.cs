@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Runtime.CompilerServices;
 using MyEngine.Assets.Models;
 using MyEngine.DataStructures;
 using MyEngine.Models;
@@ -9,6 +10,7 @@ namespace MyEngine
 {
     public class BoundingBox : Cube, IEngineModel
     {
+
         public Vector3 leftlownear;
         public Vector3 rightlownear;
         public Vector3 rightupnear;
@@ -32,7 +34,7 @@ namespace MyEngine
         }
         private void init(PositionColorModel inmodel)
         {
-            var vertices = inmodel.Vertices.Select(x => Vector3.TransformPosition(x.position, inmodel.model)).ToArray();
+            var vertices = inmodel.Vertices.Select(x => Vector3.TransformPosition(x.position, inmodel.Modelmatrix)).ToArray();
             var lowest = vertices.Min(x => x.Y);
             var highest = vertices.Max(x => x.Y);
             var left = vertices.Min(x => x.X);
@@ -96,5 +98,9 @@ namespace MyEngine
                 { position = x, color = color }).ToArray();
             IsInitialized = false;
         }
+
+        public string series { get; set; } = "default";
+        public bool purgesiblings { get; set; } = false;
+
     }
 }

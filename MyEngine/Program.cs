@@ -37,16 +37,16 @@ namespace MyEngine
             {
                 model2.ClearVolume();
             };*/
-            //model.name = "RubicsCube";
-            //engine.AddModel(model);
+            //Modelmatrix.name = "RubicsCube";
+            //engine.AddModel(Modelmatrix);
             //engine.LoadModelFromFile("C:\\Users\\Steven\\3D Objects\\AxisMat.vox");
             //engine.LoadModelFromFile("C:\\Users\\Steven\\3D Objects\\blocksalongx.vox");
            
-            //var model = testgetmodel.First();
+            //var Modelmatrix = testgetmodel.First();
             model.rotateX(15f);
             model.rotateZ(20f);
             model.MoveToVector(new Vector3(15f,-2f,10f));
-            //BoundingBox boundingBox = new BoundingBox(model);
+            //BoundingBox boundingBox = new BoundingBox(Modelmatrix);
             //engine.AddModel(boundingBox);
             engine.Run(60.0);
 

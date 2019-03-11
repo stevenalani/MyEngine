@@ -3,23 +3,28 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Assimp;
 using MyEngine.Assets;
 using MyEngine.ShaderImporter;
-using OpenTK;
 
 namespace MyEngine
 {
     internal class ModelManager
     {
-        private readonly Dictionary<int,Model> _models = new Dictionary<int, Model>();
-        private ConcurrentQueue<Model> UninitializedModels = new ConcurrentQueue<Model>();
+        private readonly Dictionary<int, Model> _models = new Dictionary<int, Model>();
+
+        private readonly Dictionary<string, List<IEngineModel>> engineModels =
+            new Dictionary<string, List<IEngineModel>>();
+
+        private readonly ConcurrentQueue<IEngineModel> UninitializedEngineModels = new ConcurrentQueue<IEngineModel>();
+        private readonly ConcurrentQueue<Model> UninitializedModels = new ConcurrentQueue<Model>();
+
+        public bool HasModelUpdates { get; set; }
 
         public Model[] GetModels(bool joined = true)
         {
-            if(!joined)
-                return this._models.Values.ToArray();
-            List<Model> res = new List<Model>();
+            if (!joined)
+                return _models.Values.ToArray();
+            var res = new List<Model>();
             res.AddRange(UninitializedModels);
             res.AddRange(_models.Values);
             return res.ToArray();
@@ -27,8 +32,14 @@ namespace MyEngine
 
         public void AddModel(Model model)
         {
-            UninitializedModels.Enqueue(model);
             HasModelUpdates = true;
+            if (model is IEngineModel)
+            {
+                UninitializedEngineModels.Enqueue((IEngineModel) model);
+                return;
+            }
+
+            UninitializedModels.Enqueue(model);
         }
 
         public void InitModels()
@@ -40,7 +51,21 @@ namespace MyEngine
                 {
                     UninitializedModels.TryDequeue(out model);
                     model?.InitBuffers();
-                    _models.Add(model.ID,model);
+                    _models.Add(model.ID, model);
+                }
+            }
+            else if (!UninitializedEngineModels.IsEmpty)
+            {
+                IEngineModel model = null;
+                while (!UninitializedEngineModels.IsEmpty)
+                {
+                    UninitializedEngineModels.TryDequeue(out model);
+                    ((Model) model)?.InitBuffers();
+                    if (!engineModels.ContainsKey(model.series))
+                        engineModels.Add(model.series, new List<IEngineModel>());
+                    if (model.purgesiblings)
+                        engineModels[model.series] = new List<IEngineModel>();
+                    engineModels[model.series].Add(model);
                 }
             }
             else
@@ -49,38 +74,33 @@ namespace MyEngine
             }
         }
 
-        public bool HasModelUpdates { get; set; } = false;
-
-        public void DrawModels(ShaderProgram shader,int[] modelIDs = null)
+        public void DrawModels(ShaderProgram shader, int[] modelIDs = null)
         {
             if (modelIDs == null)
                 foreach (var model in _models.Values)
                 {
                     model.Draw(shader);
-                    if (!model.IsInitialized)
-                    {
-                        model.InitBuffers();
-                    } 
+                    if (!model.IsInitialized) model.InitBuffers();
                 }
-                   
+
             else
-            {
                 foreach (var modelID in modelIDs)
-                {
                     if (_models.ContainsKey(modelID))
-                    {
                         _models[modelID].Draw(shader);
-                    }
-                }
+
+            foreach (var engineModel in engineModels.Values)
+            foreach (var model in engineModel)
+            {
+                ((Model) model).Draw(shader);
+                if (!((Model) model).IsInitialized) ((Model) model).InitBuffers();
             }
-            
         }
 
-        public void LoadModelFromFile(string modelpath,string name)
+        public void LoadModelFromFile(string modelpath, string name)
         {
             if (name == "") name = Path.GetFileNameWithoutExtension(modelpath);
             var models = ModelImporter.LoadFromFile(modelpath);
-            int i = 0;
+            var i = 0;
             foreach (var model in models)
             {
                 model.name = i > 0 ? name + i : name;
@@ -92,7 +112,7 @@ namespace MyEngine
 
         public void Update(object sender, EventArgs eventArgs)
         {
-            if(HasModelUpdates)
+            if (HasModelUpdates)
                 InitModels();
         }
 
@@ -107,7 +127,7 @@ namespace MyEngine
 
         public void Update()
         {
-                Update(null,null);
+            Update(null, null);
         }
     }
 }
