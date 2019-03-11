@@ -29,11 +29,18 @@ namespace MyEngine.Assets.Models.Voxel
         public void Update()
         {
             var rand = new Random(DateTime.Now.Millisecond);
-            for (var i = 0; i < dimensions.X; i++)
+            /*for (var i = 0; i < dimensions.X; i++)
             for (var j = 0; j < dimensions.Y; j++)
-            for (var k = 0; k < dimensions.Z; k++)
-                SetVoxel(new Vector3(i, j, k),
+            for (var k = 0; k < dimensions.Z; k++)*/
+            var i = rand.Next(0, (int) (dimensions.X-1));
+            var j = rand.Next(0, (int) (dimensions.Y-1));
+            var k = rand.Next(0, (int) (dimensions.Z-1));
+            SetVoxel(new Vector3(i, j, k),
                     new Vector4(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255)));
+            foreach (var voxelInformation in VolumeData)
+            {
+                VolumeData[(int) voxelInformation.Posindices.X,(int) voxelInformation.Posindices.Y,(int) voxelInformation.Posindices.Z].checkedin = false;
+            }
             Init();
         }
     }
@@ -71,7 +78,7 @@ namespace MyEngine.Assets.Models.Voxel
         public void update()
         {
             drawings++;
-            if (drawings == 100)
+            if (drawings == 50)
             {
                 volume.Update();
                 this.Vertices = volume.Vertices;
