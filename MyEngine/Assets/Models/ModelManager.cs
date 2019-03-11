@@ -54,7 +54,14 @@ namespace MyEngine
         {
             if (modelIDs == null)
                 foreach (var model in _models.Values)
+                {
                     model.Draw(shader);
+                    if (!model.IsInitialized)
+                    {
+                        model.InitBuffers();
+                    } 
+                }
+                   
             else
             {
                 foreach (var modelID in modelIDs)

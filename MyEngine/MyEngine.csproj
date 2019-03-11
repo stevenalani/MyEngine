@@ -99,6 +99,7 @@
     <Compile Include="Assets\Models\Model.cs" />
     <Compile Include="Assets\Models\PositionColorVertex2.cs" />
     <Compile Include="Assets\Models\Voxel\HugeVolume.cs" />
+    <Compile Include="Assets\Models\Voxel\RandomDiscoVolume.cs" />
     <Compile Include="Assets\Models\Voxel\Volume.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="CameraAngles.cs" />

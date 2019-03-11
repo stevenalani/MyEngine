@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using MyEngine.Assets.Models;
 using MyEngine.Logging;
 using OpenTK;
@@ -23,18 +24,20 @@ namespace MyEngine
         private CrossHair CrossHair;
         private double lasttime;
         internal ShaderManager shaderManager = new ShaderManager();
+        private bool IsWireframe;
+        private DateTime nextWireframeSwitch = DateTime.Now;
 
 
-        public Engine(int height, int width, Camera camera = null) : base(
-            height,
+        public Engine(int width, int height, Camera camera = null) : base(
             width,
+            height,
             GraphicsMode.Default,
             "OpenGl Version:",
             GameWindowFlags.Default,
             DisplayDevice.GetDisplay(DisplayIndex.Default),
             4,
             0,
-            GraphicsContextFlags.ForwardCompatible)
+            GraphicsContextFlags.Default)
         {
             Title += GL.GetString(StringName.Version);
             VSync = VSyncMode.Off;
@@ -76,7 +79,7 @@ namespace MyEngine
         {
             base.OnLoad(e);
 
-            GL.PolygonMode(MaterialFace.FrontAndBack,PolygonMode.Line);
+            //GL.PolygonMode(MaterialFace.FrontAndBack,PolygonMode.Line);
 
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Front);
@@ -96,9 +99,9 @@ namespace MyEngine
             Title = $"(Vsync: {VSync}) FPS: {1f / e.Time:0}";
             Color4 backColor;
             backColor.A = 1.0f;
-            backColor.R = 0.1f;
-            backColor.G = 0.1f;
-            backColor.B = 0.3f;
+            backColor.R = 0.9f;
+            backColor.G = 0.9f;
+            backColor.B = 0.9f;
             GL.ClearColor(backColor);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             var projection = Camera.GetProjection();
@@ -114,7 +117,6 @@ namespace MyEngine
             shader.SetUniformFloat("ambientStrength", 1);
             shader.SetUniformFloat("diffuseStrength", 1f);
             shader.SetUniformFloat("specularStrength", 1f);
-
             modelManager.DrawModels(shader);;
             CrossHair?.Draw();
             SwapBuffers();
@@ -184,6 +186,26 @@ namespace MyEngine
                 Camera.ProcessKeyboard(CameraMovement.UP, deltaTime);
             if (keyState.IsKeyDown(Key.ControlLeft))
                 Camera.ProcessKeyboard(CameraMovement.DOWN, deltaTime);
+            if (keyState.IsKeyDown(Key.G))
+                switchWireframe(deltaTime);
+        }
+
+        private void switchWireframe(float deltatime)
+        {
+            var now = DateTime.Now;
+            if ( nextWireframeSwitch < now)
+            {
+                IsWireframe = !IsWireframe;
+                if (IsWireframe)
+                {
+                    GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+                }
+                else
+                {
+                    GL.PolygonMode(MaterialFace.FrontAndBack,PolygonMode.Fill);
+                }
+                nextWireframeSwitch = nextWireframeSwitch.AddSeconds((now - nextWireframeSwitch).Seconds +0.5);
+            }
         }
 
         public void enableCrossHair(Vector4 color)

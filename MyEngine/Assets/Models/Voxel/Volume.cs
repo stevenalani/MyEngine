@@ -7,15 +7,16 @@ namespace MyEngine.Assets.Models.Voxel
 {
     public class Volume
     {
-        private readonly Vector3 dimensions;
+        protected readonly Vector3 dimensions;
 
         // Stores the Voxel Material
-        private readonly VoxelInformation[,,] VolumeData;
+        protected VoxelInformation[,,] VolumeData;
         private uint _voxelscount;
         private bool hasstartpoint;
         public uint[] Indices;
 
         public PositionColorVertex[] Vertices;
+        private bool isInitialized;
 
         public Volume(Vector3 dimensions)
         {
@@ -23,10 +24,10 @@ namespace MyEngine.Assets.Models.Voxel
             VolumeData = new VoxelInformation[(int) dimensions.X, (int) dimensions.Y, (int) dimensions.Z];
         }
 
-        public Volume(int sizeInformationX, int sizeInformationY, int sizeInformationZ)
+        public Volume(int witdh, int height, int depth)
         {
-            dimensions = new Vector3(sizeInformationX, sizeInformationY, sizeInformationZ);
-            VolumeData = new VoxelInformation[sizeInformationX, sizeInformationY, sizeInformationZ];
+            dimensions = new Vector3(witdh, height, depth);
+            VolumeData = new VoxelInformation[witdh, height, depth];
         }
 
         public void SetVoxel(Vector3 pos, Vector4 mat)
@@ -34,6 +35,7 @@ namespace MyEngine.Assets.Models.Voxel
             if (!(pos.X <= dimensions.X && pos.Y <= dimensions.Y && pos.Z <= dimensions.Z)) return;
             VolumeData[(int) pos.X, (int) pos.Y, (int) pos.Z] = new VoxelInformation(pos, mat);
             _voxelscount++;
+            isInitialized = false;
         }
 
 
@@ -107,7 +109,7 @@ namespace MyEngine.Assets.Models.Voxel
                             countZ = voxelsInfront;
                     }
                 else if (countY >= countX && countY >= countZ)
-                    for (var i = (int) currentvoxel.Posindices.Y; i <= currentvoxel.Posindices.Y + countX; i++)
+                    for (var i = (int) currentvoxel.Posindices.Y; i <= currentvoxel.Posindices.Y + countY; i++)
                     {
                         var voxel = VolumeData[currentX, i, currentZ];
                         var voxelsRight = GetNeighborsX(voxel);
@@ -121,13 +123,12 @@ namespace MyEngine.Assets.Models.Voxel
                     for (var i = (int) currentvoxel.Posindices.Z; i <= currentvoxel.Posindices.Z + countZ; i++)
                     {
                         var voxel = VolumeData[currentX, currentY, i];
-                        //Console.WriteLine(voxel.Color);
                         var voxelsAbove = GetNeighborsY(voxel);
                         var voxelsRight = GetNeighborsX(voxel);
                         if (voxelsAbove < countY || countY == -1)
                             countY = voxelsAbove;
                         if (voxelsRight < countX || countX == -1)
-                            countZ = voxelsRight;
+                            countX = voxelsRight;
                     }
 
                 var posxColorVertex = new PositionColorVertex
@@ -230,9 +231,23 @@ namespace MyEngine.Assets.Models.Voxel
 
             Indices = indices.ToArray();
         }
+
+        public void Init()
+        {
+            ComputeVertices();
+            ComputeIndices();
+            isInitialized = true;
+        }
+
+        public PositionColorModel GetModel()
+        {
+            if(!isInitialized)
+                Init();
+            return new PositionColorModel(Vertices,Indices);
+        }
     }
 
-    internal struct VoxelInformation
+    public struct VoxelInformation
     {
         public Vector4 Color;
         public Vector3 Posindices;

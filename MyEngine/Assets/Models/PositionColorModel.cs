@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using MyEngine.Assets.Models;
+using MyEngine.Assets.Models.Voxel;
 using MyEngine.ShaderImporter;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -20,6 +21,15 @@ namespace MyEngine
         public uint[] Indices { get; set; }
 
         public PositionColorVertex[] Vertices;
+
+        public PositionColorModel(Volume volume, bool isReady = false)
+        {
+            if (!isReady)
+                volume.Init();
+            isReady = true;
+            Vertices = volume.Vertices;
+            Indices = volume.Indices;
+        }
 
         public override void InitBuffers()
 
@@ -50,12 +60,12 @@ namespace MyEngine
 
         public override void Draw(ShaderProgram shader)
         {
-            if (IsInitialized)
-            {
+            if (IsInitialized){ 
                 shader.SetUniformMatrix4X4("model",model);
                 GL.BindVertexArray(VAO);
                 GL.DrawElements(BeginMode.Triangles, Indices.Length, DrawElementsType.UnsignedInt, 0);
             }
+            
         }
     }
 }
