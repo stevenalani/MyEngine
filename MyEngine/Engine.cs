@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
 using MyEngine.Assets.Models;
 using MyEngine.Logging;
 using OpenTK;
@@ -15,8 +14,6 @@ namespace MyEngine
 {
     internal class Engine : GameWindow
     {
-        public event Action Update;
-
         private readonly ModelManager modelManager = new ModelManager();
         private bool _firstMouse = true;
 
@@ -24,10 +21,10 @@ namespace MyEngine
 
         public Camera Camera;
         private CrossHair CrossHair;
-        private double lasttime;
-        internal ShaderManager shaderManager = new ShaderManager();
         private bool IsWireframe;
+        private double lasttime;
         private DateTime nextWireframeSwitch = DateTime.Now;
+        internal ShaderManager shaderManager = new ShaderManager();
 
 
         public Engine(int width, int height, Camera camera = null) : base(
@@ -58,6 +55,9 @@ namespace MyEngine
             //EngineLogger.Start();
         }
 
+        public static Logger EngineLogger { get; set; }
+        public event Action Update;
+
         private void OnUpdate(object sender, EventArgs e)
         {
             Update?.Invoke();
@@ -67,8 +67,6 @@ namespace MyEngine
         {
             Update?.Invoke();
         }
-
-        public static Logger EngineLogger { get; set; }
 
         public void AddShader(string vsShaderPath, string fsShaderPath = "")
         {
@@ -152,6 +150,7 @@ namespace MyEngine
             base.OnMouseUp(e);
             var ray = new VisualRay(Camera);
             AddModel(ray);
+
             CheckHit();
         }
 
@@ -205,18 +204,14 @@ namespace MyEngine
         private void switchWireframe(float deltatime)
         {
             var now = DateTime.Now;
-            if ( nextWireframeSwitch < now)
+            if (nextWireframeSwitch < now)
             {
                 IsWireframe = !IsWireframe;
                 if (IsWireframe)
-                {
                     GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-                }
                 else
-                {
-                    GL.PolygonMode(MaterialFace.FrontAndBack,PolygonMode.Fill);
-                }
-                nextWireframeSwitch = nextWireframeSwitch.AddSeconds((now - nextWireframeSwitch).Seconds +0.5);
+                    GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+                nextWireframeSwitch = nextWireframeSwitch.AddSeconds((now - nextWireframeSwitch).Seconds + 0.5);
             }
         }
 
@@ -230,20 +225,35 @@ namespace MyEngine
             modelManager.LoadModelFromFile(modelPath, name);
         }
 
-        public bool CheckHit()
+        public Model CheckHit()
         {
             var BoundingBoxes = modelManager.GetModels().Where(x => x is PositionColorModel && !(x is IEngineModel))
                 .Select(x =>
                 {
                     var bb = new BoundingBox((PositionColorModel) x);
-                    modelManager.AddModel(bb);
-#if DEBUG
-                    modelManager.AddModel(bb);
-#endif
-                    return new KeyValuePair<PositionColorModel,BoundingBox>((PositionColorModel)x,bb);
+                    return new KeyValuePair<PositionColorModel, BoundingBox>((PositionColorModel) x, bb);
                 });
-            
-            return true;
+
+
+            foreach (var values in BoundingBoxes)
+            {
+                var boundingbox = values.Value;
+                boundingbox.TransformBoundingBox(values.Key.model);
+                for (var i = 1; i <= 100; i++)
+                {
+                    var Target = Camera.ViewDirection * i;
+                    if (boundingbox.leftlownear.X <= Target.X && boundingbox.rightlownear.X >= Target.X)
+                    {
+#if DEBUG
+                        modelManager.AddModel(values.Value);
+#endif
+                        break;
+                    }
+                }
+            }
+
+
+            return null;
         }
 
         public List<Model> GetModel(string name)

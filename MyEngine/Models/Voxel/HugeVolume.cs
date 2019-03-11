@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using MyEngine.Models.Voxel;
 using OpenTK;
 
 namespace MyEngine.Assets.Models.Voxel

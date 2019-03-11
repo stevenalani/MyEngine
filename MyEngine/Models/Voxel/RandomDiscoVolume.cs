@@ -1,11 +1,15 @@
 ﻿using System;
+using MyEngine.DataStructures;
+using MyEngine.Models.Voxel;
+using MyEngine.ShaderImporter;
 using OpenTK;
-using OpenTK.Graphics.ES30;
 
 namespace MyEngine.Assets.Models.Voxel
 {
     internal class RandomDiscoVolume : Volume
     {
+        private int drawings;
+
         public RandomDiscoVolume(Vector3 dimensions) : base(dimensions)
         {
             var rand = new Random(DateTime.Now.Millisecond);
@@ -19,11 +23,9 @@ namespace MyEngine.Assets.Models.Voxel
 
         public RandomDiscoVolume(int witdh, int height, int depth) : base(witdh, height, depth)
         {
-            var rand = new Random(DateTime.Now.Millisecond);
             Update();
         }
 
-        
 
         public void Update()
         {
@@ -31,26 +33,36 @@ namespace MyEngine.Assets.Models.Voxel
             /*for (var i = 0; i < dimensions.X; i++)
             for (var j = 0; j < dimensions.Y; j++)
             for (var k = 0; k < dimensions.Z; k++)*/
-            var x = rand.Next(0, (int) (dimensions.X-1));
-            var y = rand.Next(0, (int) (dimensions.Y-1));
-            var z = rand.Next(0, (int) (dimensions.Z-1));
-            ClearVoxel(x,y,z);
-            x = rand.Next(0, (int) (dimensions.X-1));
-            y = rand.Next(0, (int) (dimensions.Y-1));
-            z = rand.Next(0, (int) (dimensions.Z-1));
-            ClearVoxel(x: x, y: y, z: z);
-            x = rand.Next(0, (int)(dimensions.X - 1));
-            y = rand.Next(0, (int)(dimensions.Y - 1));
-            z = rand.Next(0, (int)(dimensions.Z - 1));
+            var x = rand.Next(0, (int) (dimensions.X - 1));
+            var y = rand.Next(0, (int) (dimensions.Y - 1));
+            var z = rand.Next(0, (int) (dimensions.Z - 1));
+            ClearVoxel(x, y, z);
+            x = rand.Next(0, (int) (dimensions.X - 1));
+            y = rand.Next(0, (int) (dimensions.Y - 1));
+            z = rand.Next(0, (int) (dimensions.Z - 1));
+            ClearVoxel(x, y, z);
+            x = rand.Next(0, (int) (dimensions.X - 1));
+            y = rand.Next(0, (int) (dimensions.Y - 1));
+            z = rand.Next(0, (int) (dimensions.Z - 1));
             SetVoxel(new Vector3(x, y, z),
-                    new Vector4(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255)));
-            foreach (var voxelInformation in VolumeData)
-            {
-                VolumeData[(int) voxelInformation.Posindices.X,(int) voxelInformation.Posindices.Y,(int) voxelInformation.Posindices.Z].checkedin = false;
-            }
+                new Vector4(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255)));
+            for (var zz = 0; zz < dimensions.Z; zz++)
+            for (var yy = 0; yy < dimensions.Y; yy++)
+            for (var xx = 0; xx < dimensions.X; xx++)   
+                VolumeData[xx, yy, zz].checkedin = false;
+
             Init();
         }
 
-
+        public override void Draw(ShaderProgram shader)
+        {
+            base.Draw(shader);
+            drawings++;
+            if (drawings == 50)
+            {
+                Update();
+                drawings = 0;
+            }
+        }
     }
 }

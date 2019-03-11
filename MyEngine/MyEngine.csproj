@@ -100,7 +100,6 @@
     <Compile Include="Models\Model.cs" />
     <Compile Include="DataStructures\PositionColorVertex2.cs" />
     <Compile Include="Models\Voxel\HugeVolume.cs" />
-    <Compile Include="Models\PositionColorModelCustom.cs" />
     <Compile Include="Models\Voxel\RandomDiscoVolume.cs" />
     <Compile Include="Models\Voxel\Volume.cs" />
     <Compile Include="Camera.cs" />

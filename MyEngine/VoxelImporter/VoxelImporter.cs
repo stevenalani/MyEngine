@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using MyEngine.Assets.Models;
 using MyEngine.Assets.Models.Voxel;
+using MyEngine.Models.Voxel;
 using OpenTK;
 
 namespace MyEngine.VoxelImporter

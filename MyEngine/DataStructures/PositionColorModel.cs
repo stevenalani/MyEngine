@@ -4,6 +4,7 @@ using System.Linq;
 using MyEngine.Assets.Models;
 using MyEngine.Assets.Models.Voxel;
 using MyEngine.DataStructures;
+using MyEngine.Models.Voxel;
 using MyEngine.ShaderImporter;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -36,7 +37,7 @@ namespace MyEngine
         public override void InitBuffers()
 
         {
-            if(IsInitialized)
+            if(IsInitialized && Vertices != null && Indices != null)
                 return;
 
             VAO = GL.GenVertexArray();

@@ -6,6 +6,7 @@ using System.Text;
 using MyEngine.Assets.Models;
 using MyEngine.Assets.Models.Voxel;
 using MyEngine.Models;
+using MyEngine.Models.Voxel;
 using OpenTK;
 
 namespace MyEngine
@@ -29,7 +30,13 @@ namespace MyEngine
             engine.LoadModelFromFile(Path.Combine(userprofilePath, "3D Objects\\chr_rain.vox"));
             var model = engine.GetModel("chr_rain").First();
 
-            //var model = new PositionColorModelCustom(6, 6, 6);
+            var model2 = new RandomDiscoVolume(6, 6, 6);
+            model2.name = "Random";
+            engine.AddModel(model2);
+            engine.MouseUp += (sender, eventArgs) =>
+            {
+                model2.ClearVolume();
+            };
             //model.name = "RubicsCube";
             //engine.AddModel(model);
             //engine.LoadModelFromFile("C:\\Users\\Steven\\3D Objects\\AxisMat.vox");
@@ -37,7 +44,10 @@ namespace MyEngine
            
             //var model = testgetmodel.First();
             model.rotateX(15f);
-            model.MoveForward(100f);
+            model.rotateZ(20f);
+
+            model.MoveForward(10f);
+            model.MoveToVector(new Vector3(15,-2,10));
             //BoundingBox boundingBox = new BoundingBox(model);
             //engine.AddModel(boundingBox);
             engine.Run(60.0);
