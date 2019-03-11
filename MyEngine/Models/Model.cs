@@ -1,6 +1,7 @@
 ﻿using System;
 using GlmNet;
 using MyEngine.Assets.Models;
+using MyEngine.DataStructures;
 using MyEngine.ShaderImporter;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -97,5 +98,7 @@ namespace MyEngine
             var rotationMatrix4 = MathHelpers.getRotation(yawpitchroll.X,yawpitchroll.Y,yawpitchroll.Z);
             this.Direction = Vector3.TransformNormal(Direction, rotationMatrix4);
         }
+
+        
     }
 }

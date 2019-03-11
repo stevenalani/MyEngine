@@ -99,9 +99,9 @@ namespace MyEngine
             Title = $"(Vsync: {VSync}) FPS: {1f / e.Time:0}";
             Color4 backColor;
             backColor.A = 1.0f;
-            backColor.R = 0.9f;
-            backColor.G = 0.9f;
-            backColor.B = 0.9f;
+            backColor.R = 0.1f;
+            backColor.G = 0.1f;
+            backColor.B = 0.2f;
             GL.ClearColor(backColor);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             var projection = Camera.GetProjection();
@@ -117,7 +117,7 @@ namespace MyEngine
             shader.SetUniformFloat("ambientStrength", 1);
             shader.SetUniformFloat("diffuseStrength", 1f);
             shader.SetUniformFloat("specularStrength", 1f);
-            modelManager.DrawModels(shader);;
+            modelManager.DrawModels(shader);
             CrossHair?.Draw();
             SwapBuffers();
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using Assimp.Configs;
+using MyEngine.DataStructures;
 using MyEngine.Logging;
 using MyEngine.ShaderImporter;
 using OpenTK;

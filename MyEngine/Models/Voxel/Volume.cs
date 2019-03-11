@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MyEngine.DataStructures;
 using OpenTK;
 
 namespace MyEngine.Assets.Models.Voxel
@@ -38,6 +39,12 @@ namespace MyEngine.Assets.Models.Voxel
             isInitialized = false;
         }
 
+        protected void ClearVoxel(int x, int y, int z)
+        {
+            if (!(x <= dimensions.X && y <= dimensions.Y && z <= dimensions.Z)) return;
+            VolumeData[x, y, z].Color = Vector4.Zero;
+            isInitialized = false;
+        }
 
         private bool IsSameColorFront(VoxelInformation voxel)
         {
@@ -237,13 +244,6 @@ namespace MyEngine.Assets.Models.Voxel
             ComputeVertices();
             ComputeIndices();
             isInitialized = true;
-        }
-
-        public PositionColorModel GetModel()
-        {
-            if(!isInitialized)
-                Init();
-            return new PositionColorModel(Vertices,Indices);
         }
     }
 

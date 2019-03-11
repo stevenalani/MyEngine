@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using MyEngine.Assets.Models;
+using MyEngine.DataStructures;
 using OpenTK;
 using OpenTK.Graphics;
 
@@ -7,7 +8,6 @@ namespace MyEngine
 {
     public class BoundingBox : Cube
     {
-        new Matrix4 model = Matrix4.Identity;
         public Vector3 leftlownear;
         public Vector3 rightlownear;
         public Vector3 rightupnear;
@@ -24,11 +24,13 @@ namespace MyEngine
             if (model is PositionColorModel)
             {
                 init((PositionColorModel)model);
+                ((PositionColorModel)model).OnUpdate += init;
             }
         }
-        private void init(PositionColorModel model)
+        private void init(PositionColorModel inmodel)
         {
-            var vertices = model.Vertices.Select(x => Vector3.TransformVector(x.position, model.model)).ToArray();
+            this.Position = inmodel.Position;
+            var vertices = inmodel.Vertices.Select(x => Vector3.TransformVector(x.position,inmodel.model)).ToArray();
             var lowest = vertices.Min(x => x.Y);
             var highest = vertices.Max(x => x.Y);
             var left = vertices.Min(x => x.X);
@@ -49,6 +51,7 @@ namespace MyEngine
             leftupfar = new Vector3(left, highest, farest);
             Vertices = ToArray().Select(x => new PositionColorVertex()
                 {position = x, color = new Vector4(0.1f, 0.7f, 1f, 0.1f)}).ToArray();
+            IsInitialized = false;
         }
 
 

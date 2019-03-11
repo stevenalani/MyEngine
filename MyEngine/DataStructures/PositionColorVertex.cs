@@ -1,8 +1,6 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using MyEngine.Assets.Models;
-using OpenTK;
+﻿using OpenTK;
 
-namespace MyEngine
+namespace MyEngine.DataStructures
 {
     public struct PositionColorVertex: IVertextype
     {

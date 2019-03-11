@@ -1,6 +1,6 @@
 ﻿using OpenTK;
 
-namespace MyEngine.Assets.Models
+namespace MyEngine.DataStructures
 {
     public struct PositionColorVertex2 : IVertextype
     {
@@ -28,10 +28,5 @@ namespace MyEngine.Assets.Models
         {
             return sizeof(float) * 6;
         }
-    }
-
-    public interface IVertextype
-    {
-        int getStructSize();
     }
 }

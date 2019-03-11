@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MyEngine.Assets.Models;
 using MyEngine.Assets.Models.Voxel;
+using MyEngine.DataStructures;
 using MyEngine.ShaderImporter;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -12,6 +13,7 @@ namespace MyEngine
 {
     public class PositionColorModel : Model
     {
+        public event Action<PositionColorModel> OnUpdate;
         public PositionColorModel(PositionColorVertex[] vertices, uint[] indices)
         {
             Vertices = vertices;
@@ -56,6 +58,7 @@ namespace MyEngine
             GL.EnableVertexAttribArray(1);
             GL.BindVertexArray(0);
             this.IsInitialized = true;
+            OnUpdate?.Invoke(this);
         }
 
         public override void Draw(ShaderProgram shader)

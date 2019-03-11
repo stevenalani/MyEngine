@@ -1,6 +1,6 @@
 ﻿using System;
-using MyEngine.ShaderImporter;
 using OpenTK;
+using OpenTK.Graphics.ES30;
 
 namespace MyEngine.Assets.Models.Voxel
 {
@@ -20,7 +20,6 @@ namespace MyEngine.Assets.Models.Voxel
         public RandomDiscoVolume(int witdh, int height, int depth) : base(witdh, height, depth)
         {
             var rand = new Random(DateTime.Now.Millisecond);
-            
             Update();
         }
 
@@ -32,10 +31,18 @@ namespace MyEngine.Assets.Models.Voxel
             /*for (var i = 0; i < dimensions.X; i++)
             for (var j = 0; j < dimensions.Y; j++)
             for (var k = 0; k < dimensions.Z; k++)*/
-            var i = rand.Next(0, (int) (dimensions.X-1));
-            var j = rand.Next(0, (int) (dimensions.Y-1));
-            var k = rand.Next(0, (int) (dimensions.Z-1));
-            SetVoxel(new Vector3(i, j, k),
+            var x = rand.Next(0, (int) (dimensions.X-1));
+            var y = rand.Next(0, (int) (dimensions.Y-1));
+            var z = rand.Next(0, (int) (dimensions.Z-1));
+            ClearVoxel(x,y,z);
+            x = rand.Next(0, (int) (dimensions.X-1));
+            y = rand.Next(0, (int) (dimensions.Y-1));
+            z = rand.Next(0, (int) (dimensions.Z-1));
+            ClearVoxel(x: x, y: y, z: z);
+            x = rand.Next(0, (int)(dimensions.X - 1));
+            y = rand.Next(0, (int)(dimensions.Y - 1));
+            z = rand.Next(0, (int)(dimensions.Z - 1));
+            SetVoxel(new Vector3(x, y, z),
                     new Vector4(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255)));
             foreach (var voxelInformation in VolumeData)
             {
@@ -43,49 +50,7 @@ namespace MyEngine.Assets.Models.Voxel
             }
             Init();
         }
-    }
-
-    internal class PositionColorModelCustom : PositionColorModel
-    {
-        RandomDiscoVolume volume;
-        private int drawings = 0;
-
-        public PositionColorModelCustom(RandomDiscoVolume volume) : base(volume.Vertices,volume.Indices)
-        {
-            this.volume = volume;
-            this.Vertices = volume.Vertices;
-            this.Indices = volume.Indices;
-            //this.OnDraw += volume.Update;
-        }
-
-        public PositionColorModelCustom(int f, int f1, int f2) : base(null,null)
-        {
-            volume = new RandomDiscoVolume(f,f1,f2);
-            Vertices = volume.Vertices;
-            Indices = volume.Indices;
-        }
-
-        private event Action OnDraw;
 
 
-        public override void Draw(ShaderProgram shader)
-        {
-            base.Draw(shader);
-            update();
-
-        }
-
-        public void update()
-        {
-            drawings++;
-            if (drawings == 50)
-            {
-                volume.Update();
-                this.Vertices = volume.Vertices;
-                this.Indices = volume.Indices;
-                IsInitialized = false;
-                drawings = 0;
-            }
-        }
     }
 }
