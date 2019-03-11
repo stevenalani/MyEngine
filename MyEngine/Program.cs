@@ -21,10 +21,11 @@ namespace MyEngine
             Engine engine = new Engine(width, height, cam);
             
             //HeightmapImporter hi = new HeightmapImporter();
-            engine.AddShader("Shaders\\DefaultVoxelShader.vs", "Shaders\\DefaultVoxelShader.fs");
+            engine.AddShader("Shaders\\DefaultVoxelShader21.vs", "Shaders\\DefaultVoxelShader21.fs");
             engine.enableCrossHair(new Vector4(1f,1f,1f,0.5f));
             //engine.LoadModelFromFile(Path.Combine(userprofilePath,"3D Objects\\blocksalongx.vox"));
-
+            HeightmapImporter.getOpenStreetXMLPath(new Vector2(48.756846f, 9.156012f),
+                new Vector2(48.759632f, 9.168275f), "Heslach",4);
             var model = new PositionColorModelCustom(6, 6, 6);
             model.name = "RubicsCube";
             engine.AddModel(model);

@@ -120,6 +120,7 @@
     <Compile Include="VisualRay.cs" />
     <Compile Include="VoxelImporter\Chunk.cs" />
     <Compile Include="VoxelImporter\VoxelImporter.cs" />
+    <Compile Include="XMLMaps\OSM.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -148,7 +149,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ConsoleLog\" />
-    <Folder Include="XMLMaps\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

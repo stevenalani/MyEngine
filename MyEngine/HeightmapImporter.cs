@@ -1,53 +1,57 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Xml.Serialization;
+using MyEngine.XMLMaps;
 using OpenTK;
 
 namespace MyEngine
 {
     public class HeightmapImporter
     {
-        public HeightmapImporter()
-        {
-            string url = "https://api.openstreetmap.org/api/0.6/map?bbox=11.54,48.14,11.543,48.145";
-            HttpWebRequest request = (HttpWebRequest) WebRequest.Create(url);
-
-            request.Method = WebRequestMethods.Http.Get;
-            HttpWebResponse response = (HttpWebResponse) request.GetResponse();
-            var stream = response.GetResponseStream();
-
-            StreamReader sr = new StreamReader(stream);
-            string result = sr.ReadToEnd();
-            sr.Close();
-            StreamWriter sw = new StreamWriter("openstreetresult.xml");
-            sw.Write(result);
-            sw.Close();
-        }
-
-        public static string getOpenStreetXMLPath(Vector2 leftBottom, Vector2 rightTop, string filePath)
+        static string folderName = @"XMLMaps";
+        public static string getOpenStreetXMLPath(Vector2 leftBottom, Vector2 rightTop, string mapName, int cluster=1)
         {
             /*left minlon.            bottom minlat.            right maxlon.            top maxlat.*/
+            Vector2 steps = (rightTop - leftBottom) / cluster;
+            var clusterEnd = leftBottom + steps;
+            string pathString = System.IO.Path.Combine(folderName, mapName);
             
-            string fileName = "openStreetresultTest.xml";
-            string folderName = @"C:\Users\Chantal\GitProjects\MyEngine\MyEngine\XMLMaps";
-            string pathString = System.IO.Path.Combine(folderName, "City1");
-            pathString = System.IO.Path.Combine(pathString, fileName);
+            if (!Directory.Exists(folderName))
+            {
+                Directory.CreateDirectory(folderName);
+                if (!Directory.Exists(pathString))
+                {
+                    Directory.CreateDirectory(pathString);
+                }
+            };
+            for (int y = 0; y < cluster; y++)
+            {
+                for (int x = 0; x < cluster; x++)
+                {
+                    var fileName = String.Concat(mapName, x.ToString() + x.ToString());
+                    var pathString2 = System.IO.Path.Combine(pathString, fileName + ".xml");
+                    string url = "https://api.openstreetmap.org/api/0.6/map?bbox=" + leftBottom.X.ToString(CultureInfo.InvariantCulture) + "," + leftBottom.Y.ToString(CultureInfo.InvariantCulture) + "," + clusterEnd.X.ToString(CultureInfo.InvariantCulture) + "," + clusterEnd.Y.ToString(CultureInfo.InvariantCulture) + "";
+                    clusterEnd.X += steps.X;
+                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
 
-            string url = "https://api.openstreetmap.org/api/0.6/map?bbox=" + leftBottom.X + "," + leftBottom.Y + "," + rightTop.X +", " + rightTop.Y+"";
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                    request.Method = WebRequestMethods.Http.Get;
+                    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                    var stream = response.GetResponseStream();
 
-            request.Method = WebRequestMethods.Http.Get;
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            var stream = response.GetResponseStream();
+                    StreamReader sr = new StreamReader(stream);
+                    string result = sr.ReadToEnd();
+                    sr.Close();
+                    StreamWriter sw = new StreamWriter(pathString2);
 
-            StreamReader sr = new StreamReader(stream);
-            string result = sr.ReadToEnd();
-            sr.Close();
-            StreamWriter sw = new StreamWriter("openstreetresult.xml");
-            sw.Write(result);
-            sw.Close();
-            return "";
+
+                    sw.Write(result);
+                    sw.Close();
+                }
+                clusterEnd.Y += steps.Y;
+            }
+            return "success";
         }
     }
 }
