@@ -225,7 +225,7 @@ namespace MyEngine
 
         public List<Model> CheckHit()
         {
-            List<RayHitResult> hitResults = new List<Model>();
+            List<RayHitResult> hitResults = new List<RayHitResult>();
             var BoundingBoxes = modelManager.GetModels().Where(x => x is PositionColorModel && !(x is IEngineModel))
                 .Select(x =>
                 {
