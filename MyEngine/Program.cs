@@ -23,20 +23,23 @@ namespace MyEngine
             
             engine.AddShader("Shaders\\DefaultVoxelShader21.vs", "Shaders\\DefaultVoxelShader21.fs");
             engine.enableCrossHair(new Vector4(1f,1f,1f,0.5f));
-            
+
             /*HeightmapImporter.getOpenStreetXMLPath(new Vector2(48.756846f, 9.156012f),
                 new Vector2(48.8f, 9.2f), "Heslach",4);*/
-            var model = new PositionColorModelCustom(6, 6, 6);
-            model.name = "RubicsCube";
-            engine.AddModel(model);
+            engine.LoadModelFromFile(Path.Combine(userprofilePath, "3D Objects\\chr_rain.vox"));
+            var model = engine.GetModel("chr_rain").First();
+
+            //var model = new PositionColorModelCustom(6, 6, 6);
+            //model.name = "RubicsCube";
+            //engine.AddModel(model);
             //engine.LoadModelFromFile("C:\\Users\\Steven\\3D Objects\\AxisMat.vox");
             //engine.LoadModelFromFile("C:\\Users\\Steven\\3D Objects\\blocksalongx.vox");
-            //var testgetmodel = engine.GetModel("fuckgreedy");
+           
             //var model = testgetmodel.First();
             model.rotateX(15f);
             model.MoveForward(100f);
-            BoundingBox boundingBox = new BoundingBox(model);
-            engine.AddModel(boundingBox);
+            //BoundingBox boundingBox = new BoundingBox(model);
+            //engine.AddModel(boundingBox);
             engine.Run(60.0);
 
         }

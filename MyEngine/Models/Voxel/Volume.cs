@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using MyEngine.DataStructures;
+using MyEngine.Models;
 using OpenTK;
 
 namespace MyEngine.Assets.Models.Voxel

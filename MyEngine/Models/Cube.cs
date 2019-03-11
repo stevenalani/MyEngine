@@ -3,7 +3,7 @@ using MyEngine.DataStructures;
 using MyEngine.ShaderImporter;
 using OpenTK;
 
-namespace MyEngine.Assets.Models
+namespace MyEngine.Models
 {
     public static class CubeData
     {

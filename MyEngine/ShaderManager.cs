@@ -44,5 +44,9 @@ namespace MyEngine
             InitPrograms();
         }
 
+        public void Update()
+        {
+            Update(null,null);
+        }
     }
 }

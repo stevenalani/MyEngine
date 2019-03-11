@@ -33,7 +33,7 @@ namespace MyEngine
 
         public static Vector3[] NotCentered => Vertices.Select(x => (x / 2) + new Vector3(0.5f)).ToArray();
     }
-    internal class VisualRay : PositionColorModel
+    internal class VisualRay : PositionColorModel, IEngineModel
     {
         public VisualRay(Camera camera) : base(null, VisualRayData.Indices)
         {

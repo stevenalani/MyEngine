@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Assimp;
 using MyEngine.Assets;
 using MyEngine.ShaderImporter;
 using OpenTK;
@@ -89,7 +90,7 @@ namespace MyEngine
         }
 
 
-        public void Update(object sender, EventArgs e)
+        public void Update(object sender, EventArgs eventArgs)
         {
             if(HasModelUpdates)
                 InitModels();
@@ -102,6 +103,11 @@ namespace MyEngine
             var l2 = UninitializedModels.Where(x => x.name == name).ToList();
             l1.AddRange(l2);
             return l1;
+        }
+
+        public void Update()
+        {
+                Update(null,null);
         }
     }
 }

@@ -15,6 +15,8 @@ namespace MyEngine
 {
     internal class Engine : GameWindow
     {
+        public event Action Update;
+
         private readonly ModelManager modelManager = new ModelManager();
         private bool _firstMouse = true;
 
@@ -48,12 +50,22 @@ namespace MyEngine
             else
                 Camera = camera;
 
-            Load += modelManager.Update;
-            Load += shaderManager.Update;
-            UpdateFrame += modelManager.Update;
-            UpdateFrame += shaderManager.Update;
+            Load += OnUpdate;
+            Update += modelManager.Update;
+            Update += shaderManager.Update;
+            UpdateFrame += OnUpdate;
             EngineLogger = new Logger();
             //EngineLogger.Start();
+        }
+
+        private void OnUpdate(object sender, EventArgs e)
+        {
+            Update?.Invoke();
+        }
+
+        private void OnUpdate(object sender, FrameEventArgs e)
+        {
+            Update?.Invoke();
         }
 
         public static Logger EngineLogger { get; set; }
@@ -220,13 +232,17 @@ namespace MyEngine
 
         public bool CheckHit()
         {
-            var BoundingBoxes = modelManager.GetModels().Where(x => x is PositionColorModel && !(x is VisualRay))
+            var BoundingBoxes = modelManager.GetModels().Where(x => x is PositionColorModel && !(x is IEngineModel))
                 .Select(x =>
                 {
                     var bb = new BoundingBox((PositionColorModel) x);
                     modelManager.AddModel(bb);
-                    return bb;
+#if DEBUG
+                    modelManager.AddModel(bb);
+#endif
+                    return new KeyValuePair<PositionColorModel,BoundingBox>((PositionColorModel)x,bb);
                 });
+            
             return true;
         }
 
@@ -234,6 +250,10 @@ namespace MyEngine
         {
             return modelManager.GetModel(name);
         }
+    }
+
+    public interface IEngineModel
+    {
     }
 
     internal struct MousePositionState
