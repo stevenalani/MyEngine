@@ -89,8 +89,6 @@ namespace MyEngine
         {
             base.OnLoad(e);
 
-            //GL.PolygonMode(MaterialFace.FrontAndBack,PolygonMode.Line);
-
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Front);
             GL.FrontFace(FrontFaceDirection.Cw);
@@ -225,8 +223,9 @@ namespace MyEngine
             modelManager.LoadModelFromFile(modelPath, name);
         }
 
-        public Model CheckHit()
+        public List<Model> CheckHit()
         {
+            List<RayHitResult> hitResults = new List<Model>();
             var BoundingBoxes = modelManager.GetModels().Where(x => x is PositionColorModel && !(x is IEngineModel))
                 .Select(x =>
                 {
@@ -238,17 +237,19 @@ namespace MyEngine
             foreach (var values in BoundingBoxes)
             {
                 var boundingbox = values.Value;
-                boundingbox.TransformBoundingBox(values.Key.model);
                 for (var i = 1; i <= 100; i++)
                 {
-                    var Target = Camera.ViewDirection * i;
-                    if (boundingbox.leftlownear.X <= Target.X && boundingbox.rightlownear.X >= Target.X)
+                    var Target = Camera.Position + Camera.ViewDirection * i;
+                    var isinx = Target.X >= boundingbox.leftlownear.X && Target.X <= boundingbox.rightlownear.X;
+                    var isiny = Target.Y >= boundingbox.leftlownear.Y && Target.Y <= boundingbox.rightupnear.Y;
+                    var isinz = boundingbox.leftlownear.Z >= Target.Z && Target.Z >= boundingbox.rightlowfar.Z ;
+                    if ( isinx && isiny && isinz)
                     {
-#if DEBUG
-                        modelManager.AddModel(values.Value);
-#endif
+                        BoundingBox bb2 = new BoundingBox(values.Key, new Vector4(0.8f, 0.2f, 0.2f, 0.1f));
+                        modelManager.AddModel(bb2);
                         break;
                     }
+
                 }
             }
 
@@ -260,6 +261,12 @@ namespace MyEngine
         {
             return modelManager.GetModel(name);
         }
+    }
+
+    internal struct RayHitResult
+    {
+        Model model;
+        
     }
 
     public interface IEngineModel

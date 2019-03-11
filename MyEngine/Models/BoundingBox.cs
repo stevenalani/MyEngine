@@ -20,8 +20,10 @@ namespace MyEngine
         public Vector3 leftupfar;
 
         public Vector3 dimensions;
-        public BoundingBox(Model model)
+        public Vector4 color;
+        public BoundingBox(Model model, Vector4 color = default(Vector4))
         {
+            this.color = color == default(Vector4)?new Vector4(0.1f, 0.7f, 1f, 0.1f) : color;
             if (model is PositionColorModel)
             {
                 init((PositionColorModel)model);
@@ -30,7 +32,7 @@ namespace MyEngine
         }
         private void init(PositionColorModel inmodel)
         {
-            var vertices = inmodel.Vertices.Select(x => x.position).ToArray();
+            var vertices = inmodel.Vertices.Select(x => Vector3.TransformPosition(x.position, inmodel.model)).ToArray();
             var lowest = vertices.Min(x => x.Y);
             var highest = vertices.Max(x => x.Y);
             var left = vertices.Min(x => x.X);
@@ -51,7 +53,7 @@ namespace MyEngine
             leftupfar = new Vector3(left, highest, farest);
 
             Vertices = ToArray().Select(x => new PositionColorVertex()
-                {position = Vector3.TransformPosition(x, inmodel.model), color = new Vector4(0.1f, 0.7f, 1f, 0.1f)}).ToArray();
+                {position = x, color = color }).ToArray();
             IsInitialized = false;
         }
 
@@ -90,7 +92,9 @@ namespace MyEngine
             rightlowfar = new Vector3(right, lowest, farest);
             rightupfar = new Vector3(right, highest, farest);
             leftupfar = new Vector3(left, highest, farest);
-
+            Vertices = ToArray().Select(x => new PositionColorVertex()
+                { position = x, color = color }).ToArray();
+            IsInitialized = false;
         }
     }
 }

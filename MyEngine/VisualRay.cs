@@ -50,12 +50,7 @@ namespace MyEngine
                 new PositionColorVertex(){ position = new Vector3(-0.01f,0.01f,0),color = color }, 
                 new PositionColorVertex(){ position = target*1000f,color = color }, 
             };
-            /*
             
-            float yaw = direction.X >= 0 ? (float)Math.Acos(target.X/target.Length) : (float)Math.Acos((1f + target.X) / target.Length);
-            float pitch = direction.Y >= 0 ? (float)Math.Acos(target.Y / target.Length) : (float)Math.Acos((1f + target.Y) / target.Length);
-            float roll = direction.Z >= 0 ? (float)Math.Acos(target.Z / target.Length): (float)Math.Acos((1f + target.Z) / target.Length);
-            Rotations = new Vector3((float) yaw,(float) pitch,(float) roll) * (float)(180/Math.PI);*/
         }
 
 

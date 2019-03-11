@@ -33,10 +33,10 @@ namespace MyEngine
             var model2 = new RandomDiscoVolume(6, 6, 6);
             model2.name = "Random";
             engine.AddModel(model2);
-            engine.MouseUp += (sender, eventArgs) =>
+            /*engine.MouseUp += (sender, eventArgs) =>
             {
                 model2.ClearVolume();
-            };
+            };*/
             //model.name = "RubicsCube";
             //engine.AddModel(model);
             //engine.LoadModelFromFile("C:\\Users\\Steven\\3D Objects\\AxisMat.vox");
@@ -45,9 +45,7 @@ namespace MyEngine
             //var model = testgetmodel.First();
             model.rotateX(15f);
             model.rotateZ(20f);
-
-            model.MoveForward(10f);
-            model.MoveToVector(new Vector3(15,-2,10));
+            model.MoveToVector(new Vector3(15f,-2f,10f));
             //BoundingBox boundingBox = new BoundingBox(model);
             //engine.AddModel(boundingBox);
             engine.Run(60.0);
