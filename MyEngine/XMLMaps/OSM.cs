@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
@@ -9,31 +11,22 @@ namespace MyEngine.XMLMaps
 {
     public class OSM
     {
-        public OSM() { }
-        public List<OSMTag> Tags { get; set; }
-    }
-    public class OSMTag
-    {
-        public OSMTag() { }
-
-        public OSMTag(string key, string value)
+        [DataMember]
+        public float latitude { get; set; }
+        [DataMember]
+        public float elevation { get; set; }
+        [DataMember]
+        public float longitude { get; set; }
+        public OSM() { }    
+        public string OSMBound(Vector2 leftBottom, Vector2 rightTop, string filePath)
         {
-            Key = key;
-            Value = value;
-        }
-        public string Key { get; set; }
-        public string Value { get; set; }
-    }
+            string[] fileEntries = Directory.GetFiles(filePath); 
+            foreach (var file in fileEntries)
+            {
+                //focused BBoxe
+            }
 
-    public class OSMBound
-    {
-        public OSMBound() { }
-
-        public OSMBound(Vector2 leftBottom, Vector2 rightTop, string filePath)
-        {
-            string fileRoot = filePath;
+            return "";
         }
-        public string Key { get; set; }
-        public string Value { get; set; }
     }
 }
