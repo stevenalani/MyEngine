@@ -24,8 +24,8 @@ namespace MyEngine
             
             engine.AddShader("Shaders\\DefaultVoxelShader21.vs", "Shaders\\DefaultVoxelShader21.fs");
             engine.enableCrossHair(new Vector4(1f,1f,1f,0.5f));
-
-            /*HeightmapImporter.getOpenStreetXMLPath(new Vector2(48.756846f, 9.156012f),
+            HeightmapImporter.getOpenElevation(41.161758f, -8.583933f);
+            /*HeightmapImporter.getOpenStreetXMLBBox(new Vector2(48.756846f, 9.156012f),
                 new Vector2(48.8f, 9.2f), "Heslach",4);*/
             engine.LoadModelFromFile(Path.Combine(userprofilePath, "3D Objects\\chr_rain.vox"));
             var model = engine.GetModel("chr_rain").First();
