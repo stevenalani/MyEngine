@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Assimp;
 using MyEngine.Assets.Models;
+using MyEngine.Models.Voxel;
 
 namespace MyEngine.Assets
 {
@@ -16,7 +17,7 @@ namespace MyEngine.Assets
             if (file.ToLower().Contains(".vox"))
             {
                 var voxel = VoxelImporter.VoxelImporter.LoadVoxelModelFromVox(file);
-                voxel.Init();
+                voxel.ComputeVerticesAndIndices();
                 importResult.Add(voxel);
             }
             else

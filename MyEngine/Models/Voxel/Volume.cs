@@ -8,42 +8,43 @@ namespace MyEngine.Models.Voxel
     public class Volume : PositionColorModel
     {
         public readonly Vector3 dimensions;
-        private uint _voxelscount;
+        protected VoxelInformation[,,] VolumeData;
+
+        private uint _voxelscount = 0;
 
 
         // Stores the Voxel Material
-        protected VoxelInformation[,,] VolumeData;
+        
 
         public Volume(Vector3 dimensions) : base(null, null)
         {
             this.dimensions = dimensions;
             VolumeData = new VoxelInformation[(int) dimensions.X, (int) dimensions.Y, (int) dimensions.Z];
+            InitializeVolumeData();
         }
 
         public Volume(int witdh, int height, int depth) : base(null, null)
         {
             dimensions = new Vector3(witdh, height, depth);
-            VolumeData = new VoxelInformation[witdh, height, depth];
             InitializeVolumeData();
         }
 
         private void InitializeVolumeData()
         {
+            VolumeData = new VoxelInformation[(int) dimensions.X, (int) dimensions.Y, (int) dimensions.Z];
             for (var z = 0; z < dimensions.Z; z++)
             for (var y = 0; y < dimensions.Y; y++)
             for (var x = 0; x < dimensions.X; x++)
                 VolumeData[x, y, z] = new VoxelInformation(new Vector3(x, y, z), Vector4.Zero);
         }
 
-        public void SetVoxel(Vector3 posoition, Vector4 mat)
+        public void SetVoxel(Vector3 position, Vector4 mat)
         {
-            var pos = posoition;
-            pos.Z = dimensions.Z -1 - pos.Z;
-            if (!(pos.X < dimensions.X && pos.Y < dimensions.Y && pos.Z < dimensions.Z) || (pos.X <= -1 || pos.Y <= -1 || pos.Z <= -1))
+            Vector3 pos = position;
+            if (pos.X >= dimensions.X || pos.Y >= dimensions.Y || pos.Z >= dimensions.Z || pos.X <= -1 || pos.Y <= -1 || pos.Z <= -1)
                 return;
             if(VolumeData[(int)pos.X, (int)pos.Y, (int)pos.Z].Color == Vector4.Zero)_voxelscount++;
             VolumeData[(int) pos.X, (int) pos.Y, (int) pos.Z] = new VoxelInformation(pos, mat);
-            IsInitialized = false;
         }
 
         public void SetVoxel(int posx, int posy, int posz, Vector4 color)
@@ -60,7 +61,6 @@ namespace MyEngine.Models.Voxel
         {
             if (!(x <= dimensions.X && y <= dimensions.Y && z <= dimensions.Z)) return;
             VolumeData[x, y, z].Color = Vector4.Zero;
-            IsInitialized = false;
         }
 
         private bool IsSameColorFront(VoxelInformation voxel)
@@ -108,7 +108,10 @@ namespace MyEngine.Models.Voxel
         public void ComputeVertices()
         {
             VoxelInformation currentvoxel;
-
+            if (_voxelscount > 0)
+            {
+                checkout(Vector3.Zero, dimensions);
+            }
             int countX = -1, countY = -1, countZ = -1;
             var poscolresult = new List<PositionColorVertex>();
             for (var currentZ = 0; currentZ < dimensions.Z; currentZ++)
@@ -248,6 +251,13 @@ namespace MyEngine.Models.Voxel
             for (var k = (int) start.Z; k < end.Z; k++)
                 VolumeData[i, j, k].checkedin = true;
         }
+        private void checkout(Vector3 start, Vector3 end)
+        {
+            for (var i = (int) start.X; i < end.X; i++)
+            for (var j = (int) start.Y; j < end.Y; j++)
+            for (var k = (int) start.Z; k < end.Z; k++)
+                VolumeData[i, j, k].checkedin = false;
+        }
 
         public void ComputeIndices()
         {
@@ -257,10 +267,11 @@ namespace MyEngine.Models.Voxel
             Indices = indices.ToArray();
         }
 
-        public void Init()
+        public void ComputeVerticesAndIndices()
         {
             ComputeVertices();
             ComputeIndices();
+            IsInitialized = false;
         }
 
 
@@ -269,6 +280,15 @@ namespace MyEngine.Models.Voxel
             if (x >= 0 && x < dimensions.X && y >= 0 && y < dimensions.Y && z >= 0 && z < dimensions.Z)
             {
                 return VolumeData[x, y, z].Color != Vector4.Zero;
+            }
+
+            return false;
+        }
+        public bool IsValidVoxelPosition(int x, int y, int z)
+        {
+            if (x >= 0 && x < dimensions.X && y >= 0 && y < dimensions.Y && z >= 0 && z < dimensions.Z)
+            {
+                return true;
             }
 
             return false;

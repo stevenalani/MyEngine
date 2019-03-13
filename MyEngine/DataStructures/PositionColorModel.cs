@@ -25,15 +25,6 @@ namespace MyEngine
 
         public PositionColorVertex[] Vertices;
 
-        public PositionColorModel(Volume volume, bool isReady = false)
-        {
-            if (!isReady)
-                volume.Init();
-            isReady = true;
-            Vertices = volume.Vertices;
-            Indices = volume.Indices;
-        }
-
         public override void InitBuffers()
 
         {

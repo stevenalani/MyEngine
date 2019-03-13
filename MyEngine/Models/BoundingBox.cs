@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using MyEngine.Assets.Models;
 using MyEngine.DataStructures;
+using MyEngine.Logging;
 using MyEngine.Models;
 using OpenTK;
 using OpenTK.Graphics;
@@ -35,9 +36,8 @@ namespace MyEngine
             }
         }
         private void update(PositionColorModel inmodel)
-        {;
-
-            var vertices = inmodel.Vertices.Select(x => Vector3.TransformPerspective(x.position, inmodel.Modelmatrix)).ToArray();
+        {
+            var vertices = inmodel.Vertices.Select(x => Vector3.TransformPosition(x.position, inmodel.Modelmatrix)).ToArray();
             var min_y = vertices.Min(x => x.Y);
             var max_y = vertices.Max(x => x.Y);
             var min_x = vertices.Min(x => x.X);

@@ -160,6 +160,7 @@ namespace MyEngine
 
             foreach (var values in BoundingBoxes)
             {
+                //EngineLogger.Log(new LogMessage(values.Key.Modelmatrix.ToString(), "MODELMATRIX I"));
                 var boundingbox = values.Value;
                 for (var i = 0.1f; i <= 100f; i += 0.01f)
                 {
@@ -205,33 +206,35 @@ namespace MyEngine
             var results = CheckHit();
             var volumes = results.Where(x => x.model is Volume);
             Random rand = new Random(DateTime.Now.Millisecond);
-            var colorval = 255;//rand.Next(255);
+            var colorval = 240;
             foreach (var volumehit in volumes)
             {
                 Volume volume = (Volume)volumehit.model;
-                var hitinobjectspace = Vector3.TransformPosition(volumehit.HitPositionWorld, volume.Modelmatrix.Inverted());
-                //var hitinobjectspace = Vector3.TransformPosition(volumehit.HitPositionWorld, Camera.GetView().Inverted());//volume.Modelmatrix);
-                //var hitinobjectspace = volumehit.HitPositionWorld - Camera.Position;//volume.Modelmatrix);
-                var directionModelSpace = Vector3.TransformVector(volumehit.RayDirectionWorld,volume.Modelmatrix.Inverted()) ;
-                   
+                var hitinobjectspace = Vector3.TransformPosition(volumehit.HitPositionWorld, volume.Modelmatrix.Inverted()) + volume.dimensions/2;
+                var directionModelSpace = Vector3.Normalize(Vector3.TransformVector(volumehit.RayDirectionWorld,volume.Modelmatrix.Inverted())) ;
                 
+
                 EngineLogger.Log(new LogMessage(volume.name, "<clear>hit model"));
                 EngineLogger.Log(new LogMessage(volumehit.RayDirectionWorld.ToString(), "RAYDIR WORLD")); 
                 EngineLogger.Log(new LogMessage(directionModelSpace.ToString(), "RAYDIR MODEL")); 
                 EngineLogger.Log(new LogMessage(volumehit.HitPositionWorld.ToString(), "HITPOINT WORLD"));
                 EngineLogger.Log(new LogMessage(hitinobjectspace.ToString(), "HITPOINT MODEL"));
-                
-                
+
+                var IsVoxelSet = false;
                 for (double i = 0; i < 100; i+=0.1)
                 {
                     var ray = hitinobjectspace + directionModelSpace * (float)i;
-                    if (volume.IsVoxel((int) ray.X, (int) ray.Y, (int) ray.Z))
+                    if (volume.IsValidVoxelPosition((int) ray.X, (int) ray.Y, (int) ray.Z))
                     {
-                        volume.SetVoxel((int)ray.X, (int)ray.Y,
+                         volume.SetVoxel((int)ray.X, (int)ray.Y,
                     (int)ray.Z, new Vector4(colorval, colorval, colorval, 255f));
-                    }
-                    if(i == 0 || (i >= 99 && i < 99.1))
-                    EngineLogger.Log(new LogMessage(ray.ToString(), i+"ray in o space"));
+                         IsVoxelSet = true;
+                    }                   
+                }
+
+                if (IsVoxelSet)
+                {
+                    volume.ComputeVerticesAndIndices();
                 }
             }
         }

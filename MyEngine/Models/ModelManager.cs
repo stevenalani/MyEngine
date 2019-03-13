@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MyEngine.Assets;
+using MyEngine.Models.Voxel;
 using MyEngine.ShaderImporter;
 
 namespace MyEngine
@@ -106,6 +107,10 @@ namespace MyEngine
                 model.name = i > 0 ? name + i : name;
                 UninitializedModels.Enqueue(model);
                 HasModelUpdates = true;
+                if (model is Volume)
+                {
+                    HasModelUpdates = true;
+                }
             }
         }
 
