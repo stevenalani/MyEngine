@@ -16,10 +16,8 @@ namespace MyEngine.Assets
             if (file.ToLower().Contains(".vox"))
             {
                 var voxel = VoxelImporter.VoxelImporter.LoadVoxelModelFromVox(file);
-                voxel.ComputeVertices();
-                voxel.ComputeIndices();
-                PositionColorModel model = new PositionColorModel(voxel.Vertices,voxel.Indices);
-                importResult.Add(model);
+                voxel.Init();
+                importResult.Add(voxel);
             }
             else
             {

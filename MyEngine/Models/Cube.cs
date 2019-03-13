@@ -8,15 +8,15 @@ namespace MyEngine.Models
     public static class CubeData
     {
         public static readonly Vector3[] Vertices = {
-            new Vector3(-1f,-1f,1f),
-            new Vector3(1f,-1f,1f),
-            new Vector3(1f,1f,1f),
-            new Vector3(-1f,1f,1f), 
+            new Vector3(-0.5f,-0.5f,0.5f),
+            new Vector3(0.5f,-0.5f,0.5f),
+            new Vector3(0.5f,0.5f,0.5f),
+            new Vector3(-0.5f,0.5f,0.5f), 
 
-            new Vector3(-1f,-1f,-1f),
-            new Vector3(1f,-1f,-1f),
-            new Vector3(1f,1f,-1f),
-            new Vector3(-1f,1f,-1f),
+            new Vector3(-0.5f,-0.5f,-0.5f),
+            new Vector3(0.5f,-0.5f,-0.5f),
+            new Vector3(0.5f,0.5f,-0.5f),
+            new Vector3(-0.5f,0.5f,-0.5f),
         };
         public static readonly uint[] Indices =
         {
@@ -41,7 +41,7 @@ namespace MyEngine.Models
 
         public static Vector3[] NotCentered => Vertices.Select(x => (x / 2) + new Vector3(0.5f)).ToArray();
     }
-    public class Cube : PositionColorModel
+    internal class Cube : PositionColorModel
     {
         public Cube() : base(null, CubeData.Indices)
         {

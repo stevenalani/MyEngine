@@ -17,7 +17,13 @@ namespace MyEngine.Assets.Models.Voxel
             for (var j = 0; j < dimensions.Y; j++)
             for (var k = 0; k < dimensions.Z; k++)
                 SetVoxel(new Vector3(i, j, k),
-                    new Vector4(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255)));
+                    new Vector4(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 200)));
+            SetVoxel(new Vector3(dimensions.X-1, 0, 0),
+                new Vector4(255, 0, 0, 255));
+            SetVoxel(new Vector3(0, dimensions.Y - 1, 0),
+                new Vector4(0, 255, 0, 255));
+            SetVoxel(new Vector3(0, 0, dimensions.Z - 1),
+                new Vector4(0, 0, 255, 255));
             Update();
         }
 
@@ -45,11 +51,18 @@ namespace MyEngine.Assets.Models.Voxel
             y = rand.Next(0, (int) (dimensions.Y - 1));
             z = rand.Next(0, (int) (dimensions.Z - 1));
             SetVoxel(new Vector3(x, y, z),
-                new Vector4(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255)));
+                new Vector4(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 200)));
             for (var zz = 0; zz < dimensions.Z; zz++)
             for (var yy = 0; yy < dimensions.Y; yy++)
             for (var xx = 0; xx < dimensions.X; xx++)   
                 VolumeData[xx, yy, zz].checkedin = false;
+
+            SetVoxel(new Vector3(dimensions.X - 1, 0, 0),
+                new Vector4(255, 0, 0, 255));
+            SetVoxel(new Vector3(0, dimensions.Y - 1, 0),
+                new Vector4(0, 255, 0, 255));
+            SetVoxel(new Vector3(0, 0, dimensions.Z - 1),
+                new Vector4(0, 0, 255, 255));
 
             Init();
         }

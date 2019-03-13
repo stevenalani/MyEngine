@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.Remoting.Lifetime;
+using Assimp;
+using GlmNet;
 using MyEngine.Assets.Models;
 using MyEngine.Logging;
+using MyEngine.Models.Voxel;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -53,7 +55,8 @@ namespace MyEngine
             Update += shaderManager.Update;
             UpdateFrame += OnUpdate;
             EngineLogger = new Logger();
-            //EngineLogger.Start();
+            EngineLogger.Start();
+            
         }
 
         public static Logger EngineLogger { get; set; }
@@ -143,17 +146,94 @@ namespace MyEngine
         {
             base.OnMouseDown(e);
         }
+        public List<RayHitResult> CheckHit()
+        {
+            
+            
+            var hitResults = new List<RayHitResult>();
+            var BoundingBoxes = modelManager.GetModels().Where(x => x is PositionColorModel)
+                .Select(x =>
+                {
+                    var bb = new BoundingBox((PositionColorModel)x,this.Camera);
+                    return new KeyValuePair<PositionColorModel, BoundingBox>((PositionColorModel)x, bb);
+                });
 
+            foreach (var values in BoundingBoxes)
+            {
+                var boundingbox = values.Value;
+                for (var i = 0.1f; i <= 100f; i += 0.01f)
+                {
+                    var ray = Camera.Position + Camera.ViewDirection * i;
+                    var isinx = ray.X >= boundingbox.leftlownear.X && ray.X <= boundingbox.rightlownear.X;
+                    var isiny = ray.Y >= boundingbox.leftlownear.Y && ray.Y <= boundingbox.rightupnear.Y;
+                    var isinz = boundingbox.leftlownear.Z >= ray.Z && ray.Z >= boundingbox.rightlowfar.Z;
+                    if (isinx && isiny && isinz)
+                    {
+                        while (isinx && isiny && isinz)
+                        {
+                            isinx = ray.X >= boundingbox.leftlownear.X && ray.X <= boundingbox.rightlownear.X;
+                            isiny = ray.Y >= boundingbox.leftlownear.Y && ray.Y <= boundingbox.rightupnear.Y;
+                            isinz = boundingbox.leftlownear.Z >= ray.Z && ray.Z >= boundingbox.rightlowfar.Z;
+                            ray -= Camera.ViewDirection * 0.5f;
+                        }
+                        var bb2 = new BoundingBox(values.Key, Camera,new Vector4(0.8f, 0.2f, 0.2f, 0.1f));
+                        bb2.series = "Checkhit";
+                        bb2.purgesiblings = true;
+                        modelManager.AddModel(bb2);
+                        var hit = new RayHitResult
+                        {
+                            model = values.Key,
+                            HitPositionWorld = ray,
+                            RayDirectionWorld = Camera.ViewDirection
+                        };
+                        hitResults.Add(hit);
+                        break;
+                    }
+                }
+            }
+
+            return hitResults;
+        }
         protected override void OnMouseUp(MouseButtonEventArgs e)
         {
             base.OnMouseUp(e);
-            var ray = new VisualRay(Camera);
-            AddModel(ray);
+            var visualray = new VisualRay(Camera);
+            visualray.series = "showray";
+            visualray.purgesiblings = true;
+            AddModel(visualray);
 
             var results = CheckHit();
-            var hitinobjectspace =
-                results.Select(x => Vector3.TransformPosition(x.hitPosition, x.model.Modelmatrix.Inverted()));
-            
+            var volumes = results.Where(x => x.model is Volume);
+            Random rand = new Random(DateTime.Now.Millisecond);
+            var colorval = 255;//rand.Next(255);
+            foreach (var volumehit in volumes)
+            {
+                Volume volume = (Volume)volumehit.model;
+                var hitinobjectspace = Vector3.TransformPosition(volumehit.HitPositionWorld, volume.Modelmatrix.Inverted());
+                //var hitinobjectspace = Vector3.TransformPosition(volumehit.HitPositionWorld, Camera.GetView().Inverted());//volume.Modelmatrix);
+                //var hitinobjectspace = volumehit.HitPositionWorld - Camera.Position;//volume.Modelmatrix);
+                var directionModelSpace = Vector3.TransformVector(volumehit.RayDirectionWorld,volume.Modelmatrix.Inverted()) ;
+                   
+                
+                EngineLogger.Log(new LogMessage(volume.name, "<clear>hit model"));
+                EngineLogger.Log(new LogMessage(volumehit.RayDirectionWorld.ToString(), "RAYDIR WORLD")); 
+                EngineLogger.Log(new LogMessage(directionModelSpace.ToString(), "RAYDIR MODEL")); 
+                EngineLogger.Log(new LogMessage(volumehit.HitPositionWorld.ToString(), "HITPOINT WORLD"));
+                EngineLogger.Log(new LogMessage(hitinobjectspace.ToString(), "HITPOINT MODEL"));
+                
+                
+                for (double i = 0; i < 100; i+=0.1)
+                {
+                    var ray = hitinobjectspace + directionModelSpace * (float)i;
+                    if (volume.IsVoxel((int) ray.X, (int) ray.Y, (int) ray.Z))
+                    {
+                        volume.SetVoxel((int)ray.X, (int)ray.Y,
+                    (int)ray.Z, new Vector4(colorval, colorval, colorval, 255f));
+                    }
+                    if(i == 0 || (i >= 99 && i < 99.1))
+                    EngineLogger.Log(new LogMessage(ray.ToString(), i+"ray in o space"));
+                }
+            }
         }
 
         protected override void OnMouseMove(MouseMoveEventArgs e)
@@ -227,46 +307,7 @@ namespace MyEngine
             modelManager.LoadModelFromFile(modelPath, name);
         }
 
-        public List<RayHitResult> CheckHit()
-        {
-            List<RayHitResult> hitResults = new List<RayHitResult>();
-            var BoundingBoxes = modelManager.GetModels().Where(x => x is PositionColorModel && !(x is IEngineModel))
-                .Select(x =>
-                {
-                    var bb = new BoundingBox((PositionColorModel) x);
-                    return new KeyValuePair<PositionColorModel, BoundingBox>((PositionColorModel) x, bb);
-                });
 
-
-            foreach (var values in BoundingBoxes)
-            {
-                var boundingbox = values.Value;
-                for (var i = 1; i <= 100; i++)
-                {
-                    var Target = Camera.Position + Camera.ViewDirection * i;
-                    var isinx = Target.X >= boundingbox.leftlownear.X && Target.X <= boundingbox.rightlownear.X;
-                    var isiny = Target.Y >= boundingbox.leftlownear.Y && Target.Y <= boundingbox.rightupnear.Y;
-                    var isinz = boundingbox.leftlownear.Z >= Target.Z && Target.Z >= boundingbox.rightlowfar.Z ;
-                    if ( isinx && isiny && isinz)
-                    {
-                        BoundingBox bb2 = new BoundingBox(values.Key, new Vector4(0.8f, 0.2f, 0.2f, 0.1f));
-                        bb2.purgesiblings = true;
-                        modelManager.AddModel(bb2);
-                        var hit = new RayHitResult()
-                        {
-                            model = values.Key,
-                            hitPosition = Target
-                        };
-                        hitResults.Add(hit);
-                        break;
-                    }
-
-                }
-            }
-
-
-            return hitResults;
-        }
 
         public List<Model> GetModel(string name)
         {
@@ -277,8 +318,8 @@ namespace MyEngine
     public struct RayHitResult
     {
         public Model model;
-        public Vector3 hitPosition;
-
+        public Vector3 HitPositionWorld;
+        public Vector3 RayDirectionWorld;
     }
 
     public interface IEngineModel

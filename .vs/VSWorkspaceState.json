@@ -1,7 +1,8 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\MyEngine"
   ],
-  "SelectedNode": "\\.gitignore",
+  "SelectedNode": "\\MyEngine\\MyEngine.csproj",
   "PreviewInSolutionExplorer": false
 }

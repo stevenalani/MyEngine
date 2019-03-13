@@ -7,7 +7,7 @@ namespace MyEngine.Models.Voxel
 {
     public class Volume : PositionColorModel
     {
-        protected readonly Vector3 dimensions;
+        public readonly Vector3 dimensions;
         private uint _voxelscount;
 
 
@@ -35,12 +35,25 @@ namespace MyEngine.Models.Voxel
                 VolumeData[x, y, z] = new VoxelInformation(new Vector3(x, y, z), Vector4.Zero);
         }
 
-        public void SetVoxel(Vector3 pos, Vector4 mat)
+        public void SetVoxel(Vector3 posoition, Vector4 mat)
         {
-            if (!(pos.X <= dimensions.X && pos.Y <= dimensions.Y && pos.Z <= dimensions.Z)) return;
+            var pos = posoition;
+            pos.Z = dimensions.Z -1 - pos.Z;
+            if (!(pos.X < dimensions.X && pos.Y < dimensions.Y && pos.Z < dimensions.Z) || (pos.X <= -1 || pos.Y <= -1 || pos.Z <= -1))
+                return;
+            if(VolumeData[(int)pos.X, (int)pos.Y, (int)pos.Z].Color == Vector4.Zero)_voxelscount++;
             VolumeData[(int) pos.X, (int) pos.Y, (int) pos.Z] = new VoxelInformation(pos, mat);
-            _voxelscount++;
             IsInitialized = false;
+        }
+
+        public void SetVoxel(int posx, int posy, int posz, Vector4 color)
+        {
+            SetVoxel(new Vector3(posx, posy, posz), color);
+        }
+
+        public void ClearVolume()
+        {
+            InitializeVolumeData();
         }
 
         protected void ClearVoxel(int x, int y, int z)
@@ -250,9 +263,15 @@ namespace MyEngine.Models.Voxel
             ComputeIndices();
         }
 
-        public void ClearVolume()
+
+        public bool IsVoxel(int x, int y, int z)
         {
-            InitializeVolumeData();
+            if (x >= 0 && x < dimensions.X && y >= 0 && y < dimensions.Y && z >= 0 && z < dimensions.Z)
+            {
+                return VolumeData[x, y, z].Color != Vector4.Zero;
+            }
+
+            return false;
         }
     }
 

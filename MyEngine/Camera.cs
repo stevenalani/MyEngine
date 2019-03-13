@@ -126,8 +126,6 @@ namespace MyEngine
             Yaw -= xoffset * Sensitivity;
             Pitch -= yoffset * Sensitivity * ViewDirection.Z/Math.Abs(ViewDirection.Z);
            
-            Engine.EngineLogger.loggingQueue.Enqueue(new LogMessage($"YAW: {Yaw}\n PITCH: {Pitch}\n ViewDir {ViewDirection}"));
-            
             Update();
         }
 
