@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Xml.Serialization;
 using MyEngine.XMLMaps;
+using Newtonsoft.Json;
 using OpenTK;
 
 namespace MyEngine
@@ -11,7 +12,26 @@ namespace MyEngine
     public class HeightmapImporter
     {
         static string folderName = @"XMLMaps";
-        public static string getOpenStreetXMLPath(Vector2 leftBottom, Vector2 rightTop, string mapName, int cluster=1)
+
+        public static string getOpenElevation( float lat, float lon)
+        {
+           string addCood = lat.ToString(CultureInfo.InvariantCulture) + "," + lon.ToString(CultureInfo.InvariantCulture);
+           string url = "https://api.open-elevation.com/api/v1/lookup?locations="+ addCood;
+           HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+
+           request.Method = WebRequestMethods.Http.Get;
+           HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+           var stream = response.GetResponseStream();
+
+           StreamReader sr = new StreamReader(stream);
+           string result = sr.ReadToEnd();
+           OSM cood = JsonConvert.DeserializeObject<OSM>(result);
+
+           Console.Write(cood.longitude.ToString());
+           sr.Close();
+           return result.ToString();
+        }
+        public static string getOpenStreetXMLBBox(Vector2 leftBottom, Vector2 rightTop, string mapName, int cluster=1)
         {
             /*left minlon.            bottom minlat.            right maxlon.            top maxlat.*/
             Vector2 steps = (rightTop - leftBottom) / cluster;
