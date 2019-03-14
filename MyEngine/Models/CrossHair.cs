@@ -23,7 +23,7 @@ namespace MyEngine.Assets.Models
             Position = Vector3.Zero;
             Scales = Vector3.One * 0.01f;
             this.Color = color;
-            Shader = engine.shaderManager.GetFirst();// new ShaderProgram("Shaders\\DefaultCrosshairShader.vs", "Shaders\\DefaultCrosshairShader.fs");
+            // new ShaderProgram("Shaders\\DefaultCrosshairShader.vs", "Shaders\\DefaultCrosshairShader.fs");
             Vertices = new[]
             {
                 new PositionColorVertex {color = color, position = new Vector3(-engine.Width/2f, engine.Height/2f,-10f)},
@@ -42,6 +42,7 @@ namespace MyEngine.Assets.Models
 
         private void SetupShader(object sender, EventArgs e)
         {
+            Shader = engine.shaderManager.GetFirst();
             if (!Shader.IsCompiled)
                 Shader.SetupShader();
         }

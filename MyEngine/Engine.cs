@@ -212,13 +212,6 @@ namespace MyEngine
                 Volume volume = (Volume)volumehit.model;
                 var hitinobjectspace = Vector3.TransformPosition(volumehit.HitPositionWorld, volume.Modelmatrix.Inverted()) + volume.dimensions/2;
                 var directionModelSpace = Vector3.Normalize(Vector3.TransformVector(volumehit.RayDirectionWorld,volume.Modelmatrix.Inverted())) ;
-                
-
-                EngineLogger.Log(new LogMessage(volume.name, "<clear>hit model"));
-                EngineLogger.Log(new LogMessage(volumehit.RayDirectionWorld.ToString(), "RAYDIR WORLD")); 
-                EngineLogger.Log(new LogMessage(directionModelSpace.ToString(), "RAYDIR MODEL")); 
-                EngineLogger.Log(new LogMessage(volumehit.HitPositionWorld.ToString(), "HITPOINT WORLD"));
-                EngineLogger.Log(new LogMessage(hitinobjectspace.ToString(), "HITPOINT MODEL"));
 
                 var IsVoxelSet = false;
                 for (double i = 0; i < 100; i+=0.1)
