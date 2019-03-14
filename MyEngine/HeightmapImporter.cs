@@ -5,6 +5,7 @@ using System.Net;
 using System.Xml.Serialization;
 using MyEngine.XMLMaps;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OpenTK;
 
 namespace MyEngine
@@ -25,10 +26,12 @@ namespace MyEngine
 
            StreamReader sr = new StreamReader(stream);
            string result = sr.ReadToEnd();
-           OSM cood = JsonConvert.DeserializeObject<OSM>(result);
 
-           Console.Write(cood.longitude.ToString());
-           sr.Close();
+            var jsonObj = JsonConvert.DeserializeObject<JObject>(result).First.First;
+            OsmOject test = JsonConvert.DeserializeObject<OsmOject>(result);
+            Console.WriteLine(test.data[0].elevation);
+            Console.WriteLine(jsonObj["elevation"]);
+            sr.Close();
            return result.ToString();
         }
         public static string getOpenStreetXMLBBox(Vector2 leftBottom, Vector2 rightTop, string mapName, int cluster=1)
