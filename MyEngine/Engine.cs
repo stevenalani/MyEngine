@@ -227,7 +227,7 @@ namespace MyEngine
 
                 if (IsVoxelSet)
                 {
-                    volume.ComputeVerticesAndIndices();
+                    volume.IsInitialized = false;
                 }
             }
         }

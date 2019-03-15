@@ -28,7 +28,7 @@ namespace MyEngine
         public override void InitBuffers()
 
         {
-            if(IsInitialized && Vertices != null && Indices != null)
+            if(IsInitialized || Vertices == null || Indices == null)
                 return;
 
             VAO = GL.GenVertexArray();
@@ -49,7 +49,7 @@ namespace MyEngine
             GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, sizeof(float)*7, 3 * sizeof(float));
             GL.EnableVertexAttribArray(1);
             GL.BindVertexArray(0);
-            this.IsInitialized = true;
+            IsInitialized = true;
             OnUpdate?.Invoke(this);
         }
 

@@ -17,7 +17,7 @@ namespace MyEngine.Assets
             if (file.ToLower().Contains(".vox"))
             {
                 var voxel = VoxelImporter.VoxelImporter.LoadVoxelModelFromVox(file);
-                voxel.ComputeVerticesAndIndices();
+                //voxel.ComputeVerticesAndIndices();
                 importResult.Add(voxel);
             }
             else

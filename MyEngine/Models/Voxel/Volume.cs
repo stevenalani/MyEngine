@@ -8,18 +8,13 @@ namespace MyEngine.Models.Voxel
     public class Volume : PositionColorModel
     {
         public readonly Vector3 dimensions;
-        protected VoxelInformation[,,] VolumeData;
+        protected Voxel[,,] VolumeData;
 
-        private uint _voxelscount = 0;
-
-
-        // Stores the Voxel Material
-        
 
         public Volume(Vector3 dimensions) : base(null, null)
         {
             this.dimensions = dimensions;
-            VolumeData = new VoxelInformation[(int) dimensions.X, (int) dimensions.Y, (int) dimensions.Z];
+            VolumeData = new Voxel[(int) dimensions.X, (int) dimensions.Y, (int) dimensions.Z];
             InitializeVolumeData();
         }
 
@@ -31,20 +26,23 @@ namespace MyEngine.Models.Voxel
 
         private void InitializeVolumeData()
         {
-            VolumeData = new VoxelInformation[(int) dimensions.X, (int) dimensions.Y, (int) dimensions.Z];
+            VolumeData = new Voxel[(int) dimensions.X, (int) dimensions.Y, (int) dimensions.Z];
             for (var z = 0; z < dimensions.Z; z++)
             for (var y = 0; y < dimensions.Y; y++)
             for (var x = 0; x < dimensions.X; x++)
-                VolumeData[x, y, z] = new VoxelInformation(new Vector3(x, y, z), Vector4.Zero);
+                VolumeData[x, y, z] = new Voxel(new Vector3(x, y, z), Vector4.Zero);
+            IsInitialized = false;
         }
 
         public void SetVoxel(Vector3 position, Vector4 mat)
         {
-            Vector3 pos = position;
-            if (pos.X >= dimensions.X || pos.Y >= dimensions.Y || pos.Z >= dimensions.Z || pos.X <= -1 || pos.Y <= -1 || pos.Z <= -1)
+            var pos = position;
+            if (pos.X >= dimensions.X || pos.Y >= dimensions.Y || pos.Z >= dimensions.Z || pos.X <= -1 || pos.Y <= -1 ||
+                pos.Z <= -1)
                 return;
-            if(VolumeData[(int)pos.X, (int)pos.Y, (int)pos.Z].Color == Vector4.Zero)_voxelscount++;
-            VolumeData[(int) pos.X, (int) pos.Y, (int) pos.Z] = new VoxelInformation(pos, mat);
+            //if (VolumeData[(int) pos.X, (int) pos.Y, (int) pos.Z].Color == Vector4.Zero)_voxelcount++
+            VolumeData[(int) pos.X, (int) pos.Y, (int) pos.Z] = new Voxel(pos, mat);
+            IsInitialized = false;
         }
 
         public void SetVoxel(int posx, int posy, int posz, Vector4 color)
@@ -63,42 +61,42 @@ namespace MyEngine.Models.Voxel
             VolumeData[x, y, z].Color = Vector4.Zero;
         }
 
-        private bool IsSameColorFront(VoxelInformation voxel)
+        private bool IsSameColorFront(Voxel voxel)
         {
             var front = voxel.Posindices + Vector3.UnitZ;
             var result = VolumeData[(int) front.X, (int) front.Y, (int) front.Z];
             return result.Color == voxel.Color;
         }
 
-        private bool IsSameColorBack(VoxelInformation voxel)
+        private bool IsSameColorBack(Voxel voxel)
         {
             var front = voxel.Posindices - Vector3.UnitZ;
             var result = VolumeData[(int) front.X, (int) front.Y, (int) front.Z];
             return result.Color == voxel.Color;
         }
 
-        private bool IsSameColorRight(VoxelInformation voxel)
+        private bool IsSameColorRight(Voxel voxel)
         {
             var front = voxel.Posindices + Vector3.UnitX;
             var result = VolumeData[(int) front.X, (int) front.Y, (int) front.Z];
             return result.Color == voxel.Color;
         }
 
-        private bool IsSameColorLeft(VoxelInformation voxel)
+        private bool IsSameColorLeft(Voxel voxel)
         {
             var front = voxel.Posindices - Vector3.UnitX;
             var result = VolumeData[(int) front.X, (int) front.Y, (int) front.Z];
             return result.Color == voxel.Color;
         }
 
-        private bool IsSameColorUp(VoxelInformation voxel)
+        private bool IsSameColorUp(Voxel voxel)
         {
             var front = voxel.Posindices + Vector3.UnitY;
             var result = VolumeData[(int) front.X, (int) front.Y, (int) front.Z];
             return result.Color == voxel.Color;
         }
 
-        private bool IsSameColorDown(VoxelInformation voxel)
+        private bool IsSameColorDown(Voxel voxel)
         {
             var front = voxel.Posindices - Vector3.UnitY;
             var result = VolumeData[(int) front.X, (int) front.Y, (int) front.Z];
@@ -107,12 +105,9 @@ namespace MyEngine.Models.Voxel
 
         public void ComputeVertices()
         {
-            VoxelInformation currentvoxel;
-            if (_voxelscount > 0)
-            {
-                checkout(Vector3.Zero, dimensions);
-            }
-            int countX = -1, countY = -1, countZ = -1;
+            Voxel currentvoxel;
+            int countX, countY, countZ;
+            var _checked = 0;
             var poscolresult = new List<PositionColorVertex>();
             for (var currentZ = 0; currentZ < dimensions.Z; currentZ++)
             for (var currentY = 0; currentY < dimensions.Y; currentY++)
@@ -121,6 +116,8 @@ namespace MyEngine.Models.Voxel
                 currentvoxel = VolumeData[currentX, currentY, currentZ];
                 if (currentvoxel.Color == Vector4.Zero || currentvoxel.checkedin)
                     continue;
+
+                _checked++;
                 countX = GetNeighborsX(currentvoxel);
                 countY = GetNeighborsY(currentvoxel);
                 countZ = GetNeighborsZ(currentvoxel);
@@ -183,33 +180,62 @@ namespace MyEngine.Models.Voxel
                 poscolresult.Add(posxColorVertex);
                 posxColorVertex.position.X = currentvoxel.Posindices.X;
                 poscolresult.Add(posxColorVertex);
-
-                // currentX += countX;
-
-                checkin(currentvoxel.Posindices,
-                    new Vector3(currentvoxel.Posindices.X + countX + 1, currentvoxel.Posindices.Y + countY + 1,
-                        currentvoxel.Posindices.Z + countZ + 1));
+                var end = new Vector3(currentvoxel.Posindices.X + countX + 1, currentvoxel.Posindices.Y + countY + 1,
+                    currentvoxel.Posindices.Z + countZ + 1);
+                checkin(currentvoxel.Posindices, end);
             }
 
-            Vertices = poscolresult.Select(x =>
+            if (poscolresult.Count != 0)
+            {
+                if (Vertices == null)
+                    Vertices = poscolresult.Select(x =>
+                        {
+                            return new PositionColorVertex
+                            {
+                                color = x.color,
+                                position = x.position - dimensions / 2
+                            };
+                        }
+                    ).ToArray();
+                else
                 {
-                    return new PositionColorVertex
+                    var list1 = new List<PositionColorVertex>(Vertices);
+                    foreach (var positionColorVertex in poscolresult)
                     {
-                        color = x.color,
-                        position = x.position - dimensions / 2
-                    };
+                        for (var i = 0;i < Vertices.Length; i++)
+                        {
+                            if (Vertices[i].position == positionColorVertex.position - dimensions / 2)
+                            {
+                                Vertices[i].color = positionColorVertex.color;
+                            }
+                        }
+                    }
+                    list1.AddRange(poscolresult.Select(x =>
+                        {
+                            return new PositionColorVertex
+                            {
+                                color = x.color,
+                                position = x.position - dimensions / 2
+                            };
+                        }
+                    ));
+                    Vertices = list1.ToArray();
                 }
-            ).ToArray();
+            }
+
+            else
+            {
+
+            }
         }
 
-        private int GetNeighborsX(VoxelInformation start)
+        private int GetNeighborsX(Voxel start)
         {
-            var next = new VoxelInformation(start.Posindices, start.Color);
+            var next = new Voxel(start.Posindices, start.Color);
             var neighborsX = 0;
-            while (next.Posindices.X < dimensions.X - 1 && IsSameColorRight(next))
+            while (next.Posindices.X < dimensions.X - 1 && IsSameColorRight(next) &&
+                   !VolumeData[(int) next.Posindices.X, (int) next.Posindices.Y, (int) next.Posindices.Z].checkedin)
             {
-                if (VolumeData[(int) next.Posindices.X, (int) next.Posindices.Y, (int) next.Posindices.Z].checkedin)
-                    break;
                 neighborsX++;
                 next.Posindices.X++;
             }
@@ -217,9 +243,9 @@ namespace MyEngine.Models.Voxel
             return neighborsX;
         }
 
-        private int GetNeighborsY(VoxelInformation start)
+        private int GetNeighborsY(Voxel start)
         {
-            var next = new VoxelInformation(start.Posindices, start.Color);
+            var next = new Voxel(start.Posindices, start.Color);
             var neighborsY = 0;
             while (next.Posindices.Y < dimensions.Y - 1 && IsSameColorUp(next) &&
                    !VolumeData[(int) next.Posindices.X, (int) next.Posindices.Y, (int) next.Posindices.Z].checkedin)
@@ -231,11 +257,12 @@ namespace MyEngine.Models.Voxel
             return neighborsY;
         }
 
-        private int GetNeighborsZ(VoxelInformation start)
+        private int GetNeighborsZ(Voxel start)
         {
-            var next = new VoxelInformation(start.Posindices, start.Color);
+            var next = new Voxel(start.Posindices, start.Color);
             var neighborsZ = 0;
-            while (next.Posindices.Z < dimensions.Z - 1 && IsSameColorFront(next))
+            while (next.Posindices.Z < dimensions.Z - 1 && IsSameColorFront(next) &&
+                   !VolumeData[(int) next.Posindices.X, (int) next.Posindices.Y, (int) next.Posindices.Z].checkedin)
             {
                 next.Posindices.Z++;
                 neighborsZ++;
@@ -244,13 +271,24 @@ namespace MyEngine.Models.Voxel
             return neighborsZ;
         }
 
+        public override void InitBuffers()
+        {
+            ComputeVerticesAndIndices();
+            base.InitBuffers();
+        }
+
         private void checkin(Vector3 start, Vector3 end)
         {
             for (var i = (int) start.X; i < end.X; i++)
             for (var j = (int) start.Y; j < end.Y; j++)
             for (var k = (int) start.Z; k < end.Z; k++)
-                VolumeData[i, j, k].checkedin = true;
+            {
+                var voxel = VolumeData[i, j, k];
+                if (voxel.Color != Vector4.Zero)
+                    VolumeData[i, j, k].checkedin = true;
+            }
         }
+
         private void checkout(Vector3 start, Vector3 end)
         {
             for (var i = (int) start.X; i < end.X; i++)
@@ -261,51 +299,72 @@ namespace MyEngine.Models.Voxel
 
         public void ComputeIndices()
         {
+            //var vxlcnt = GetVoxelCount();
+            var vxlcnt = Vertices.Length / 8;
             var indices = new List<uint>();
-            for (uint i = 0; i < _voxelscount; i++) indices.AddRange(CubeData.Indices.Select(x => x + i * 8).ToList());
+            for (uint i = 0; i < vxlcnt; i++)
+                indices.AddRange(CubeData.Indices.Select(x => x + i * 8).ToList());
 
             Indices = indices.ToArray();
+        }
+
+        public int GetVoxelCount()
+        {
+            var _voxelscount = 0;
+            for (var i = 0; i < dimensions.X; i++)
+            for (var j = 0; j < dimensions.Y; j++)
+            for (var k = 0; k < dimensions.Z; k++)
+                if (VolumeData[i, j, k].Color != Vector4.Zero)
+                    _voxelscount++;
+            return _voxelscount;
+        }
+
+        public int GetCheckedInCount()
+        {
+            var _voxelscount = 0;
+            for (var i = 0; i < dimensions.X; i++)
+            for (var j = 0; j < dimensions.Y; j++)
+            for (var k = 0; k < dimensions.Z; k++)
+                if (VolumeData[i, j, k].checkedin)
+                    _voxelscount++;
+            return _voxelscount;
         }
 
         public void ComputeVerticesAndIndices()
         {
             ComputeVertices();
             ComputeIndices();
-            IsInitialized = false;
         }
 
 
         public bool IsVoxel(int x, int y, int z)
         {
             if (x >= 0 && x < dimensions.X && y >= 0 && y < dimensions.Y && z >= 0 && z < dimensions.Z)
-            {
                 return VolumeData[x, y, z].Color != Vector4.Zero;
-            }
 
             return false;
         }
+
         public bool IsValidVoxelPosition(int x, int y, int z)
         {
-            if (x >= 0 && x < dimensions.X && y >= 0 && y < dimensions.Y && z >= 0 && z < dimensions.Z)
-            {
-                return true;
-            }
+            if (x >= 0 && x < dimensions.X && y >= 0 && y < dimensions.Y && z >= 0 && z < dimensions.Z) return true;
 
             return false;
         }
     }
 
-    public struct VoxelInformation
+    public struct Voxel
     {
         public Vector4 Color;
         public Vector3 Posindices;
         public bool checkedin;
+        public bool IsVoxel => Color != Vector4.Zero;
 
-        public VoxelInformation(Vector3 position, Vector4 color, bool checkedin = false)
+        public Voxel(Vector3 position, Vector4 color)
         {
             Color = color;
             Posindices = position;
-            this.checkedin = checkedin;
+            checkedin = false;
         }
     }
 }

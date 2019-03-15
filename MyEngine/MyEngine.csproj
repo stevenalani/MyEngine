@@ -115,7 +115,7 @@
     <Compile Include="Logging\DebugHelpers.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Models\DefaultModel.cs" />
-    <Compile Include="DataStructures\PositionColorModel.cs" />
+    <Compile Include="Models\PositionColorModel.cs" />
     <Compile Include="MathHelpers\MathHelpers.cs" />
     <Compile Include="Models\ModelManager.cs" />
     <Compile Include="DataStructures\PositionColorVertex.cs" />

@@ -80,20 +80,24 @@ namespace MyEngine
             if (modelIDs == null)
                 foreach (var model in _models.Values)
                 {
+                    if (!model.IsInitialized){ model.InitBuffers();}
                     model.Draw(shader);
-                    if (!model.IsInitialized) model.InitBuffers();
+                    
                 }
-
             else
                 foreach (var modelID in modelIDs)
                     if (_models.ContainsKey(modelID))
+                    {
+                        if (_models[modelID].IsInitialized)
+                        _models[modelID].InitBuffers();
                         _models[modelID].Draw(shader);
+                    }
 
             foreach (var engineModel in engineModels.Values)
             foreach (var model in engineModel)
             {
-                ((Model) model).Draw(shader);
                 if (!((Model) model).IsInitialized) ((Model) model).InitBuffers();
+                ((Model) model).Draw(shader);
             }
         }
 

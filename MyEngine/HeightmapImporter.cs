@@ -47,6 +47,8 @@ namespace MyEngine
             DataContractJsonSerializer ser;
             if(obj is Location)
                 ser = new DataContractJsonSerializer(typeof(Location));
+            if (obj is List<Location>)
+                ser = new DataContractJsonSerializer(typeof(List<Location>));
             else if (obj is LocationResult)
                 ser = new DataContractJsonSerializer(typeof(LocationResult));
             else
@@ -57,17 +59,35 @@ namespace MyEngine
             return Encoding.UTF8.GetString(json, 0, json.Length);
         }
 
-        public static LocationResult[] GetOpenElevationData(Vector2 start, Vector2 end)
+        public static List<LocationResult> GetOpenElevationData(Vector2 start, Vector2 end, Vector2 pointsPerAxis = default(Vector2))
         {
+            pointsPerAxis = pointsPerAxis.X != 0 && pointsPerAxis.Y != 0 ? pointsPerAxis :new Vector2(10f);
+            var steps = new Vector2((end - start).X / pointsPerAxis.X,(end - start).Y / pointsPerAxis.Y);
+            double stepsX = steps.X;
+            double stepsY = steps.Y;
             string data = "";
-            for (float latitude = start.X; latitude < end.X; latitude += 0.01f)
-            for (float longitude = start.Y; longitude < end.Y; longitude += 0.01f)
-            {
+            List<Location> dataList = new List<Location>();
+            for (int i = 1; i <= pointsPerAxis.X; i++)
+            for (int j = 1; j <= pointsPerAxis.Y; j++)
+            {             
                 Location temp = new Location();
-                temp.latitude = latitude;
-                temp.longitude = longitude;
+                temp.latitude = (float) (i * stepsX) + start.X;
+                temp.longitude = (float)(j * stepsY) + start.Y;
+                dataList.Add(temp);
                 data += temp.ToJSON();
             }
+            /*
+            for (double latitude = start.X; latitude < end.X; latitude += stepsX)
+            for (double longitude = start.Y; longitude < end.Y; longitude += stepsY)
+            {
+                Location temp = new Location();
+                temp.latitude = (float)latitude;
+                temp.longitude = (float)longitude;
+                dataList.Add(temp);
+                data += temp.ToJSON();
+            }*/
+
+            data = dataList.ToJSON();
 
             string url = "https://api.open-elevation.com/api/v1/lookup";
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
@@ -78,6 +98,7 @@ namespace MyEngine
             StreamWriter streamWriter = new StreamWriter(requestStream);
             streamWriter.Write(data);
             streamWriter.Close();
+            request.Timeout = 10000;
             try
             {
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
@@ -85,29 +106,29 @@ namespace MyEngine
 
                 StreamReader sr = new StreamReader(stream);
                 string result = sr.ReadToEnd();
-                OSM cood = JsonConvert.DeserializeObject<OSM>(result);
+                var locationResults = JsonConvert.DeserializeObject<List<LocationResult>>(result);
 
-                Console.Write(cood.longitude.ToString());
+                
                 sr.Close();
                 
-                return new[] { new LocationResult() };
+                return locationResults;
             }
             catch (Exception e)
             {
                 List<LocationResult> testdata = new List<LocationResult>();
                 Random random = new Random(DateTime.Now.Millisecond % 15);
-                for (float latitude = start.X; latitude < end.X; latitude += 0.01f)
-                for (float longitude = start.Y; longitude < end.Y; longitude += 0.01f)
+                for (int i = 1; i <= pointsPerAxis.X; i++)
+                for (int j = 1; j <= pointsPerAxis.Y; j++)
                 {
                     LocationResult result = new LocationResult();
-                    result.latitude = latitude;
-                    result.longitude = longitude;
-                    result.elevation = random.Next(0, 150);
+                    result.latitude = (float)(i * stepsX) + start.X;
+                    result.longitude = (float)(j * stepsY) + start.Y;
+                    result.elevation = random.Next(0, 10);
                     testdata.Add(result);
                     
                 }
 
-                return testdata.ToArray();
+                return testdata;
             }
         }
 
@@ -130,6 +151,8 @@ namespace MyEngine
            sr.Close();
            return result.ToString();
         }
+
+
         public static string getOpenStreetXMLBBox(Vector2 leftBottom, Vector2 rightTop, string mapName, int cluster=1)
         {
             /*left minlon.            bottom minlat.            right maxlon.            top maxlat.*/
