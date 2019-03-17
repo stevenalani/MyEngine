@@ -123,11 +123,11 @@ namespace MyEngine
             shader.SetUniformMatrix4X4("projection", projection);
             var view = Camera.GetView();
             shader.SetUniformMatrix4X4("view", view);
-            shader.SetUniformVector3("lightPos", Camera.Position);
+            shader.SetUniformVector3("lightPos", Camera.Position+Camera.ViewDirection);
             shader.SetUniformVector3("lightColor", new Vector3(1, 1, 1));
             shader.SetUniformVector3("viewpos", Camera.Position);
             shader.SetUniformFloat("ambientStrength", 1);
-            shader.SetUniformFloat("diffuseStrength", 1f);
+            shader.SetUniformFloat("diffuseStrength", 2f);
             shader.SetUniformFloat("specularStrength", 1f);
             modelManager.DrawModels(shader);
             CrossHair?.Draw();

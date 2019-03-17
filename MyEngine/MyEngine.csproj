@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataStructures\IVertextype.cs" />
+    <Compile Include="Mapgenerator.cs" />
     <Compile Include="Models\ModelImporter.cs" />
     <Compile Include="Models\BoundingBox.cs" />
     <Compile Include="Models\CrossHair.cs" />
