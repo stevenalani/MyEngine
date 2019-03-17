@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using BulletSharp;
 using OpenTK;
 
 namespace MyEngine
@@ -25,18 +26,13 @@ namespace MyEngine
             var heslachFrom = new Vector2(48.755238f, 9.146392f);
             var heslachTo = new Vector2(48.767457f, 9.167524f);
 
-            /*var heslachHeight = new List<HeightmapImporter.LocationResult>();
-            heslachHeight.Add(new HeightmapImporter.LocationResult {elevation = 0});
-            heslachHeight.Add(new HeightmapImporter.LocationResult {elevation = 3});
-            heslachHeight.Add(new HeightmapImporter.LocationResult {elevation = 2});
-            heslachHeight.Add(new HeightmapImporter.LocationResult {elevation = 2});*/
             Mapgenerator mapgen = new Mapgenerator();
-            var heslachHeight = HeightmapImporter.GetOpenElevationData(heslachFrom, heslachTo, new Vector2(20, 20));
-            var vol = mapgen.GenerateMapFromHeightData(heslachHeight, new Vector2(20, 20), 20);
-            //var vol = Mapgenerator.generateLineFillLower(5, 10, 10, false,Vector3.UnitY);
+            var heslachHeight = HeightmapImporter.GetOpenElevationData(heslachFrom, heslachTo, new Vector2(10, 10));
+            var vol = mapgen.GenerateMapFromHeightData(heslachHeight, new Vector2(10, 10), 50);
             vol.Scales = new Vector3(0.1f);
-            engine.AddModel(vol);
-
+            engine.SetWorld(vol);
+            CollisionConfiguration collision = new DefaultCollisionConfiguration();
+            CollisionDispatcher dispatcher =new CollisionDispatcher(collision);
 
             //engine.LoadModelFromFile(Path.Combine(userprofilePath, "3D Objects\\chr_rain.vox"));
             //engine.LoadModelFromFile(Path.Combine(userprofilePath, "3D Objects\\untitled.vox"));

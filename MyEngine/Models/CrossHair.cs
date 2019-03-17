@@ -26,7 +26,7 @@ namespace MyEngine.Assets.Models
             // new ShaderProgram("Shaders\\DefaultCrosshairShader.vs", "Shaders\\DefaultCrosshairShader.fs");
             Vertices = new[]
             {
-                new PositionColorVertex {color = color, position = new Vector3(-engine.Width/2f, engine.Height/2f,-10f)},
+                new PositionColorVertex {Color = color, Position = new Vector3(-engine.Width/2f, engine.Height/2f,-10f)},
             };
             Indices = new uint[] {0};
            

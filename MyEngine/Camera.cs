@@ -33,7 +33,7 @@ namespace MyEngine
 
         private float aspect;
         private float near;
-        private float far;
+        internal float far;
 
         private Matrix4 pProjection;
         private Matrix4 oProjection;

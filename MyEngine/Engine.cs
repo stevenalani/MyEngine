@@ -28,6 +28,7 @@ namespace MyEngine
         private double lasttime;
         private DateTime nextWireframeSwitch = DateTime.Now;
         internal ShaderManager shaderManager = new ShaderManager();
+        private Physics physics;
 
 
         public Engine(int width, int height, Camera camera = null) : base(
@@ -72,22 +73,6 @@ namespace MyEngine
             Update?.Invoke();
         }
 
-        public void AddShader(string vsShaderPath, string fsShaderPath = "")
-        {
-            shaderManager.AddShader(vsShaderPath, fsShaderPath);
-        }
-
-        public void AddModel(Model model)
-        {
-            modelManager.AddModel(model);
-        }
-
-
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            base.OnClosing(e);
-            EngineLogger?.Stop();
-        }
 
         protected override void OnLoad(EventArgs e)
         {
@@ -123,7 +108,7 @@ namespace MyEngine
             shader.SetUniformMatrix4X4("projection", projection);
             var view = Camera.GetView();
             shader.SetUniformMatrix4X4("view", view);
-            shader.SetUniformVector3("lightPos", Camera.Position+Camera.ViewDirection);
+            shader.SetUniformVector3("lightPos", new Vector3(0,100,0));
             shader.SetUniformVector3("lightColor", new Vector3(1, 1, 1));
             shader.SetUniformVector3("viewpos", Camera.Position);
             shader.SetUniformFloat("ambientStrength", 1);
@@ -210,11 +195,11 @@ namespace MyEngine
             foreach (var volumehit in volumes)
             {
                 Volume volume = (Volume)volumehit.model;
-                var hitinobjectspace = Vector3.TransformPosition(volumehit.HitPositionWorld, volume.Modelmatrix.Inverted()) + volume.dimensions/2;
+                var hitinobjectspace = Vector3.TransformPosition(volumehit.HitPositionWorld, volume.Modelmatrix.Inverted()) + volume.size/2;
                 var directionModelSpace = Vector3.Normalize(Vector3.TransformVector(volumehit.RayDirectionWorld,volume.Modelmatrix.Inverted())) ;
 
                 var IsVoxelSet = false;
-                for (double i = 0; i < 100; i+=0.1)
+                for (double i = 0; i < Camera.far*2; i+=0.1)
                 {
                     var ray = hitinobjectspace + directionModelSpace * (float)i;
                     if (volume.IsValidVoxelPosition((int) ray.X, (int) ray.Y, (int) ray.Z))
@@ -222,6 +207,8 @@ namespace MyEngine
                          volume.SetVoxel((int)ray.X, (int)ray.Y,
                     (int)ray.Z, new Vector4(colorval, colorval, colorval, 255f));
                          IsVoxelSet = true;
+                         volume.IsInitialized = false;
+                        break;
                     }                   
                 }
 
@@ -303,7 +290,30 @@ namespace MyEngine
             modelManager.LoadModelFromFile(modelPath, name);
         }
 
+        public void AddShader(string vsShaderPath, string fsShaderPath = "")
+        {
+            shaderManager.AddShader(vsShaderPath, fsShaderPath);
+        }
 
+        public void AddModel(Model model)
+        {
+            modelManager.AddModel(model);
+        }
+        public void SetWorld(Model world)
+        {
+            modelManager.SetWorld(world);
+        }
+        public void ClearWorld()
+        {
+            modelManager.ClearWorld();
+        }
+
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+            EngineLogger?.Stop();
+        }
 
         public List<Model> GetModel(string name)
         {

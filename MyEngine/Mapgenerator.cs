@@ -14,10 +14,16 @@ namespace MyEngine
         private const float Rock = 0.8f;
         private const float Snow = 0.9f;
 
-        private int Y(int x,double slope,int y0) => (int)( x * slope + y0);
-        private Vector4 color(float y,int deltaheight)
+        private Volume vol;
+
+        private int Y(int x, double slope, int y0)
         {
-            double heightcolorscale = 1.0;
+            return (int) Math.Round(x * slope + y0);
+        }
+
+        private Vector4 color(float y, int deltaheight)
+        {
+            var heightcolorscale = 1.0;
             while (heightcolorscale * deltaheight * 0.1f < 1) heightcolorscale *= 1.1f;
             Vector4 color;
             if (y <= deltaheight * Water * heightcolorscale)
@@ -35,22 +41,24 @@ namespace MyEngine
             return color;
         }
 
-        private Volume vol;
-        
-        public Volume GenerateMapFromHeightData(List<HeightmapImporter.LocationResult> heights,
+        public VoxelMap GenerateMapFromHeightData(List<HeightmapImporter.LocationResult> heights,
             Vector2 itemsperaxis, int offset = -1)
         {
             offset = offset == -1 ? 3 : offset;
             var deltaheight = heights.Max(location => location.elevation) - heights.Min(location => location.elevation);
             var indexcount = itemsperaxis.X * itemsperaxis.Y;
-            var vol = new Volume((int) itemsperaxis.X * offset, deltaheight,
+            var vol = new VoxelMap((int) itemsperaxis.X * offset, deltaheight,
                 (int) itemsperaxis.Y * offset);
 
-            
-            
-            for (var x = 0; x < itemsperaxis.X; x++)for (var z = 0; z < itemsperaxis.Y; z++)
+
+            for (var z = 0; z < itemsperaxis.Y; z++)
+            for (var x = 0; x < itemsperaxis.X; x++)
             {
-                var currentindex = (int) (z + x * itemsperaxis.Y);
+                if (z == 1 && x == 1)
+                {
+                    var iks = 0;
+                }
+                var currentindex = (int) ( x+ z * itemsperaxis.X);
                 var elevationCurrent = heights[currentindex].elevation;
                 int elevationRight = -1, elevationFront = -1, elevationRightFront = -1;
                 if (currentindex + 1 < indexcount && currentindex + (int) itemsperaxis.Y < indexcount &&
@@ -79,34 +87,49 @@ namespace MyEngine
                         {
                             for (var y = 0; y < heightsZ[forward]; y++)
                             {
-                                var colorr = color(y,deltaheight);
-                                vol.SetVoxel(x * offset + i, y, z * offset + forward , colorr);
-                                }
-                                for (var y = 0; y < heightsX[forward]; y++)
-                                {
-                                var colorr = color(y,deltaheight);
+                                var colorr = color(y, deltaheight);
+                                vol.SetVoxel(x * offset + i, y, z * offset + forward, colorr);
+                            }
+
+                            for (var y = 0; y < heightsX[forward]; y++)
+                            {
+                                var colorr = color(y, deltaheight);
                                 vol.SetVoxel(x * offset + forward, y, z * offset + i, colorr);
                             }
                         }
+                    }
 
+                    if (x == 1)
+                    {
+                        var iks = 0;
+                    }
+
+                    if (x == 2)
+                    {
+                        var iks = 0;
                     }
                 }
             }
+            vol.SetVoxel(0,0,0,new Vector4(255));
+            vol.SetVoxel((int) (vol.size.X-1), (int)(vol.size.Y - 1), 0,new Vector4(255,0,0,1f));
+            
+            vol.SetVoxel(0, (int)(vol.size.Y - 1), (int)(vol.size.X - 1), new Vector4(0,0, 255, 1f));
             return vol;
         }
 
-        public Volume generateLineFillLower(int y0, int y1, int lengthInVoxels,bool fill = false,Vector3 direction = default(Vector3))
+        public Volume generateLineFillLower(int y0, int y1, int lengthInVoxels, bool fill = false,
+            Vector3 direction = default(Vector3))
         {
             Volume vol = null;
-            var slope = (y1 - y0) / (double)lengthInVoxels;
+            var slope = (y1 - y0) / (double) lengthInVoxels;
             direction = direction == default(Vector3) ? Vector3.UnitX : Vector3.Normalize(direction);
 
-            for (int i = 0; i < lengthInVoxels; i++)
+            for (var i = 0; i < lengthInVoxels; i++)
             {
                 var y = Y(i, slope, y0);
                 if (fill)
                 {
-                    for (int yn = (int) y; yn > 0; yn--)
+                    for (var yn = y; yn > 0; yn--)
                         if (direction == Vector3.UnitX)
                         {
                             if (vol == null)
@@ -123,7 +146,7 @@ namespace MyEngine
                         else
                         {
                             if (vol == null)
-                                vol = new Volume(1,y1, lengthInVoxels);
+                                vol = new Volume(1, y1, lengthInVoxels);
                             vol.SetVoxel(0, yn, i, new Vector4(0, 120, 255, 255));
                         }
                 }
@@ -149,19 +172,19 @@ namespace MyEngine
                         vol.SetVoxel(0, y, i, new Vector4(0, 120, 255, 255));
                     }
                 }
-                
             }
-            return vol;
 
+            return vol;
         }
+
         private int[] calculateLine(int y0, int y1, int points)
         {
             var result = new List<int>();
             var deltaHeight = y1 - y0;
-            double slope = (double)deltaHeight / (double)points;
+            var slope = deltaHeight / (double) points;
             for (var i = 0; i < points; i++)
             {
-                var height = Y(i,slope,y0);
+                var height = Y(i, slope, y0);
                 result.Add(height);
             }
 

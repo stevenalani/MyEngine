@@ -44,11 +44,11 @@ namespace MyEngine
 
             Vertices = new PositionColorVertex[]
             {
-                new PositionColorVertex(){ position = new Vector3(-0.01f,-0.01f,0),color = color }, 
-                new PositionColorVertex(){ position = new Vector3(0.01f,-0.01f,0),color = color }, 
-                new PositionColorVertex(){ position = new Vector3(0.01f,0.01f,0),color = color }, 
-                new PositionColorVertex(){ position = new Vector3(-0.01f,0.01f,0),color = color }, 
-                new PositionColorVertex(){ position = target*1000f,color = color }, 
+                new PositionColorVertex(){ Position = new Vector3(-0.01f,-0.01f,0),Color = color }, 
+                new PositionColorVertex(){ Position = new Vector3(0.01f,-0.01f,0),Color = color }, 
+                new PositionColorVertex(){ Position = new Vector3(0.01f,0.01f,0),Color = color }, 
+                new PositionColorVertex(){ Position = new Vector3(-0.01f,0.01f,0),Color = color }, 
+                new PositionColorVertex(){ Position = target*1000f,Color = color }, 
             };
             
         }

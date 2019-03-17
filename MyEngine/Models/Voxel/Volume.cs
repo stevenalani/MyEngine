@@ -7,29 +7,31 @@ namespace MyEngine.Models.Voxel
 {
     public class Volume : PositionColorModel
     {
-        public readonly Vector3 dimensions;
+        public readonly Vector3 size;
         protected Voxel[,,] VolumeData;
 
 
-        public Volume(Vector3 dimensions) : base(null, null)
+        public Volume(Vector3 size) : base(null, null)
         {
-            this.dimensions = dimensions;
-            VolumeData = new Voxel[(int) dimensions.X, (int) dimensions.Y, (int) dimensions.Z];
+            this.size = size;
+            VolumeData = new Voxel[(int) size.X, (int) size.Y, (int) size.Z];
             InitializeVolumeData();
         }
 
-        public Volume(int witdh, int height, int depth) : base(null, null)
+        public Volume(int witdh, int height, int depth) : base(CubeData.Vertices.Select(x=> new PositionColorVertex(){Position = x, Color = new Vector4(0)}).ToArray(), CubeData.Indices)
         {
-            dimensions = new Vector3(witdh, height, depth);
+            size = new Vector3(witdh, height, depth);
             InitializeVolumeData();
         }
+
+        
 
         private void InitializeVolumeData()
         {
-            VolumeData = new Voxel[(int) dimensions.X, (int) dimensions.Y, (int) dimensions.Z];
-            for (var z = 0; z < dimensions.Z; z++)
-            for (var y = 0; y < dimensions.Y; y++)
-            for (var x = 0; x < dimensions.X; x++)
+            VolumeData = new Voxel[(int) size.X, (int) size.Y, (int) size.Z];
+            for (var z = 0; z < size.Z; z++)
+            for (var y = 0; y < size.Y; y++)
+            for (var x = 0; x < size.X; x++)
                 VolumeData[x, y, z] = new Voxel(new Vector3(x, y, z), Vector4.Zero);
             IsInitialized = false;
         }
@@ -37,7 +39,7 @@ namespace MyEngine.Models.Voxel
         public void SetVoxel(Vector3 position, Vector4 mat)
         {
             var pos = position;
-            if (pos.X >= dimensions.X || pos.Y >= dimensions.Y || pos.Z >= dimensions.Z || pos.X <= -1 || pos.Y <= -1 ||
+            if (pos.X >= size.X || pos.Y >= size.Y || pos.Z >= size.Z || pos.X <= -1 || pos.Y <= -1 ||
                 pos.Z <= -1)
                 return;
             //if (VolumeData[(int) pos.X, (int) pos.Y, (int) pos.Z].Color == Vector4.Zero)_voxelcount++
@@ -57,7 +59,7 @@ namespace MyEngine.Models.Voxel
 
         protected void ClearVoxel(int x, int y, int z)
         {
-            if (!(x <= dimensions.X && y <= dimensions.Y && z <= dimensions.Z)) return;
+            if (!(x <= size.X && y <= size.Y && z <= size.Z)) return;
             VolumeData[x, y, z].Color = Vector4.Zero;
         }
 
@@ -109,9 +111,9 @@ namespace MyEngine.Models.Voxel
             int countX, countY, countZ;
             var _checked = 0;
             var poscolresult = new List<PositionColorVertex>();
-            for (var currentZ = 0; currentZ < dimensions.Z; currentZ++)
-            for (var currentY = 0; currentY < dimensions.Y; currentY++)
-            for (var currentX = 0; currentX < dimensions.X; currentX++)
+            for (var currentZ = 0; currentZ < size.Z; currentZ++)
+            for (var currentY = 0; currentY < size.Y; currentY++)
+            for (var currentX = 0; currentX < size.X; currentX++)
             {
                 currentvoxel = VolumeData[currentX, currentY, currentZ];
                 if (currentvoxel.Color == Vector4.Zero || currentvoxel.checkedin)
@@ -157,28 +159,28 @@ namespace MyEngine.Models.Voxel
 
                 var posxColorVertex = new PositionColorVertex
                 {
-                    color = currentvoxel.Color / 255,
-                    position = currentvoxel.Posindices
+                    Color = currentvoxel.Color / 255,
+                    Position = currentvoxel.Posindices
                 };
-                posxColorVertex.position.Z = currentvoxel.Posindices.Z + countZ + 1;
+                posxColorVertex.Position.Z = currentvoxel.Posindices.Z + countZ + 1;
                 poscolresult.Add(posxColorVertex);
-                posxColorVertex.position.X = currentvoxel.Posindices.X + countX + 1;
+                posxColorVertex.Position.X = currentvoxel.Posindices.X + countX + 1;
                 poscolresult.Add(posxColorVertex);
-                posxColorVertex.position.Y = currentvoxel.Posindices.Y + countY + 1;
+                posxColorVertex.Position.Y = currentvoxel.Posindices.Y + countY + 1;
                 poscolresult.Add(posxColorVertex);
-                posxColorVertex.position.X = currentvoxel.Posindices.X;
+                posxColorVertex.Position.X = currentvoxel.Posindices.X;
                 poscolresult.Add(posxColorVertex);
 
                 //Backface Vertex
-                posxColorVertex.position.X = currentvoxel.Posindices.X;
-                posxColorVertex.position.Y = currentvoxel.Posindices.Y;
-                posxColorVertex.position.Z = currentvoxel.Posindices.Z;
+                posxColorVertex.Position.X = currentvoxel.Posindices.X;
+                posxColorVertex.Position.Y = currentvoxel.Posindices.Y;
+                posxColorVertex.Position.Z = currentvoxel.Posindices.Z;
                 poscolresult.Add(posxColorVertex);
-                posxColorVertex.position.X = currentvoxel.Posindices.X + countX + 1;
+                posxColorVertex.Position.X = currentvoxel.Posindices.X + countX + 1;
                 poscolresult.Add(posxColorVertex);
-                posxColorVertex.position.Y = currentvoxel.Posindices.Y + countY + 1;
+                posxColorVertex.Position.Y = currentvoxel.Posindices.Y + countY + 1;
                 poscolresult.Add(posxColorVertex);
-                posxColorVertex.position.X = currentvoxel.Posindices.X;
+                posxColorVertex.Position.X = currentvoxel.Posindices.X;
                 poscolresult.Add(posxColorVertex);
                 var end = new Vector3(currentvoxel.Posindices.X + countX + 1, currentvoxel.Posindices.Y + countY + 1,
                     currentvoxel.Posindices.Z + countZ + 1);
@@ -192,8 +194,8 @@ namespace MyEngine.Models.Voxel
                         {
                             return new PositionColorVertex
                             {
-                                color = x.color,
-                                position = x.position - dimensions / 2
+                                Color = x.Color,
+                                Position = x.Position - size / 2
                             };
                         }
                     ).ToArray();
@@ -204,9 +206,9 @@ namespace MyEngine.Models.Voxel
                     {
                         for (var i = 0;i < Vertices.Length; i++)
                         {
-                            if (Vertices[i].position == positionColorVertex.position - dimensions / 2)
+                            if (Vertices[i].Position == positionColorVertex.Position - size / 2)
                             {
-                                Vertices[i].color = positionColorVertex.color;
+                                Vertices[i].Color = positionColorVertex.Color;
                             }
                         }
                     }
@@ -214,8 +216,8 @@ namespace MyEngine.Models.Voxel
                         {
                             return new PositionColorVertex
                             {
-                                color = x.color,
-                                position = x.position - dimensions / 2
+                                Color = x.Color,
+                                Position = x.Position - size / 2
                             };
                         }
                     ));
@@ -233,7 +235,7 @@ namespace MyEngine.Models.Voxel
         {
             var next = new Voxel(start.Posindices, start.Color);
             var neighborsX = 0;
-            while (next.Posindices.X < dimensions.X - 1 && IsSameColorRight(next) &&
+            while (next.Posindices.X < size.X - 1 && IsSameColorRight(next) &&
                    !VolumeData[(int) next.Posindices.X, (int) next.Posindices.Y, (int) next.Posindices.Z].checkedin)
             {
                 neighborsX++;
@@ -247,7 +249,7 @@ namespace MyEngine.Models.Voxel
         {
             var next = new Voxel(start.Posindices, start.Color);
             var neighborsY = 0;
-            while (next.Posindices.Y < dimensions.Y - 1 && IsSameColorUp(next) &&
+            while (next.Posindices.Y < size.Y - 1 && IsSameColorUp(next) &&
                    !VolumeData[(int) next.Posindices.X, (int) next.Posindices.Y, (int) next.Posindices.Z].checkedin)
             {
                 next.Posindices.Y++;
@@ -261,7 +263,7 @@ namespace MyEngine.Models.Voxel
         {
             var next = new Voxel(start.Posindices, start.Color);
             var neighborsZ = 0;
-            while (next.Posindices.Z < dimensions.Z - 1 && IsSameColorFront(next) &&
+            while (next.Posindices.Z < size.Z - 1 && IsSameColorFront(next) &&
                    !VolumeData[(int) next.Posindices.X, (int) next.Posindices.Y, (int) next.Posindices.Z].checkedin)
             {
                 next.Posindices.Z++;
@@ -311,9 +313,9 @@ namespace MyEngine.Models.Voxel
         public int GetVoxelCount()
         {
             var _voxelscount = 0;
-            for (var i = 0; i < dimensions.X; i++)
-            for (var j = 0; j < dimensions.Y; j++)
-            for (var k = 0; k < dimensions.Z; k++)
+            for (var i = 0; i < size.X; i++)
+            for (var j = 0; j < size.Y; j++)
+            for (var k = 0; k < size.Z; k++)
                 if (VolumeData[i, j, k].Color != Vector4.Zero)
                     _voxelscount++;
             return _voxelscount;
@@ -322,9 +324,9 @@ namespace MyEngine.Models.Voxel
         public int GetCheckedInCount()
         {
             var _voxelscount = 0;
-            for (var i = 0; i < dimensions.X; i++)
-            for (var j = 0; j < dimensions.Y; j++)
-            for (var k = 0; k < dimensions.Z; k++)
+            for (var i = 0; i < size.X; i++)
+            for (var j = 0; j < size.Y; j++)
+            for (var k = 0; k < size.Z; k++)
                 if (VolumeData[i, j, k].checkedin)
                     _voxelscount++;
             return _voxelscount;
@@ -339,7 +341,7 @@ namespace MyEngine.Models.Voxel
 
         public bool IsVoxel(int x, int y, int z)
         {
-            if (x >= 0 && x < dimensions.X && y >= 0 && y < dimensions.Y && z >= 0 && z < dimensions.Z)
+            if (x >= 0 && x < size.X && y >= 0 && y < size.Y && z >= 0 && z < size.Z)
                 return VolumeData[x, y, z].Color != Vector4.Zero;
 
             return false;
@@ -347,7 +349,7 @@ namespace MyEngine.Models.Voxel
 
         public bool IsValidVoxelPosition(int x, int y, int z)
         {
-            if (x >= 0 && x < dimensions.X && y >= 0 && y < dimensions.Y && z >= 0 && z < dimensions.Z) return true;
+            if (x >= 0 && x < size.X && y >= 0 && y < size.Y && z >= 0 && z < size.Z) return true;
 
             return false;
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using BulletSharp;
 using GlmNet;
 using MyEngine.Assets.Models;
 using MyEngine.DataStructures;
@@ -8,7 +9,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace MyEngine
 {
-    public abstract class Model: IDisposable
+    public abstract class Model:IDisposable
     {
         private static int nextid = 0;
         public readonly int ID;
@@ -24,16 +25,20 @@ namespace MyEngine
 
         protected IVertextype[] Vertices;
 
-        private Vector3 Direction = -Vector3.UnitZ;
+        public Vector3 Direction = -Vector3.UnitZ;
+        protected float mass;
 
         public Matrix4 Modelmatrix =>  MathHelpers.getRotation(Rotations.X, Rotations.Y,Rotations.Z) * Matrix4.CreateScale(Scales) *   Matrix4.CreateTranslation(Position);
-            
-        
+
+        protected CollisionShape collisionShape;
+
+        public abstract CollisionShape GetCollisionShape();
 
         protected Model()
         {
-            ID  = Model.nextid++;
+            ID = Model.nextid++;
         }
+
         public bool IsInitialized { get; set; }
 
 

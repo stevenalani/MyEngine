@@ -37,7 +37,7 @@ namespace MyEngine
         }
         private void update(PositionColorModel inmodel)
         {
-            var vertices = inmodel.Vertices.Select(x => Vector3.TransformPosition(x.position, inmodel.Modelmatrix)).ToArray();
+            var vertices = inmodel.Vertices.Select(x => Vector3.TransformPosition(x.Position, inmodel.Modelmatrix)).ToArray();
             var min_y = vertices.Min(x => x.Y);
             var max_y = vertices.Max(x => x.Y);
             var min_x = vertices.Min(x => x.X);
@@ -61,9 +61,9 @@ namespace MyEngine
 
             Vertices = ToArray()?.Select(x => new PositionColorVertex()
                 {
-                    //position = Vector3.TransformPerspective(x, Camera.GetProjection().Inverted() * Camera.GetView().Inverted()),
-                    position = x,
-                    color = color
+                    //Position = Vector3.TransformPerspective(x, Camera.GetProjection().Inverted() * Camera.GetView().Inverted()),
+                    Position = x,
+                    Color = color
                 }).ToArray();
             IsInitialized = false;
         }
@@ -86,7 +86,7 @@ namespace MyEngine
 
         public void TransformBoundingBox(Matrix4 transforMatrix)
         {
-            var edges = Vertices.Select(x => Vector3.TransformPosition(x.position,transforMatrix));
+            var edges = Vertices.Select(x => Vector3.TransformPosition(x.Position,transforMatrix));
             var lowest = edges.Min(x => x.Y);
             var highest = edges.Max(x => x.Y);
             var left = edges.Min(x => x.X);
@@ -104,7 +104,7 @@ namespace MyEngine
             rightupfar = new Vector3(right, highest, farest);
             leftupfar = new Vector3(left, highest, farest);
             Vertices = ToArray().Select(x => new PositionColorVertex()
-                { position = x, color = color }).ToArray();
+                { Position = x, Color = color }).ToArray();
             IsInitialized = false;
         }
 

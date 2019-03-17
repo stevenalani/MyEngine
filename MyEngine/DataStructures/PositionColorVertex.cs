@@ -4,23 +4,23 @@ namespace MyEngine.DataStructures
 {
     public struct PositionColorVertex: IVertextype
     {
-        public Vector3 position;
-        public Vector4 color;
+        public Vector3 Position;
+        public Vector4 Color;
 
         public static PositionColorVertex operator +(PositionColorVertex left, Vector3 right)
         {
             return new PositionColorVertex
             {
-                position = left.position + right,
-                color =  left.color
+                Position = left.Position + right,
+                Color =  left.Color
             };
         }
         public static PositionColorVertex operator +(PositionColorVertex left, PositionColorVertex right)
         {
             return new PositionColorVertex
             {
-                position = left.position + right.position,
-                color =  left.color + right.color
+                Position = left.Position + right.Position,
+                Color =  left.Color + right.Color
             };
         }
 
