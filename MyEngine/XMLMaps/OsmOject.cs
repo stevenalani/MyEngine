@@ -15,9 +15,9 @@ namespace MyEngine.XMLMaps
     }
     public class Item
     {
-        public string latitude;
-        public string elevation;
-        public string longitude;
+        public string Latitude { get; set; }
+        public string Elevation { get; set; }
+        public string Longitude { get; set; }
     }
 
     public class OSM

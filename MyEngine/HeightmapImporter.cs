@@ -28,6 +28,7 @@ namespace MyEngine
            string result = sr.ReadToEnd();
 
             var jsonObj = JsonConvert.DeserializeObject<JObject>(result).First.First;
+            OsmOject myDeserializedObj = JsonConvert.DeserializeObject<OsmOject>(result);
             OsmOject test = JsonConvert.DeserializeObject<OsmOject>(result);
             Console.WriteLine(test.data[0].elevation);
             Console.WriteLine(jsonObj["elevation"]);
