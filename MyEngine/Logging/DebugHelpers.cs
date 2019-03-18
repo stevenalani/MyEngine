@@ -64,7 +64,7 @@ namespace MyEngine.Logging
             {
                 Console.Clear();
             }
-            Console.WriteLine("\n"+ title);
+            Console.WriteLine("\n"+ title.Replace("<clear>",""));
             Console.WriteLine(String.Empty.PadLeft(Console.BufferWidth - 1, '-'));
             Console.Write(message);
             Console.WriteLine(Environment.NewLine+String.Empty.PadLeft(Console.BufferWidth - 1, '=')+ Environment.NewLine);

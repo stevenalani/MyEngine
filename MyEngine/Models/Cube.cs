@@ -8,15 +8,15 @@ namespace MyEngine.Models
     public static class CubeData
     {
         public static readonly Vector3[] Vertices = {
-            new Vector3(-1f,-1f,1f),
-            new Vector3(1f,-1f,1f),
-            new Vector3(1f,1f,1f),
-            new Vector3(-1f,1f,1f), 
+            new Vector3(-0.5f,-0.5f,0.5f),
+            new Vector3(0.5f,-0.5f,0.5f),
+            new Vector3(0.5f,0.5f,0.5f),
+            new Vector3(-0.5f,0.5f,0.5f), 
 
-            new Vector3(-1f,-1f,-1f),
-            new Vector3(1f,-1f,-1f),
-            new Vector3(1f,1f,-1f),
-            new Vector3(-1f,1f,-1f),
+            new Vector3(-0.5f,-0.5f,-0.5f),
+            new Vector3(0.5f,-0.5f,-0.5f),
+            new Vector3(0.5f,0.5f,-0.5f),
+            new Vector3(-0.5f,0.5f,-0.5f),
         };
         public static readonly uint[] Indices =
         {
@@ -41,17 +41,17 @@ namespace MyEngine.Models
 
         public static Vector3[] NotCentered => Vertices.Select(x => (x / 2) + new Vector3(0.5f)).ToArray();
     }
-    public class Cube : PositionColorModel
+    internal class Cube : PositionColorModel
     {
         public Cube() : base(null, CubeData.Indices)
         {
             Vertices = CubeData.Vertices.Select(x => new PositionColorVertex
-                {position = x, color = new Vector4(0.1f, 0.5f, 0.2f, 0.4f)}).ToArray();
+                {Position = x, Color = new Vector4(0.1f, 0.5f, 0.2f, 0.4f)}).ToArray();
         }
         public Cube(BoundingBox boundingBox) : base(null, CubeData.Indices)
         {
             Vertices = boundingBox.ToArray().Select(x => new PositionColorVertex
-                {position = x, color = new Vector4(0.1f, 0.5f, 0.2f, 0.2f)}).ToArray();
+                {Position = x, Color = new Vector4(0.1f, 0.5f, 0.2f, 0.2f)}).ToArray();
         }
 
         public override void Draw(ShaderProgram shaderProgram)

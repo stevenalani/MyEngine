@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BulletSharp;
 using MyEngine.Assets.Models;
 using MyEngine.Assets.Models.Voxel;
 using MyEngine.DataStructures;
@@ -25,19 +26,10 @@ namespace MyEngine
 
         public PositionColorVertex[] Vertices;
 
-        public PositionColorModel(Volume volume, bool isReady = false)
-        {
-            if (!isReady)
-                volume.Init();
-            isReady = true;
-            Vertices = volume.Vertices;
-            Indices = volume.Indices;
-        }
-
         public override void InitBuffers()
 
         {
-            if(IsInitialized && Vertices != null && Indices != null)
+            if(IsInitialized || Vertices == null || Indices == null)
                 return;
 
             VAO = GL.GenVertexArray();
@@ -53,13 +45,26 @@ namespace MyEngine
             // Vertices positions
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, sizeof(float)*7, 0);
             GL.EnableVertexAttribArray(0);
-            // color attribute
+            // Color attribute
             
             GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, sizeof(float)*7, 3 * sizeof(float));
             GL.EnableVertexAttribArray(1);
             GL.BindVertexArray(0);
-            this.IsInitialized = true;
+            collisionShape = GetCollisionShape();
+            IsInitialized = true;
+
             OnUpdate?.Invoke(this);
+        }
+
+        public override CollisionShape GetCollisionShape()
+        {
+            var minX = Vertices.Min(x => x.Position.X);
+            var maxX = Vertices.Max(x => x.Position.X);
+            var minY = Vertices.Min(x => x.Position.Y);
+            var maxY = Vertices.Max(x => x.Position.Y);
+            var minZ = Vertices.Min(x => x.Position.Z);
+            var maxZ = Vertices.Max(x => x.Position.Z);
+            return new BoxShape(maxX - minX,maxY-minY,maxZ - minZ);
         }
 
         public override void Draw(ShaderProgram shader)

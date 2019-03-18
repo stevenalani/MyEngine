@@ -33,7 +33,7 @@ namespace MyEngine
 
         private float aspect;
         private float near;
-        private float far;
+        internal float far;
 
         private Matrix4 pProjection;
         private Matrix4 oProjection;
@@ -126,8 +126,6 @@ namespace MyEngine
             Yaw -= xoffset * Sensitivity;
             Pitch -= yoffset * Sensitivity * ViewDirection.Z/Math.Abs(ViewDirection.Z);
            
-            Engine.EngineLogger.loggingQueue.Enqueue(new LogMessage($"YAW: {Yaw}\n PITCH: {Pitch}\n ViewDir {ViewDirection}"));
-            
             Update();
         }
 

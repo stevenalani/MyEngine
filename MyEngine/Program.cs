@@ -1,12 +1,7 @@
 ﻿using System;
-using System.CodeDom;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using MyEngine.Assets.Models;
-using MyEngine.Assets.Models.Voxel;
-using MyEngine.Models;
-using MyEngine.Models.Voxel;
+using BulletSharp;
 using OpenTK;
 
 namespace MyEngine
@@ -18,38 +13,39 @@ namespace MyEngine
             var width = 800;
             var height = 600;
             var userprofilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            Camera cam = new Camera(width, height, 0.1f,100f,PROJECTIONTYPE.Perspective);
-            cam.Position = new Vector3(0,0,10);
-            Engine engine = new Engine(width, height, cam);
-            
-            engine.AddShader("Shaders\\DefaultVoxelShader21.vs", "Shaders\\DefaultVoxelShader21.fs");
-            engine.enableCrossHair(new Vector4(1f,1f,1f,0.5f));
-            HeightmapImporter.getOpenElevation(41.161758f, -8.583933f);
+            var cam = new Camera(width, height, 0.1f, 100f, PROJECTIONTYPE.Perspective);
+            cam.Position = new Vector3(0, 0, 20);
+            var engine = new Engine(width, height, cam);
+            engine.enableCrossHair(new Vector4(1f, 1f, 1f, 0.5f));
+            engine.AddShader("Shaders\\DefaultVoxelShader.vs", "Shaders\\DefaultVoxelShader.fs");
+
+            //var result = HeightmapImporter.getOpenElevation(48.755238f, 9.146392f);
             /*HeightmapImporter.getOpenStreetXMLBBox(new Vector2(48.756846f, 9.156012f),
                 new Vector2(48.8f, 9.2f), "Heslach",4);*/
-            engine.LoadModelFromFile(Path.Combine(userprofilePath, "3D Objects\\chr_rain.vox"));
-            var model = engine.GetModel("chr_rain").First();
 
-            var model2 = new RandomDiscoVolume(6, 6, 6);
-            model2.name = "Random";
-            engine.AddModel(model2);
-            /*engine.MouseUp += (sender, eventArgs) =>
-            {
-                model2.ClearVolume();
-            };*/
-            //Modelmatrix.name = "RubicsCube";
-            //engine.AddModel(Modelmatrix);
-            //engine.LoadModelFromFile("C:\\Users\\Steven\\3D Objects\\AxisMat.vox");
-            //engine.LoadModelFromFile("C:\\Users\\Steven\\3D Objects\\blocksalongx.vox");
-           
-            //var Modelmatrix = testgetmodel.First();
-            model.rotateX(15f);
-            model.rotateZ(20f);
-            model.MoveToVector(new Vector3(15f,-2f,10f));
-            //BoundingBox boundingBox = new BoundingBox(Modelmatrix);
-            //engine.AddModel(boundingBox);
+            var heslachFrom = new Vector2(48.755238f, 9.146392f);
+            var heslachTo = new Vector2(48.767457f, 9.167524f);
+
+            Mapgenerator mapgen = new Mapgenerator();
+            var heslachHeight = HeightmapImporter.GetOpenElevationData(heslachFrom, heslachTo, new Vector2(10, 10));
+            var vol = mapgen.GenerateMapFromHeightData(heslachHeight, new Vector2(10, 10), 50);
+            vol.Scales = new Vector3(0.1f);
+            engine.SetWorld(vol);
+            CollisionConfiguration collision = new DefaultCollisionConfiguration();
+            CollisionDispatcher dispatcher =new CollisionDispatcher(collision);
+
+            //engine.LoadModelFromFile(Path.Combine(userprofilePath, "3D Objects\\chr_rain.vox"));
+            //engine.LoadModelFromFile(Path.Combine(userprofilePath, "3D Objects\\untitled.vox"));
+            //var model = engine.GetModel("chr_rain").First();
+            //model.MoveToVector(new Vector3(10,0,0));
+            //var model2 = new RandomDiscoVolume(6, 6, 6);
+            //model2.name = "Random";
+            //model2.Position = Vector3.UnitX; 
+            //engine.AddModel(model2);
+            //engine.UpdateFrame += (sender, eventArgs) => { model2.rotateX(0.01f); model2.MoveForward(0.08f); };
             engine.Run(60.0);
-
         }
+
+        
     }
 }

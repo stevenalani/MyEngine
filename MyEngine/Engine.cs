@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.Remoting.Lifetime;
+using Assimp;
+using GlmNet;
 using MyEngine.Assets.Models;
 using MyEngine.Logging;
+using MyEngine.Models.Voxel;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -26,6 +28,7 @@ namespace MyEngine
         private double lasttime;
         private DateTime nextWireframeSwitch = DateTime.Now;
         internal ShaderManager shaderManager = new ShaderManager();
+        private Physics physics;
 
 
         public Engine(int width, int height, Camera camera = null) : base(
@@ -53,7 +56,8 @@ namespace MyEngine
             Update += shaderManager.Update;
             UpdateFrame += OnUpdate;
             EngineLogger = new Logger();
-            //EngineLogger.Start();
+            EngineLogger.Start();
+            
         }
 
         public static Logger EngineLogger { get; set; }
@@ -69,22 +73,6 @@ namespace MyEngine
             Update?.Invoke();
         }
 
-        public void AddShader(string vsShaderPath, string fsShaderPath = "")
-        {
-            shaderManager.AddShader(vsShaderPath, fsShaderPath);
-        }
-
-        public void AddModel(Model model)
-        {
-            modelManager.AddModel(model);
-        }
-
-
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            base.OnClosing(e);
-            EngineLogger?.Stop();
-        }
 
         protected override void OnLoad(EventArgs e)
         {
@@ -120,11 +108,11 @@ namespace MyEngine
             shader.SetUniformMatrix4X4("projection", projection);
             var view = Camera.GetView();
             shader.SetUniformMatrix4X4("view", view);
-            shader.SetUniformVector3("lightPos", Camera.Position);
+            shader.SetUniformVector3("lightPos", new Vector3(0,100,0));
             shader.SetUniformVector3("lightColor", new Vector3(1, 1, 1));
             shader.SetUniformVector3("viewpos", Camera.Position);
             shader.SetUniformFloat("ambientStrength", 1);
-            shader.SetUniformFloat("diffuseStrength", 1f);
+            shader.SetUniformFloat("diffuseStrength", 2f);
             shader.SetUniformFloat("specularStrength", 1f);
             modelManager.DrawModels(shader);
             CrossHair?.Draw();
@@ -143,17 +131,92 @@ namespace MyEngine
         {
             base.OnMouseDown(e);
         }
+        public List<RayHitResult> CheckHit()
+        {
+            
+            
+            var hitResults = new List<RayHitResult>();
+            var BoundingBoxes = modelManager.GetModels().Where(x => x is PositionColorModel)
+                .Select(x =>
+                {
+                    var bb = new BoundingBox((PositionColorModel)x,this.Camera);
+                    return new KeyValuePair<PositionColorModel, BoundingBox>((PositionColorModel)x, bb);
+                });
 
+            foreach (var values in BoundingBoxes)
+            {
+                //EngineLogger.Log(new LogMessage(values.Key.Modelmatrix.ToString(), "MODELMATRIX I"));
+                var boundingbox = values.Value;
+                for (var i = 0.1f; i <= 100f; i += 0.01f)
+                {
+                    var ray = Camera.Position + Camera.ViewDirection * i;
+                    var isinx = ray.X >= boundingbox.leftlownear.X && ray.X <= boundingbox.rightlownear.X;
+                    var isiny = ray.Y >= boundingbox.leftlownear.Y && ray.Y <= boundingbox.rightupnear.Y;
+                    var isinz = boundingbox.leftlownear.Z >= ray.Z && ray.Z >= boundingbox.rightlowfar.Z;
+                    if (isinx && isiny && isinz)
+                    {
+                        while (isinx && isiny && isinz)
+                        {
+                            isinx = ray.X >= boundingbox.leftlownear.X && ray.X <= boundingbox.rightlownear.X;
+                            isiny = ray.Y >= boundingbox.leftlownear.Y && ray.Y <= boundingbox.rightupnear.Y;
+                            isinz = boundingbox.leftlownear.Z >= ray.Z && ray.Z >= boundingbox.rightlowfar.Z;
+                            ray -= Camera.ViewDirection * 0.5f;
+                        }
+                        var bb2 = new BoundingBox(values.Key, Camera,new Vector4(0.8f, 0.2f, 0.2f, 0.1f));
+                        bb2.series = "Checkhit";
+                        bb2.purgesiblings = true;
+                        modelManager.AddModel(bb2);
+                        var hit = new RayHitResult
+                        {
+                            model = values.Key,
+                            HitPositionWorld = ray,
+                            RayDirectionWorld = Camera.ViewDirection
+                        };
+                        hitResults.Add(hit);
+                        break;
+                    }
+                }
+            }
+
+            return hitResults;
+        }
         protected override void OnMouseUp(MouseButtonEventArgs e)
         {
             base.OnMouseUp(e);
-            var ray = new VisualRay(Camera);
-            AddModel(ray);
+            var visualray = new VisualRay(Camera);
+            visualray.series = "showray";
+            visualray.purgesiblings = true;
+            AddModel(visualray);
 
             var results = CheckHit();
-            var hitinobjectspace =
-                results.Select(x => Vector3.TransformPosition(x.hitPosition, x.model.Modelmatrix.Inverted()));
-            
+            var volumes = results.Where(x => x.model is Volume);
+            Random rand = new Random(DateTime.Now.Millisecond);
+            var colorval = 240;
+            foreach (var volumehit in volumes)
+            {
+                Volume volume = (Volume)volumehit.model;
+                var hitinobjectspace = Vector3.TransformPosition(volumehit.HitPositionWorld, volume.Modelmatrix.Inverted()) + volume.size/2;
+                var directionModelSpace = Vector3.Normalize(Vector3.TransformVector(volumehit.RayDirectionWorld,volume.Modelmatrix.Inverted())) ;
+
+                var IsVoxelSet = false;
+                for (double i = 0; i < Camera.far*2; i+=0.1)
+                {
+                    var ray = hitinobjectspace + directionModelSpace * (float)i;
+                    if (volume.IsValidVoxelPosition((int) ray.X, (int) ray.Y, (int) ray.Z))
+                    {
+                         volume.SetVoxel((int)ray.X, (int)ray.Y,
+                    (int)ray.Z, new Vector4(colorval, colorval, colorval, 255f));
+                         IsVoxelSet = true;
+                         volume.IsInitialized = false;
+                        break;
+                    }                   
+                }
+
+                if (IsVoxelSet)
+                {
+                    volume.IsInitialized = false;
+                }
+            }
         }
 
         protected override void OnMouseMove(MouseMoveEventArgs e)
@@ -227,45 +290,29 @@ namespace MyEngine
             modelManager.LoadModelFromFile(modelPath, name);
         }
 
-        public List<RayHitResult> CheckHit()
+        public void AddShader(string vsShaderPath, string fsShaderPath = "")
         {
-            List<RayHitResult> hitResults = new List<RayHitResult>();
-            var BoundingBoxes = modelManager.GetModels().Where(x => x is PositionColorModel && !(x is IEngineModel))
-                .Select(x =>
-                {
-                    var bb = new BoundingBox((PositionColorModel) x);
-                    return new KeyValuePair<PositionColorModel, BoundingBox>((PositionColorModel) x, bb);
-                });
+            shaderManager.AddShader(vsShaderPath, fsShaderPath);
+        }
+
+        public void AddModel(Model model)
+        {
+            modelManager.AddModel(model);
+        }
+        public void SetWorld(Model world)
+        {
+            modelManager.SetWorld(world);
+        }
+        public void ClearWorld()
+        {
+            modelManager.ClearWorld();
+        }
 
 
-            foreach (var values in BoundingBoxes)
-            {
-                var boundingbox = values.Value;
-                for (var i = 1; i <= 100; i++)
-                {
-                    var Target = Camera.Position + Camera.ViewDirection * i;
-                    var isinx = Target.X >= boundingbox.leftlownear.X && Target.X <= boundingbox.rightlownear.X;
-                    var isiny = Target.Y >= boundingbox.leftlownear.Y && Target.Y <= boundingbox.rightupnear.Y;
-                    var isinz = boundingbox.leftlownear.Z >= Target.Z && Target.Z >= boundingbox.rightlowfar.Z ;
-                    if ( isinx && isiny && isinz)
-                    {
-                        BoundingBox bb2 = new BoundingBox(values.Key, new Vector4(0.8f, 0.2f, 0.2f, 0.1f));
-                        bb2.purgesiblings = true;
-                        modelManager.AddModel(bb2);
-                        var hit = new RayHitResult()
-                        {
-                            model = values.Key,
-                            hitPosition = Target
-                        };
-                        hitResults.Add(hit);
-                        break;
-                    }
-
-                }
-            }
-
-
-            return hitResults;
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+            EngineLogger?.Stop();
         }
 
         public List<Model> GetModel(string name)
@@ -277,8 +324,8 @@ namespace MyEngine
     public struct RayHitResult
     {
         public Model model;
-        public Vector3 hitPosition;
-
+        public Vector3 HitPositionWorld;
+        public Vector3 RayDirectionWorld;
     }
 
     public interface IEngineModel

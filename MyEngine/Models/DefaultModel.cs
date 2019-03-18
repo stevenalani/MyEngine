@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Linq;
+using BulletSharp;
+using MyEngine.DataStructures;
 using MyEngine.ShaderImporter;
 using OpenTK.Graphics.OpenGL4;
 
@@ -17,7 +20,18 @@ namespace MyEngine.Assets.Models
             _indices = indices;
             this.IndicesCnt = indices.Length;
         }
+        public PositionColorVertex[] Vertices; 
 
+        public override CollisionShape GetCollisionShape()
+        {
+            var minX = Vertices.Min(x => x.Position.X);
+            var maxX = Vertices.Max(x => x.Position.X);
+            var minY = Vertices.Min(x => x.Position.Y);
+            var maxY = Vertices.Max(x => x.Position.Y);
+            var minZ = Vertices.Min(x => x.Position.Z);
+            var maxZ = Vertices.Max(x => x.Position.Z);
+            return new BoxShape(maxX - minX, maxY - minY, maxZ - minZ);
+        }
 
         public override void Draw(ShaderProgram shader)
         {
