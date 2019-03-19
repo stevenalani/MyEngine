@@ -3,6 +3,7 @@ using System.Linq;
 using BulletSharp;
 using MyEngine.DataStructures;
 using MyEngine.ShaderImporter;
+using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 
 namespace MyEngine.Assets.Models
@@ -20,9 +21,9 @@ namespace MyEngine.Assets.Models
             _indices = indices;
             this.IndicesCnt = indices.Length;
         }
-        public PositionColorVertex[] Vertices; 
+        public PositionColorVertex[] Vertices;
 
-        public override CollisionShape GetCollisionShape()
+        public override RigidBody GetRigitBody()
         {
             var minX = Vertices.Min(x => x.Position.X);
             var maxX = Vertices.Max(x => x.Position.X);
@@ -30,7 +31,29 @@ namespace MyEngine.Assets.Models
             var maxY = Vertices.Max(x => x.Position.Y);
             var minZ = Vertices.Min(x => x.Position.Z);
             var maxZ = Vertices.Max(x => x.Position.Z);
-            return new BoxShape(maxX - minX, maxY - minY, maxZ - minZ);
+            var shape = new BoxShape(maxX - minX, maxY - minY, maxZ - minZ);
+            var localInertia = shape.CalculateLocalInertia(mass);
+            var motionstat = new DefaultMotionState(MathHelpers.Matrix4toMatrix(Modelmatrix));
+            var rbInfo = new RigidBodyConstructionInfo(mass, motionstat, shape, localInertia);
+
+            var rigidbody = new RigidBody(rbInfo);
+            return rigidbody;
+        }
+        public override RigidBody GetRigitBody(Matrix4 view)
+        {
+            var minX = Vertices.Min(x => x.Position.X);
+            var maxX = Vertices.Max(x => x.Position.X);
+            var minY = Vertices.Min(x => x.Position.Y);
+            var maxY = Vertices.Max(x => x.Position.Y);
+            var minZ = Vertices.Min(x => x.Position.Z);
+            var maxZ = Vertices.Max(x => x.Position.Z);
+            var shape = new BoxShape(maxX - minX, maxY - minY, maxZ - minZ);
+            var localInertia = shape.CalculateLocalInertia(mass);
+            var motionstat = new DefaultMotionState(MathHelpers.Matrix4toMatrix(Modelmatrix * view));
+            var rbInfo = new RigidBodyConstructionInfo(mass, motionstat, shape, localInertia);
+
+            var rigidbody = new RigidBody(rbInfo);
+            return rigidbody;
         }
 
         public override void Draw(ShaderProgram shader)

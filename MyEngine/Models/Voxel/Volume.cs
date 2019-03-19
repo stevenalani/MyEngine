@@ -7,7 +7,7 @@ namespace MyEngine.Models.Voxel
 {
     public class Volume : PositionColorModel
     {
-        public readonly Vector3 size;
+        public Vector3 size;
         protected Voxel[,,] VolumeData;
 
 
@@ -24,9 +24,13 @@ namespace MyEngine.Models.Voxel
             InitializeVolumeData();
         }
 
-        
+        protected Volume() : base(null,null)
+        {
+            
+        }
 
-        private void InitializeVolumeData()
+
+        protected void InitializeVolumeData()
         {
             VolumeData = new Voxel[(int) size.X, (int) size.Y, (int) size.Z];
             for (var z = 0; z < size.Z; z++)

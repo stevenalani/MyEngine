@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using BulletSharp;
 using BulletSharp.Math;
 using MyEngine.Models.Voxel;
@@ -7,34 +9,35 @@ using Vector3 = BulletSharp.Math.Vector3;
 
 namespace MyEngine
 {
-    internal class Physics
+    internal static class Physics
     {
 
-        public DiscreteDynamicsWorld World { get; set; }
-        CollisionDispatcher dispatcher;
-        DbvtBroadphase broadphase;
-        public List<CollisionShape> CollisionShapes { get; set; } = new List<CollisionShape>();
-        CollisionConfiguration collisionConf;
+        public static DiscreteDynamicsWorld World { get; set; }
+        static CollisionDispatcher dispatcher;
+        static DbvtBroadphase broadphase;
+        public static List<CollisionShape> CollisionShapes { get; set; } = new List<CollisionShape>();
+        static CollisionConfiguration collisionConf;
 
 
 
-        public Physics()
+        static Physics()
         {
             collisionConf = new DefaultCollisionConfiguration();
             dispatcher = new CollisionDispatcher(collisionConf);
 
             broadphase = new DbvtBroadphase();
             World = new DiscreteDynamicsWorld(dispatcher, broadphase, null, collisionConf);
-            World.Gravity = new Vector3(0, -10, 0);
+            World.Gravity = new Vector3(0, -1, 0);
+            
         }
 
 
-        public virtual void Update(float elapsedTime)
+        public static void Update(float elapsedTime)
         {
             World.StepSimulation(elapsedTime);
         }
 
-        public void ExitPhysics()
+        public static void ExitPhysics()
         {
             //remove/dispose constraints
             int i;
@@ -72,45 +75,23 @@ namespace MyEngine
             collisionConf.Dispose();
         }
 
-        public RigidBody LocalCreateRigidBody(float mass, Matrix4 startTransform, CollisionShape shape)
+        public static Matrix4 GetPhysicsModelmatrix(Model model)
         {
-            bool isDynamic = (mass != 0.0f);
-            
-            Vector3 localInertia = Vector3.Zero;
-            if (isDynamic)
-                shape.CalculateLocalInertia(mass, out localInertia);
-
-            DefaultMotionState myMotionState = new DefaultMotionState(Matrix4toMatrix(startTransform));
-
-            RigidBodyConstructionInfo rbInfo = new RigidBodyConstructionInfo(mass, myMotionState, shape, localInertia);
-            RigidBody body = new RigidBody(rbInfo);
-
-            World.AddRigidBody(body);
-
-            return body;
+             var Rigidbody =  World.CollisionObjectArray.First(x => x.UserObject == model.name);
+                 
+                var matrix = Rigidbody.WorldTransform;
+            return MathHelpers.MatrixtoMatrix4(matrix);
+        }
+        public static void AddRigidBody(Model model)
+        {
+            if (World.CollisionObjectArray.Count > 0)
+            {
+                var Rigidbody = World.CollisionObjectArray.First(x => x.UserObject == model.name);
+                World.CollisionObjectArray.Remove(Rigidbody);
+            }
+           
+            World.AddRigidBody(model.GetRigitBody());
         }
 
-        private static Matrix Matrix4toMatrix(Matrix4 matrix)
-        {
-            Matrix result = Matrix.Zero;
-            result.M11 = matrix.M11;
-            result.M12 = matrix.M12;
-            result.M13 = matrix.M13;
-            result.M14 = matrix.M14;
-            result.M21 = matrix.M21;
-            result.M22 = matrix.M22;
-            result.M23 = matrix.M23;
-            result.M24 = matrix.M24;
-            result.M31 = matrix.M31;
-            result.M32 = matrix.M32;
-            result.M33 = matrix.M33;
-            result.M34 = matrix.M34;
-            result.M41 = matrix.M41;
-            result.M42 = matrix.M42;
-            result.M43 = matrix.M43;
-            result.M44 = matrix.M44;
-
-            return result;
-        }
     }
 }

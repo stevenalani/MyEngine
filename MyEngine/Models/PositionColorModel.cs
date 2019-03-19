@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BulletSharp;
+using BulletSharp.Math;
 using MyEngine.Assets.Models;
 using MyEngine.Assets.Models.Voxel;
 using MyEngine.DataStructures;
@@ -16,10 +17,11 @@ namespace MyEngine
     public class PositionColorModel : Model
     {
         public event Action<PositionColorModel> OnUpdate;
-        public PositionColorModel(PositionColorVertex[] vertices, uint[] indices)
+        public PositionColorModel(PositionColorVertex[] vertices, uint[] indices,string modelname = "untitled")
         {
             Vertices = vertices;
             Indices = indices;
+            name = modelname + ID;
         }
 
         public uint[] Indices { get; set; }
@@ -50,13 +52,12 @@ namespace MyEngine
             GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, sizeof(float)*7, 3 * sizeof(float));
             GL.EnableVertexAttribArray(1);
             GL.BindVertexArray(0);
-            collisionShape = GetCollisionShape();
             IsInitialized = true;
 
             OnUpdate?.Invoke(this);
         }
 
-        public override CollisionShape GetCollisionShape()
+        public override RigidBody GetRigitBody()
         {
             var minX = Vertices.Min(x => x.Position.X);
             var maxX = Vertices.Max(x => x.Position.X);
@@ -64,13 +65,34 @@ namespace MyEngine
             var maxY = Vertices.Max(x => x.Position.Y);
             var minZ = Vertices.Min(x => x.Position.Z);
             var maxZ = Vertices.Max(x => x.Position.Z);
-            return new BoxShape(maxX - minX,maxY-minY,maxZ - minZ);
+            var shape = new BoxShape(maxX - minX,maxY-minY,maxZ - minZ);
+            var localInertia = shape.CalculateLocalInertia(mass);
+            var motionstat = new DefaultMotionState(MathHelpers.Matrix4toMatrix(Modelmatrix));
+            var rbInfo = new RigidBodyConstructionInfo(mass, motionstat, shape, localInertia);
+            var rigidbody = new RigidBody(rbInfo);
+            rigidbody.UserObject = name;
+            return rigidbody;
+        }
+        public override RigidBody GetRigitBody(Matrix4 view)
+        {
+            var minX = Vertices.Min(x => x.Position.X);
+            var maxX = Vertices.Max(x => x.Position.X);
+            var minY = Vertices.Min(x => x.Position.Y);
+            var maxY = Vertices.Max(x => x.Position.Y);
+            var minZ = Vertices.Min(x => x.Position.Z);
+            var maxZ = Vertices.Max(x => x.Position.Z);
+            var shape = new BoxShape(maxX - minX,maxY-minY,maxZ - minZ);
+            var localInertia = shape.CalculateLocalInertia(mass);
+            var motionstat = new DefaultMotionState(MathHelpers.Matrix4toMatrix(Modelmatrix*view));
+            var rbInfo = new RigidBodyConstructionInfo(mass, motionstat, shape, localInertia);
+            var rigidbody = new RigidBody(rbInfo);
+            rigidbody.UserObject = name;
+            return rigidbody;
         }
 
         public override void Draw(ShaderProgram shader)
         {
             if (IsInitialized){ 
-                shader.SetUniformMatrix4X4("model",Modelmatrix);
                 GL.BindVertexArray(VAO);
                 GL.DrawElements(BeginMode.Triangles, Indices.Length, DrawElementsType.UnsignedInt, 0);
             }

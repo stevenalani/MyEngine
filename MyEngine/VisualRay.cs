@@ -3,6 +3,7 @@ using System.Linq;
 using MyEngine.DataStructures;
 using MyEngine.ShaderImporter;
 using OpenTK;
+using OpenTK.Graphics.OpenGL4;
 
 namespace MyEngine
 {
@@ -35,12 +36,12 @@ namespace MyEngine
     }
     internal class VisualRay : PositionColorModel, IEngineModel
     {
-        public VisualRay(Camera camera) : base(null, VisualRayData.Indices)
+        public VisualRay(Vector3 position, Vector3 direction, float length = 1000f) : base(null, VisualRayData.Indices)
         {
             Vector4 color = Vector4.One;
             Scales = new Vector3(0.1f,0.1f,0.1f);
-            Position = camera.Position;
-            var target = camera.ViewDirection;
+            Position = position;
+            var target = direction * length;
 
             Vertices = new PositionColorVertex[]
             {
@@ -48,7 +49,7 @@ namespace MyEngine
                 new PositionColorVertex(){ Position = new Vector3(0.01f,-0.01f,0),Color = color }, 
                 new PositionColorVertex(){ Position = new Vector3(0.01f,0.01f,0),Color = color }, 
                 new PositionColorVertex(){ Position = new Vector3(-0.01f,0.01f,0),Color = color }, 
-                new PositionColorVertex(){ Position = target*1000f,Color = color }, 
+                new PositionColorVertex(){ Position = target,Color = color }, 
             };
             
         }
@@ -56,6 +57,7 @@ namespace MyEngine
 
         public override void Draw(ShaderProgram shaderProgram)
         {
+            
             base.Draw(shaderProgram);
         }
 

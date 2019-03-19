@@ -9,7 +9,7 @@ using OpenTK.Graphics;
 
 namespace MyEngine
 {
-    internal class BoundingBox : Cube, IEngineModel
+    public class BoundingBox : Cube, IEngineModel
     {
 
         public Vector3 leftlownear;

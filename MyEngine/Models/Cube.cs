@@ -41,7 +41,8 @@ namespace MyEngine.Models
 
         public static Vector3[] NotCentered => Vertices.Select(x => (x / 2) + new Vector3(0.5f)).ToArray();
     }
-    internal class Cube : PositionColorModel
+
+    public class Cube : PositionColorModel
     {
         public Cube() : base(null, CubeData.Indices)
         {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing.Drawing2D;
 using BulletSharp;
 using GlmNet;
 using MyEngine.Assets.Models;
@@ -14,6 +15,7 @@ namespace MyEngine
         private static int nextid = 0;
         public readonly int ID;
         public string name;
+       
         public int VAO;
 
         protected int VBO;
@@ -26,13 +28,23 @@ namespace MyEngine
         protected IVertextype[] Vertices;
 
         public Vector3 Direction = -Vector3.UnitZ;
-        protected float mass;
+        public float mass;
 
-        public Matrix4 Modelmatrix =>  MathHelpers.getRotation(Rotations.X, Rotations.Y,Rotations.Z) * Matrix4.CreateScale(Scales) *   Matrix4.CreateTranslation(Position);
+        public Matrix4 Modelmatrix
+        {
+            get  
+            {
+               return (physicsModelmatrix == Matrix4.Zero)? MathHelpers.getRotation(Rotations.X, Rotations.Y, Rotations.Z) * Matrix4.CreateScale(Scales) *
+                       Matrix4.CreateTranslation(Position) : physicsModelmatrix;
+            }
+        }
+
+        public Matrix4 physicsModelmatrix { get; set; }
 
         protected CollisionShape collisionShape;
 
-        public abstract CollisionShape GetCollisionShape();
+        public abstract RigidBody GetRigitBody();
+        public abstract RigidBody GetRigitBody(Matrix4 view);
 
         protected Model()
         {

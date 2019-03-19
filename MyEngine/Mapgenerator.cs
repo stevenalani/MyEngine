@@ -8,14 +8,15 @@ namespace MyEngine
 {
     internal class Mapgenerator
     {
-        private const float Water = 0.2f;
-        private const float Sand = 0.4f;
+        private const float Water = 0.1f;
+        private const float Sand = 0.2f;
+        private const float Dirt = 0.3f;
         private const float Gras = 0.6f;
         private const float Rock = 0.8f;
         private const float Snow = 0.9f;
 
-        private Volume vol;
-
+        private VoxelMap vol;
+        private Random rand = RandomProvider.GetThreadRandom();
         private int Y(int x, double slope, int y0)
         {
             return (int) Math.Round(x * slope + y0);
@@ -23,18 +24,21 @@ namespace MyEngine
 
         private Vector4 color(float y, int deltaheight)
         {
+            var heightpitch = rand.NextDouble()*2 - 1.0;
             var heightcolorscale = 1.0;
-            while (heightcolorscale * deltaheight * 0.1f < 1) heightcolorscale *= 1.1f;
+            while (heightcolorscale * deltaheight * Water < 1) heightcolorscale *= 1.1f;
             Vector4 color;
-            if (y <= deltaheight * Water * heightcolorscale)
-                color = new Vector4(0, 51, 200, 127);
-            else if (y > deltaheight * Water * heightcolorscale && y <= deltaheight * Sand * heightcolorscale)
-                color = new Vector4(167, 126, 79, 255);
-            else if (y > deltaheight * Sand * heightcolorscale && y <= deltaheight * Gras * heightcolorscale)
+            if (y - heightpitch <= deltaheight * Water * heightcolorscale)
+                color = new Vector4(0, 151, 255, 127);
+            else if (y - heightpitch > deltaheight * Water * heightcolorscale && y - heightpitch <= deltaheight * Sand * heightcolorscale)
+                color = new Vector4(177, 159, 144, 255);
+            else if (y - heightpitch > deltaheight * Sand * heightcolorscale && y - heightpitch <= deltaheight * Dirt * heightcolorscale)
+                color = new Vector4(134, 100, 71, 255);
+            else if (y - heightpitch > deltaheight * Dirt * heightcolorscale && y - heightpitch <= deltaheight * Gras * heightcolorscale)
                 color = new Vector4(0, 136, 0, 255);
-            else if (y > deltaheight * Gras * heightcolorscale && y <= deltaheight * Rock * heightcolorscale)
-                color = new Vector4(0, 136, 0, 255);
-            else if (y > deltaheight * Rock * heightcolorscale && y <= deltaheight * Snow * heightcolorscale)
+            else if (y - heightpitch > deltaheight * Gras * heightcolorscale && y - heightpitch <= deltaheight * Rock * heightcolorscale)
+                color = new Vector4(170, 170, 170, 255);
+            else if (y - heightpitch > deltaheight * Rock * heightcolorscale && y - heightpitch <= deltaheight * Snow * heightcolorscale)
                 color = new Vector4(190, 190, 190, 255);
             else
                 color = new Vector4(200, 200, 200, 255);
@@ -47,8 +51,9 @@ namespace MyEngine
             offset = offset == -1 ? 3 : offset;
             var deltaheight = heights.Max(location => location.elevation) - heights.Min(location => location.elevation);
             var indexcount = itemsperaxis.X * itemsperaxis.Y;
-            var vol = new VoxelMap((int) itemsperaxis.X * offset, deltaheight,
-                (int) itemsperaxis.Y * offset);
+            vol = new VoxelMap(itemsperaxis, offset,heights.Select(x=>x.elevation).ToArray());
+            // //vol = new VoxelMap((int) itemsperaxis.X * offset, deltaheight,
+            //    (int) itemsperaxis.Y * offset);
 
 
             for (var z = 0; z < itemsperaxis.Y; z++)

@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using Assimp;
-using GlmNet;
+using BulletSharp;
 using MyEngine.Assets.Models;
 using MyEngine.Logging;
 using MyEngine.Models.Voxel;
@@ -28,7 +27,7 @@ namespace MyEngine
         private double lasttime;
         private DateTime nextWireframeSwitch = DateTime.Now;
         internal ShaderManager shaderManager = new ShaderManager();
-        private Physics physics;
+
 
 
         public Engine(int width, int height, Camera camera = null) : base(
@@ -50,15 +49,18 @@ namespace MyEngine
                 Camera = new Camera(Width, Height);
             else
                 Camera = camera;
+            
 
             Load += OnUpdate;
             Update += modelManager.Update;
             Update += shaderManager.Update;
             UpdateFrame += OnUpdate;
+            UpdateFrame += (sender, args) => Physics.Update((float) args.Time);
             EngineLogger = new Logger();
             EngineLogger.Start();
-            
+                    
         }
+
 
         public static Logger EngineLogger { get; set; }
         public event Action Update;
@@ -114,6 +116,7 @@ namespace MyEngine
             shader.SetUniformFloat("ambientStrength", 1);
             shader.SetUniformFloat("diffuseStrength", 2f);
             shader.SetUniformFloat("specularStrength", 1f);
+            
             modelManager.DrawModels(shader);
             CrossHair?.Draw();
             SwapBuffers();
@@ -136,7 +139,7 @@ namespace MyEngine
             
             
             var hitResults = new List<RayHitResult>();
-            var BoundingBoxes = modelManager.GetModels().Where(x => x is PositionColorModel)
+            var BoundingBoxes = modelManager.GetModelsAndWorld().Where(x => x is PositionColorModel)
                 .Select(x =>
                 {
                     var bb = new BoundingBox((PositionColorModel)x,this.Camera);
@@ -145,7 +148,6 @@ namespace MyEngine
 
             foreach (var values in BoundingBoxes)
             {
-                //EngineLogger.Log(new LogMessage(values.Key.Modelmatrix.ToString(), "MODELMATRIX I"));
                 var boundingbox = values.Value;
                 for (var i = 0.1f; i <= 100f; i += 0.01f)
                 {
@@ -183,7 +185,7 @@ namespace MyEngine
         protected override void OnMouseUp(MouseButtonEventArgs e)
         {
             base.OnMouseUp(e);
-            var visualray = new VisualRay(Camera);
+            var visualray = new VisualRay(Camera.Position,Camera.ViewDirection);
             visualray.series = "showray";
             visualray.purgesiblings = true;
             AddModel(visualray);
@@ -219,6 +221,7 @@ namespace MyEngine
             }
         }
 
+
         protected override void OnMouseMove(MouseMoveEventArgs e)
         {
             base.OnMouseMove(e);
@@ -240,10 +243,17 @@ namespace MyEngine
 
         protected override void OnMouseWheel(MouseWheelEventArgs e)
         {
-            base.OnMouseWheel(e);
+            
             Camera.ProcessMouseScroll(e.Y);
+            base.OnMouseWheel(e);
         }
 
+        protected override void OnUnload(EventArgs e)
+        {
+            Physics.ExitPhysics();
+            base.OnUnload(e);
+            
+        }
 
         private void HandleKeyboard(float deltaTime)
         {
@@ -276,7 +286,7 @@ namespace MyEngine
                     GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
                 else
                     GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-                nextWireframeSwitch = nextWireframeSwitch.AddSeconds((now - nextWireframeSwitch).Seconds + 0.5);
+                nextWireframeSwitch = nextWireframeSwitch.AddSeconds(0.5);
             }
         }
 
@@ -287,7 +297,11 @@ namespace MyEngine
 
         public void LoadModelFromFile(string modelPath, string name = "")
         {
-            modelManager.LoadModelFromFile(modelPath, name);
+            var model = modelManager.LoadModelFromFile(modelPath, name);
+            foreach (var model1 in model)
+            {
+                Physics.World.AddRigidBody(model1.GetRigitBody());
+            }
         }
 
         public void AddShader(string vsShaderPath, string fsShaderPath = "")
@@ -298,10 +312,13 @@ namespace MyEngine
         public void AddModel(Model model)
         {
             modelManager.AddModel(model);
+            Physics.World.AddRigidBody(model.GetRigitBody());
         }
-        public void SetWorld(Model world)
+        public void SetWorld(VoxelMap world)
         {
             modelManager.SetWorld(world);
+            Physics.CollisionShapes.Add(world.CollisionShape);
+            Physics.World.AddRigidBody(world.GetRigitBody());
         }
         public void ClearWorld()
         {
@@ -311,8 +328,8 @@ namespace MyEngine
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            base.OnClosing(e);
             EngineLogger?.Stop();
+            base.OnClosing(e);
         }
 
         public List<Model> GetModel(string name)
@@ -349,9 +366,10 @@ namespace MyEngine
             X = x;
             Y = y;
         }
+
     }
 
-    internal enum CameraMovement
+    public enum CameraMovement
     {
         FORWARD,
         BACKWARD,

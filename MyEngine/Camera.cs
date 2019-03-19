@@ -4,13 +4,13 @@ using OpenTK;
 
 namespace MyEngine
 {
-    internal enum PROJECTIONTYPE
+    public enum PROJECTIONTYPE
     {
         Perspective,
         Orthogonal
     }
 
-    internal partial class Camera
+    public partial class Camera
     {
         
         public Vector3 Position = new Vector3(0,0,1);
@@ -150,7 +150,7 @@ namespace MyEngine
     }
 
 
-    internal class CameraMovedEventArgs : EventArgs
+    public class CameraMovedEventArgs : EventArgs
     {
         public Vector3 Orgin;
         public Vector3 Orientation;

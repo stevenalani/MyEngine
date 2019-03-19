@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using BulletSharp;
+using MyEngine.Helpers;
 using OpenTK;
 
 namespace MyEngine
@@ -26,22 +28,21 @@ namespace MyEngine
             var heslachFrom = new Vector2(48.755238f, 9.146392f);
             var heslachTo = new Vector2(48.767457f, 9.167524f);
 
-            Mapgenerator mapgen = new Mapgenerator();
+           
             var heslachHeight = HeightmapImporter.GetOpenElevationData(heslachFrom, heslachTo, new Vector2(10, 10));
-            var vol = mapgen.GenerateMapFromHeightData(heslachHeight, new Vector2(10, 10), 50);
-            vol.Scales = new Vector3(0.1f);
+            Mapgenerator mapgen = new Mapgenerator();
+            var vol = mapgen.GenerateMapFromHeightData(heslachHeight, new Vector2(10, 10), 20);
             engine.SetWorld(vol);
-            CollisionConfiguration collision = new DefaultCollisionConfiguration();
-            CollisionDispatcher dispatcher =new CollisionDispatcher(collision);
 
-            //engine.LoadModelFromFile(Path.Combine(userprofilePath, "3D Objects\\chr_rain.vox"));
-            //engine.LoadModelFromFile(Path.Combine(userprofilePath, "3D Objects\\untitled.vox"));
-            //var model = engine.GetModel("chr_rain").First();
-            //model.MoveToVector(new Vector3(10,0,0));
-            //var model2 = new RandomDiscoVolume(6, 6, 6);
-            //model2.name = "Random";
-            //model2.Position = Vector3.UnitX; 
-            //engine.AddModel(model2);
+            engine.LoadModelFromFile(Path.Combine(userprofilePath, "3D Objects\\chr_rain.vox"));
+            
+            var model = engine.GetModel("chr_rain").First();
+            model.Scales = new Vector3(0.05f);
+            model.Position.Y += 30;
+            model.Position.X += 30;
+            model.mass = 1f;
+            Physics.AddRigidBody(model);
+            
             //engine.UpdateFrame += (sender, eventArgs) => { model2.rotateX(0.01f); model2.MoveForward(0.08f); };
             engine.Run(60.0);
         }

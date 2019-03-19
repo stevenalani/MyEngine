@@ -38,6 +38,7 @@ namespace MyEngine.VoxelImporter
             {
                 vol.SetVoxel(new Vector3(dimensions.X - voxel.Item1 -1, voxel.Item3, voxel.Item2),colorsList[voxel.Item4]);
             }
+            vol.ComputeVerticesAndIndices();
             return vol;
         }
     }

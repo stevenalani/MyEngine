@@ -6,6 +6,7 @@ using System.IO;
 using System.Net;
 using System.Net.Mime;
 using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading;
@@ -96,6 +97,7 @@ namespace MyEngine
             objectstream.Close();
             return Encoding.UTF8.GetString(json, 0, json.Length);
         }
+
 
         public static List<LocationResult> GetOpenElevationData(Vector2 start, Vector2 end, Vector2 pointsPerAxis = default(Vector2))
         {

@@ -3,9 +3,11 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using BulletSharp;
 using MyEngine.Assets;
 using MyEngine.Models.Voxel;
 using MyEngine.ShaderImporter;
+using OpenTK.Graphics.ES20;
 
 namespace MyEngine
 {
@@ -22,14 +24,33 @@ namespace MyEngine
 
         public bool HasModelUpdates { get; set; }
 
-        public Model[] GetModels(bool joined = true)
+        public List<Model> GetModels(bool joined = true)
         {
             if (!joined)
-                return _models.Values.ToArray();
+                return _models.Values.ToList();
             var res = new List<Model>();
             res.AddRange(UninitializedModels);
             res.AddRange(_models.Values);
-            return res.ToArray();
+            return res.ToList();
+        }
+        public List<Model> GetModelsAndWorld(bool joined = true)
+        {
+            if (!joined)
+            {
+                var models = _models.Values.ToList();
+                models.Insert(0,World);
+                return models;
+            }
+                
+            var res = new List<Model>();
+            res.AddRange(UninitializedModels);
+            res.AddRange(_models.Values);
+            if (hasWorld)
+            {
+                res.Add(World);
+            }
+
+            return res.ToList();
         }
 
         public void AddModel(Model model)
@@ -81,12 +102,16 @@ namespace MyEngine
             if (this.World != null)
             {
                 if (!World.IsInitialized) { World.InitBuffers(); }
+                shader.SetUniformMatrix4X4("model", World.Modelmatrix);
                 World.Draw(shader);
             }
             if (modelIDs == null)
                 foreach (var model in _models.Values)
                 {
                     if (!model.IsInitialized){ model.InitBuffers();}
+                    var matrix = Physics.GetPhysicsModelmatrix(model);
+                    shader.SetUniformMatrix4X4("model", matrix);
+                    //shader.SetUniformMatrix4X4("model",model.Modelmatrix);
                     model.Draw(shader);
                     
                 }
@@ -96,18 +121,21 @@ namespace MyEngine
                     {
                         if (_models[modelID].IsInitialized)
                         _models[modelID].InitBuffers();
+                        var matrix = Physics.GetPhysicsModelmatrix(_models[modelID]);
+                        shader.SetUniformMatrix4X4("model", matrix);
+                        //shader.SetUniformMatrix4X4("model", _models[modelID].Modelmatrix);
                         _models[modelID].Draw(shader);
                     }
 
-            foreach (var engineModel in engineModels.Values)
-            foreach (var model in engineModel)
+            foreach (var engineModels in engineModels.Values)
+            foreach (var model in engineModels)
             {
                 if (!((Model) model).IsInitialized) ((Model) model).InitBuffers();
                 ((Model) model).Draw(shader);
             }
         }
 
-        public void LoadModelFromFile(string modelpath, string name)
+        public List<Model> LoadModelFromFile(string modelpath, string name)
         {
             if (name == "") name = Path.GetFileNameWithoutExtension(modelpath);
             var models = ModelImporter.LoadFromFile(modelpath);
@@ -122,6 +150,8 @@ namespace MyEngine
                     HasModelUpdates = true;
                 }
             }
+
+            return models;
         }
 
 
@@ -145,13 +175,13 @@ namespace MyEngine
             Update(null, null);
         }
 
-        public void SetWorld(Model world)
+        public void SetWorld(VoxelMap world)
         {
             this.hasWorld = true;
             this.World = world;
         }
 
-        public Model World { get; set; }
+        public VoxelMap World { get; set; }
 
         public void ClearWorld()
         {

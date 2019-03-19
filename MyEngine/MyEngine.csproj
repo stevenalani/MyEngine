@@ -100,8 +100,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataStructures\IVertextype.cs" />
+    <Compile Include="Helpers\ClickHandlers.cs" />
     <Compile Include="Mapgenerator.cs" />
-    <Compile Include="Matrix4.cs" />
     <Compile Include="Models\ModelImporter.cs" />
     <Compile Include="Models\BoundingBox.cs" />
     <Compile Include="Models\CrossHair.cs" />
@@ -118,7 +118,7 @@
     <Compile Include="Engine.cs" />
     <Compile Include="Models\DefaultModel.cs" />
     <Compile Include="Models\PositionColorModel.cs" />
-    <Compile Include="MathHelpers\MathHelpers.cs" />
+    <Compile Include="Helpers\MathHelpers.cs" />
     <Compile Include="Models\ModelManager.cs" />
     <Compile Include="DataStructures\PositionColorVertex.cs" />
     <Compile Include="Models\Voxel\VoxelMap.cs" />

@@ -7,7 +7,7 @@ using OpenTK;
 
 namespace MyEngine
 {
-    internal partial class Camera
+    public partial class Camera
     {
         public const float YAW = 0f;
         public const float PITCH = 0f;
