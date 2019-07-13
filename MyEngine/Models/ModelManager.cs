@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -14,13 +15,17 @@ namespace MyEngine
     internal class ModelManager
     {
         private readonly Dictionary<int, Model> _models = new Dictionary<int, Model>();
-
         private readonly Dictionary<string, List<IEngineModel>> engineModels =
             new Dictionary<string, List<IEngineModel>>();
-
         private readonly ConcurrentQueue<IEngineModel> UninitializedEngineModels = new ConcurrentQueue<IEngineModel>();
         private readonly ConcurrentQueue<Model> UninitializedModels = new ConcurrentQueue<Model>();
-        private bool hasWorld;
+        public bool hasWorld;
+        private Engine _engine;
+
+        public ModelManager(Engine engine)
+        {
+            this._engine = engine;
+        }
 
         public bool HasModelUpdates { get; set; }
 
@@ -75,6 +80,7 @@ namespace MyEngine
                     UninitializedModels.TryDequeue(out model);
                     model?.InitBuffers();
                     _models.Add(model.ID, model);
+                    _engine.physics.AddRigidBody(model);
                 }
             }
             else if (!UninitializedEngineModels.IsEmpty)
@@ -109,8 +115,9 @@ namespace MyEngine
                 foreach (var model in _models.Values)
                 {
                     if (!model.IsInitialized){ model.InitBuffers();}
-                    var matrix = Physics.GetPhysicsModelmatrix(model);
-                    shader.SetUniformMatrix4X4("model", matrix);
+                    _engine.physics.UpdateModelPhysicsModelmatrix(model);
+                    
+                    shader.SetUniformMatrix4X4("model", model.Modelmatrix);
                     //shader.SetUniformMatrix4X4("model",model.Modelmatrix);
                     model.Draw(shader);
                     
@@ -121,8 +128,8 @@ namespace MyEngine
                     {
                         if (_models[modelID].IsInitialized)
                         _models[modelID].InitBuffers();
-                        var matrix = Physics.GetPhysicsModelmatrix(_models[modelID]);
-                        shader.SetUniformMatrix4X4("model", matrix);
+                        _engine.physics.UpdateModelPhysicsModelmatrix(_models[modelID]);
+                        shader.SetUniformMatrix4X4("model", _models[modelID].Modelmatrix);
                         //shader.SetUniformMatrix4X4("model", _models[modelID].Modelmatrix);
                         _models[modelID].Draw(shader);
                     }
@@ -155,7 +162,7 @@ namespace MyEngine
         }
 
 
-        public void Update(object sender, EventArgs eventArgs)
+        public void Update()
         {
             if (HasModelUpdates)
                 InitModels();
@@ -170,16 +177,7 @@ namespace MyEngine
             return l1;
         }
 
-        public void Update()
-        {
-            Update(null, null);
-        }
 
-        public void SetWorld(VoxelMap world)
-        {
-            this.hasWorld = true;
-            this.World = world;
-        }
 
         public VoxelMap World { get; set; }
 
@@ -187,6 +185,11 @@ namespace MyEngine
         {
             this.hasWorld = false;
             World = null;
+        }
+
+        public Dictionary<string, List<IEngineModel>>.ValueCollection GetEngineModels()
+        {
+            return this.engineModels.Values;
         }
     }
 }

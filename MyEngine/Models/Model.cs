@@ -29,19 +29,14 @@ namespace MyEngine
 
         public Vector3 Direction = -Vector3.UnitZ;
         public float mass;
+        public bool CalculatePhysics = true;
+        public Matrix4 Modelmatrix =>
+            (PhysicsModelmatrix == Matrix4.Zero)? MathHelpers.getRotation(Rotations.X, Rotations.Y, Rotations.Z) * Matrix4.CreateScale(Scales) *
+                                                  Matrix4.CreateTranslation(Position) : PhysicsModelmatrix;
 
-        public Matrix4 Modelmatrix
-        {
-            get  
-            {
-               return (physicsModelmatrix == Matrix4.Zero)? MathHelpers.getRotation(Rotations.X, Rotations.Y, Rotations.Z) * Matrix4.CreateScale(Scales) *
-                       Matrix4.CreateTranslation(Position) : physicsModelmatrix;
-            }
-        }
+        public Matrix4 PhysicsModelmatrix { get; set; }
 
-        public Matrix4 physicsModelmatrix { get; set; }
-
-        protected CollisionShape collisionShape;
+        public CollisionObject collisionObject;
 
         public abstract RigidBody GetRigitBody();
         public abstract RigidBody GetRigitBody(Matrix4 view);

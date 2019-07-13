@@ -16,7 +16,7 @@ namespace MyEngine.Assets
             List<Model> importResult = new List<Model>();
             if (file.ToLower().Contains(".vox"))
             {
-                var voxel = VoxelImporter.VoxelImporter.LoadVoxelModelFromVox(file);
+                var voxel = MyEngine.Models.Voxel.VoxelImporter.VoxelImporter.LoadVoxelModelFromVox(file);
                 //voxel.ComputeVerticesAndIndices();
                 importResult.Add(voxel);
             }

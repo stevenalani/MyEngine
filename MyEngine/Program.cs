@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using Assimp;
 using BulletSharp;
 using MyEngine.Helpers;
+using MyEngine.Models;
 using OpenTK;
 
 namespace MyEngine
@@ -12,11 +15,12 @@ namespace MyEngine
     {
         private static void Main(string[] args)
         {
-            var width = 800;
-            var height = 600;
+            
+            var width = 1400;
+            var height = 900;
             var userprofilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            var cam = new Camera(width, height, 0.1f, 100f, PROJECTIONTYPE.Perspective);
-            cam.Position = new Vector3(0, 0, 20);
+            var cam = new Camera(width, height, 0.1f, 200f, PROJECTIONTYPE.Perspective);
+            cam.Position = new Vector3(0, 20, 0);
             var engine = new Engine(width, height, cam);
             engine.enableCrossHair(new Vector4(1f, 1f, 1f, 0.5f));
             engine.AddShader("Shaders\\DefaultVoxelShader.vs", "Shaders\\DefaultVoxelShader.fs");
@@ -35,18 +39,46 @@ namespace MyEngine
             engine.SetWorld(vol);
 
             engine.LoadModelFromFile(Path.Combine(userprofilePath, "3D Objects\\chr_rain.vox"));
+            engine.LoadModelFromFile(Path.Combine(userprofilePath, "3D Objects\\chr_fox.vox"));
+            engine.LoadModelFromFile(Path.Combine(userprofilePath, "3D Objects\\chr_gumi.vox"));
             
             var model = engine.GetModel("chr_rain").First();
-            model.Scales = new Vector3(0.05f);
-            model.Position.Y += 30;
-            model.Position.X += 30;
-            model.mass = 1f;
-            Physics.AddRigidBody(model);
-            
-            //engine.UpdateFrame += (sender, eventArgs) => { model2.rotateX(0.01f); model2.MoveForward(0.08f); };
-            engine.Run(60.0);
+            model.Scales = new Vector3(0.3f);
+            model.Position.Y = 30;
+            model.mass = 0.1f;
+
+            var model1 = engine.GetModel("chr_fox").First();   
+            model1.Scales = new Vector3(0.3f);
+            model1.Position.Y = 30;
+            model1.mass = 0.1f;
+            model1.Position.X = 20;
+            model1.CalculatePhysics = false;
+            var model2 = engine.GetModel("chr_gumi").First();
+            model2.Scales = new Vector3(0.3f);
+            model2.Position.Y = 30;
+            model2.mass = 0.1f;
+            model2.Position.X = 40;
+            Random random = RandomProvider.GetThreadRandom();
+            for (int i = 0; i < 10; i++)
+            {
+                var posx = random.Next(-100,100);
+                var posy = random.Next(30, 100);
+                var posz = random.Next(-100, 100);
+                Cube cube = new Cube(new Vector4(255,0,0,255));
+                cube.name = "cube" + i;
+                cube.Position = new Vector3(posx,posy,posz);
+                cube.mass = 0.1f;
+                engine.AddModel(cube);
+            }
+            engine.Run(90);
         }
 
+        
+    }
+
+    internal class Scene
+    {
+        private List<Model> models;
         
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using BulletSharp;
@@ -9,35 +10,42 @@ using Vector3 = BulletSharp.Math.Vector3;
 
 namespace MyEngine
 {
-    internal static class Physics
+    internal class Physics
     {
 
-        public static DiscreteDynamicsWorld World { get; set; }
-        static CollisionDispatcher dispatcher;
-        static DbvtBroadphase broadphase;
-        public static List<CollisionShape> CollisionShapes { get; set; } = new List<CollisionShape>();
-        static CollisionConfiguration collisionConf;
+        private DiscreteDynamicsWorld World;
+        private CollisionDispatcher dispatcher;
+        private DbvtBroadphase broadphase;
+        private ConcurrentQueue<CollisionObject> CollisionObjectQueue = new ConcurrentQueue<CollisionObject>();
+        private CollisionConfiguration collisionConf;
+        private List<Model> Models = new List<Model>();
 
 
-
-        static Physics()
+        public Physics()
         {
             collisionConf = new DefaultCollisionConfiguration();
             dispatcher = new CollisionDispatcher(collisionConf);
 
             broadphase = new DbvtBroadphase();
             World = new DiscreteDynamicsWorld(dispatcher, broadphase, null, collisionConf);
-            World.Gravity = new Vector3(0, -1, 0);
+            World.Gravity = new Vector3(0, -3, 0);
             
         }
 
 
-        public static void Update(float elapsedTime)
+        public void Update(float elapsedTime)
         {
+            CollisionObject co =null;
+            while (!CollisionObjectQueue.IsEmpty)
+            {
+                CollisionObjectQueue.TryDequeue(out co);
+                if(co != null)
+                    World.AddRigidBody((RigidBody)co);
+            }
             World.StepSimulation(elapsedTime);
         }
 
-        public static void ExitPhysics()
+        public void ExitPhysics()
         {
             //remove/dispose constraints
             int i;
@@ -61,10 +69,6 @@ namespace MyEngine
                 obj.Dispose();
             }
 
-            //delete collision shapes
-            foreach (CollisionShape shape in CollisionShapes)
-                shape.Dispose();
-            CollisionShapes.Clear();
 
             World.Dispose();
             broadphase.Dispose();
@@ -75,23 +79,26 @@ namespace MyEngine
             collisionConf.Dispose();
         }
 
-        public static Matrix4 GetPhysicsModelmatrix(Model model)
+        public void UpdateModelPhysicsModelmatrix(Model model)
         {
-             var Rigidbody =  World.CollisionObjectArray.First(x => x.UserObject == model.name);
-                 
-                var matrix = Rigidbody.WorldTransform;
-            return MathHelpers.MatrixtoMatrix4(matrix);
-        }
-        public static void AddRigidBody(Model model)
-        {
-            if (World.CollisionObjectArray.Count > 0)
+            var Rigidbody =  World.CollisionObjectArray.FirstOrDefault(x => x.UserObject == model.name);
+            if (Rigidbody == null)
             {
-                var Rigidbody = World.CollisionObjectArray.First(x => x.UserObject == model.name);
-                World.CollisionObjectArray.Remove(Rigidbody);
+                return;
             }
-           
-            World.AddRigidBody(model.GetRigitBody());
+            var matrix = ((RigidBody)Rigidbody).MotionState.WorldTransform;
+            model.PhysicsModelmatrix = MathHelpers.MatrixtoMatrix4(matrix);
         }
+        public void AddRigidBody(Model model)
+        {
+            if (model.CalculatePhysics)
+                CollisionObjectQueue.Enqueue(model.GetRigitBody());
 
+        }
+        public void RemoveRigidBody(Model model)
+        {
+            //var Rigidbody = World.CollisionObjectArray.First(x => x.UserObject == model.name);
+            World.RemoveRigidBody(model.GetRigitBody());
+        }
     }
 }

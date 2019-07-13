@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace MyEngine.VoxelImporter
+namespace MyEngine.Models.Voxel.VoxelImporter
 {
     public class Chunk
     {
