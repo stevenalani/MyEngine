@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataStructures\IVertextype.cs" />
+    <Compile Include="EnginePublic.cs" />
     <Compile Include="Helpers\ClickHandlers.cs" />
     <Compile Include="Mapgenerator.cs" />
     <Compile Include="Models\ModelImporter.cs" />
@@ -130,8 +131,8 @@
     <Compile Include="DataStructures\PositionColorNormalVertex.cs" />
     <Compile Include="ShaderManager.cs" />
     <Compile Include="VisualRay.cs" />
-    <Compile Include="VoxelImporter\Chunk.cs" />
-    <Compile Include="VoxelImporter\VoxelImporter.cs" />
+    <Compile Include="Models\Voxel\VoxelImporter\Chunk.cs" />
+    <Compile Include="Models\Voxel\VoxelImporter\VoxelImporter.cs" />
     <Compile Include="XMLMaps\OsmOject.cs" />
   </ItemGroup>
   <ItemGroup>

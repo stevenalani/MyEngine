@@ -156,19 +156,17 @@ namespace MyEngine
             }
             catch (Exception e)
             {
+                Random random = RandomProvider.GetThreadRandom();
                 List<LocationResult> testdata = new List<LocationResult>();
                 for (int i = 0; i <= pointsPerAxis.X * pointsPerAxis.Y; i++)
                 {
-                        Random random = RandomProvider.GetThreadRandom();
                         var result = new LocationResult();
                         result.latitude = (float) (i * stepsX) + start.X;
                         result.longitude = (float) (i * stepsY) + start.Y;
                         //result.elevation = HeightmapImporter.testdata[i];
-                        result.elevation = random.Next(0,50) ;
+                        result.elevation = random.Next(0,5) ;
                         testdata.Add(result);
                 }
-                
-
                 return testdata;
             }
         }
@@ -190,7 +188,7 @@ namespace MyEngine
             var jsonObj = JsonConvert.DeserializeObject<JObject>(result).First.First;
             OsmOject myDeserializedObj = JsonConvert.DeserializeObject<OsmOject>(result);
             OsmOject test = JsonConvert.DeserializeObject<OsmOject>(result);
-            Console.WriteLine(test.data[0].elevation);
+            //Console.WriteLine(test.data[0].elevation);
             Console.WriteLine(jsonObj["elevation"]);
             sr.Close();
            return result.ToString();

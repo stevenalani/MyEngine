@@ -228,11 +228,6 @@ namespace MyEngine.Models.Voxel
                     Vertices = list1.ToArray();
                 }
             }
-
-            else
-            {
-
-            }
         }
 
         private int GetNeighborsX(Voxel start)

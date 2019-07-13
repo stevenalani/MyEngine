@@ -23,11 +23,10 @@ namespace MyEngine
         public Vector3 leftupfar;
 
         public Vector4 color;
-        public Camera Camera { get; set; }
-        public new Matrix4 Modelmatrix;
-        public BoundingBox(Model model,Camera camera, Vector4 color = default(Vector4))
+        public new Matrix4 Modelmatrix { get; set; }
+        public BoundingBox(Model model, Vector4 color = default(Vector4))
         {
-            this.Camera = camera;
+            purgesiblings = true;
             this.color = color == default(Vector4)?new Vector4(0.1f, 0.7f, 1f, 0.1f) : color;
             if (model is PositionColorModel)
             {
@@ -45,8 +44,8 @@ namespace MyEngine
             var min_z = vertices.Min(x => x.Z);
             var max_z = vertices.Max(x => x.Z);
 
-            var size = new Vector3(max_x - min_x, max_y - min_y, max_z - min_z)/2;
-            var center = new Vector3((min_x + max_x) / 2, (min_y + max_y) / 2, (min_z + max_z) / 2);
+            var size = new Vector3(max_x - min_x, max_y - min_y, max_z - min_z);
+            var center = new Vector3(size.X/ 2, size.Y / 2, size.Z / 2);
             Modelmatrix = Matrix4.CreateTranslation(center) * Matrix4.CreateScale(size);
 
             leftlownear = new Vector3(min_x, min_y, max_z);

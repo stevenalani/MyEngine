@@ -14,9 +14,10 @@ namespace MyEngine
         private const float Gras = 0.6f;
         private const float Rock = 0.8f;
         private const float Snow = 0.9f;
+        private readonly Random rand = RandomProvider.GetThreadRandom();
 
         private VoxelMap vol;
-        private Random rand = RandomProvider.GetThreadRandom();
+
         private int Y(int x, double slope, int y0)
         {
             return (int) Math.Round(x * slope + y0);
@@ -24,21 +25,26 @@ namespace MyEngine
 
         private Vector4 color(float y, int deltaheight)
         {
-            var heightpitch = rand.NextDouble()*2 - 1.0;
+            var noise = rand.NextDouble() * 2 - 1.0;
             var heightcolorscale = 1.0;
             while (heightcolorscale * deltaheight * Water < 1) heightcolorscale *= 1.1f;
             Vector4 color;
-            if (y - heightpitch <= deltaheight * Water * heightcolorscale)
-                color = new Vector4(0, 151, 255, 127);
-            else if (y - heightpitch > deltaheight * Water * heightcolorscale && y - heightpitch <= deltaheight * Sand * heightcolorscale)
+            if (y  <= deltaheight * Water * heightcolorscale)
+                color = new Vector4(0, 151, 255, 255);
+            else if (y > deltaheight * Water * heightcolorscale &&
+                     y <= deltaheight * Sand * heightcolorscale)
                 color = new Vector4(177, 159, 144, 255);
-            else if (y - heightpitch > deltaheight * Sand * heightcolorscale && y - heightpitch <= deltaheight * Dirt * heightcolorscale)
+            else if (y - noise > deltaheight * Sand * heightcolorscale &&
+                     y - noise <= deltaheight * Dirt * heightcolorscale)
                 color = new Vector4(134, 100, 71, 255);
-            else if (y - heightpitch > deltaheight * Dirt * heightcolorscale && y - heightpitch <= deltaheight * Gras * heightcolorscale)
+            else if (y - noise > deltaheight * Dirt * heightcolorscale &&
+                     y - noise <= deltaheight * Gras * heightcolorscale)
                 color = new Vector4(0, 136, 0, 255);
-            else if (y - heightpitch > deltaheight * Gras * heightcolorscale && y - heightpitch <= deltaheight * Rock * heightcolorscale)
+            else if (y - noise > deltaheight * Gras * heightcolorscale &&
+                     y - noise <= deltaheight * Rock * heightcolorscale)
                 color = new Vector4(170, 170, 170, 255);
-            else if (y - heightpitch > deltaheight * Rock * heightcolorscale && y - heightpitch <= deltaheight * Snow * heightcolorscale)
+            else if (y - noise > deltaheight * Rock * heightcolorscale &&
+                     y - noise <= deltaheight * Snow * heightcolorscale)
                 color = new Vector4(190, 190, 190, 255);
             else
                 color = new Vector4(200, 200, 200, 255);
@@ -51,7 +57,7 @@ namespace MyEngine
             offset = offset == -1 ? 3 : offset;
             var deltaheight = heights.Max(location => location.elevation) - heights.Min(location => location.elevation);
             var indexcount = itemsperaxis.X * itemsperaxis.Y;
-            vol = new VoxelMap(itemsperaxis, offset,heights.Select(x=>x.elevation).ToArray());
+            vol = new VoxelMap(itemsperaxis, offset, heights.Select(x => x.elevation).ToArray());
             // //vol = new VoxelMap((int) itemsperaxis.X * offset, deltaheight,
             //    (int) itemsperaxis.Y * offset);
 
@@ -59,66 +65,61 @@ namespace MyEngine
             for (var z = 0; z < itemsperaxis.Y; z++)
             for (var x = 0; x < itemsperaxis.X; x++)
             {
-                if (z == 1 && x == 1)
-                {
-                    var iks = 0;
-                }
-                var currentindex = (int) ( x+ z * itemsperaxis.X);
+                var currentindex = (int) (x + z * itemsperaxis.X);
                 var elevationCurrent = heights[currentindex].elevation;
-                int elevationRight = -1, elevationFront = -1, elevationRightFront = -1;
-                if (currentindex + 1 < indexcount && currentindex + (int) itemsperaxis.Y < indexcount &&
-                    currentindex + (int) itemsperaxis.Y + 1 < indexcount)
+                int elevationRight = -1, elevationInfront = -1, elevationRightFront = -1;
+                int[] resultFrontFace = null;
+                int[] resultBackFace = null;
+                int[] resultLeftFace = null;
+                int[] resultRightFace = null;
+
+                if (currentindex + 1 < indexcount)
                 {
                     elevationRight = heights[currentindex + 1].elevation;
-                    elevationFront = heights[currentindex + (int) itemsperaxis.Y].elevation;
+                    resultFrontFace = calculateLine(elevationCurrent, elevationRight, offset);
+                }
+                    
+                if (currentindex + (int) itemsperaxis.Y < indexcount)
+                {
+                    elevationInfront = heights[currentindex + (int) itemsperaxis.Y].elevation;
+                    resultLeftFace = calculateLine(elevationCurrent, elevationInfront, offset);
+                }
+                if (currentindex + (int) itemsperaxis.Y + 1 < indexcount)
+                {
                     elevationRightFront = heights[currentindex + (int) itemsperaxis.Y + 1].elevation;
+                    resultBackFace = calculateLine(elevationInfront, elevationRightFront, offset);
+                    resultRightFace = calculateLine(elevationRight, elevationRightFront, offset);
+                }
 
-                    var resultFrontFace = calculateLine(elevationCurrent, elevationRight, offset);
-                    var resultBackFace = calculateLine(elevationFront, elevationRightFront, offset);
+                for (var i = 0; i < offset; i++)
+                {
+                    int heightFront = 0, heightBack = 0, heightLeft = 0, heightRight = 0;
+                    if (resultFrontFace != null) heightFront = resultFrontFace[i];
+                    if (resultBackFace != null) heightBack = resultBackFace[i];
+                    if (resultLeftFace != null) heightLeft = resultLeftFace[i];
+                    if (resultRightFace != null) heightRight = resultRightFace[i];
 
-                    var resultLeftFace = calculateLine(elevationCurrent, elevationFront, offset);
-                    var resultRightFace = calculateLine(elevationRight, elevationRightFront, offset);
+                    var heightsAlongZ = calculateLine(heightFront, heightBack, offset);
+                    var heightsAlongX = calculateLine(heightLeft, heightRight, offset);
 
-                    for (var i = 0; i < offset; i++)
+                    for (var forward = 0; forward < offset; forward++)
                     {
-                        var heightFront = resultFrontFace[i];
-                        var heightBack = resultBackFace[i];
-                        var heightLeft = resultLeftFace[i];
-                        var heightRight = resultRightFace[i];
-                        var heightsZ = calculateLine(heightFront, heightBack, offset);
-                        var heightsX = calculateLine(heightLeft, heightRight, offset);
-
-                        for (var forward = 0; forward < offset; forward++)
+                        
+                        for (var y = 0; y < heightsAlongZ[forward]; y++)
                         {
-                            for (var y = 0; y < heightsZ[forward]; y++)
-                            {
-                                var colorr = color(y, deltaheight);
-                                vol.SetVoxel(x * offset + i, y, z * offset + forward, colorr);
-                            }
-
-                            for (var y = 0; y < heightsX[forward]; y++)
-                            {
-                                var colorr = color(y, deltaheight);
-                                vol.SetVoxel(x * offset + forward, y, z * offset + i, colorr);
-                            }
+                            var colorr = color(y, deltaheight);
+                            vol.SetVoxel(x * offset + i, y, z * offset + forward, colorr);
                         }
-                    }
 
-                    if (x == 1)
-                    {
-                        var iks = 0;
-                    }
-
-                    if (x == 2)
-                    {
-                        var iks = 0;
+                        for (var y = 0; y < heightsAlongX[forward]; y++)
+                        {
+                            var colorr = color(y, deltaheight);
+                            vol.SetVoxel(x * offset + forward, y, z * offset + i, colorr);
+                        }
                     }
                 }
             }
-            vol.SetVoxel(0,0,0,new Vector4(255));
-            vol.SetVoxel((int) (vol.size.X-1), (int)(vol.size.Y - 1), 0,new Vector4(255,0,0,1f));
-            
-            vol.SetVoxel(0, (int)(vol.size.Y - 1), (int)(vol.size.X - 1), new Vector4(0,0, 255, 1f));
+            vol.UpdateColissionObject();
             return vol;
         }
 
@@ -182,12 +183,12 @@ namespace MyEngine
             return vol;
         }
 
-        private int[] calculateLine(int y0, int y1, int points)
+        private int[] calculateLine(int y0, int y1, int pointCount)
         {
             var result = new List<int>();
             var deltaHeight = y1 - y0;
-            var slope = deltaHeight / (double) points;
-            for (var i = 0; i < points; i++)
+            var slope = deltaHeight / (double) pointCount;
+            for (var i = 0; i < pointCount; i++)
             {
                 var height = Y(i, slope, y0);
                 result.Add(height);

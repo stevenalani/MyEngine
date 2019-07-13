@@ -15,7 +15,7 @@ namespace MyEngine
         
         public Vector3 Position = new Vector3(0,0,1);
 
-        public const float SPEED = 10f;
+        public const float SPEED = 15f;
         public const float SENSITIVITY = 0.1f;
         public const float ZOOM = 45.0f;
 

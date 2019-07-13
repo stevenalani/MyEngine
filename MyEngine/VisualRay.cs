@@ -42,7 +42,7 @@ namespace MyEngine
             Scales = new Vector3(0.1f,0.1f,0.1f);
             Position = position;
             var target = direction * length;
-
+            purgesiblings = true;
             Vertices = new PositionColorVertex[]
             {
                 new PositionColorVertex(){ Position = new Vector3(-0.01f,-0.01f,0),Color = color }, 
@@ -63,5 +63,12 @@ namespace MyEngine
 
         public string series { get; set; } = "default";
         public bool purgesiblings { get; set; } = false;
+
+        public new Matrix4 Modelmatrix
+        {
+            get => ((Model) this).Modelmatrix;
+            set => Modelmatrix = value;
+        }
     }
+    
 }

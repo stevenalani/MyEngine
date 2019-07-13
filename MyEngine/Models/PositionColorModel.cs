@@ -53,12 +53,15 @@ namespace MyEngine
             GL.EnableVertexAttribArray(1);
             GL.BindVertexArray(0);
             IsInitialized = true;
-
             OnUpdate?.Invoke(this);
         }
 
         public override RigidBody GetRigitBody()
         {
+            if (Vertices == null)
+            {
+                return null;
+            }
             var minX = Vertices.Min(x => x.Position.X);
             var maxX = Vertices.Max(x => x.Position.X);
             var minY = Vertices.Min(x => x.Position.Y);
@@ -92,10 +95,14 @@ namespace MyEngine
 
         public override void Draw(ShaderProgram shader)
         {
-            if (IsInitialized){ 
+            if (!IsInitialized){
+                InitBuffers();
+            }
+            
                 GL.BindVertexArray(VAO);
                 GL.DrawElements(BeginMode.Triangles, Indices.Length, DrawElementsType.UnsignedInt, 0);
-            }
+                
+            
             
         }
     }
