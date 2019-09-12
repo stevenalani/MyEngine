@@ -37,7 +37,7 @@ namespace MyEngine.Models.Voxel
             for (var y = 0; y < size.Y; y++)
             for (var x = 0; x < size.X; x++)
                 VolumeData[x, y, z] = new Voxel(new Vector3(x, y, z), Vector4.Zero);
-            IsInitialized = false;
+            IsReady = false;
         }
 
         public void SetVoxel(Vector3 position, Vector4 mat)
@@ -48,7 +48,7 @@ namespace MyEngine.Models.Voxel
                 return;
             //if (VolumeData[(int) pos.X, (int) pos.Y, (int) pos.Z].Color == Vector4.Zero)_voxelcount++
             VolumeData[(int) pos.X, (int) pos.Y, (int) pos.Z] = new Voxel(pos, mat);
-            IsInitialized = false;
+            IsReady = false;
         }
 
         public void SetVoxel(int posx, int posy, int posz, Vector4 color)

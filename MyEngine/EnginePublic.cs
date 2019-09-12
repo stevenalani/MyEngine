@@ -11,16 +11,15 @@ using OpenTK;
 
 namespace MyEngine
 {
-
-    internal partial class Engine
+    public partial class Engine
     {
         public Camera Camera;
         public static Logger EngineLogger { get; set; }
         public event Action Update;
 
-        public void enableCrossHair(Vector4 color)
+        public void enableCrossHair(MyEngine.DataStructures.Vectors.Vector4 color)
         {
-            CrossHair = new CrossHair(this, color);
+            CrossHair = new CrossHair(this, color._depVector4);
         }
 
         public void LoadModelFromFile(string modelPath, string name = "")
@@ -40,7 +39,10 @@ namespace MyEngine
 
         public void SetWorld(VoxelMap world)
         {
-            physics.AddRigidBody(world);
+            if (this.physics != null)
+            {
+                 physics.AddRigidBody(world);
+            }
             modelManager.World = world;
         }
 
@@ -55,7 +57,7 @@ namespace MyEngine
             var BoundingBoxes = modelManager.GetModelsAndWorld().Where(x => x is PositionColorModel)
                 .Select(x =>
                 {
-                    var bb = new BoundingBox((PositionColorModel)x);
+                    var bb = ((PositionColorModel)x).BoundingBox;
                     return new KeyValuePair<PositionColorModel, BoundingBox>((PositionColorModel)x, bb);
                 });
 
@@ -78,10 +80,10 @@ namespace MyEngine
                             ray -= Camera.ViewDirection * 0.5f;
                         }
 
-                        var bb2 = new BoundingBox(values.Key, new Vector4(0.8f, 0.2f, 0.2f, 0.1f));
-                        bb2.series = "Checkhit";
-                        bb2.purgesiblings = true;
-                        modelManager.AddModel(bb2);
+                        //var bb2 = new BoundingBox(values.Key, new Vector4(0.8f, 0.2f, 0.2f, 0.1f));
+                        //bb2.series = "Checkhit";
+                        //bb2.purgesiblings = true;
+                        modelManager.AddModel(values.Key.BoundingBox);
                         var hit = new RayHitResult
                         {
                             model = values.Key,
@@ -99,7 +101,7 @@ namespace MyEngine
 
         public void DrawModel(Model model,ShaderProgram shader)
         {
-            if (!model.IsInitialized){ model.InitBuffers();}
+            if (!model.IsReady){ model.InitBuffers();}
             //var matrix = _engine.physics.UpdateModelPhysicsModelmatrix(model);
             var matrix = MathHelpers.MatrixtoMatrix4(model.collisionObject.WorldTransform);
             shader.SetUniformMatrix4X4("model", matrix);
@@ -109,7 +111,7 @@ namespace MyEngine
 
         public void DrawWorld(Model model, ShaderProgram shader)
         {
-            if (!model.IsInitialized) { model.InitBuffers(); }
+            if (!model.IsReady) { model.InitBuffers(); }
             shader.SetUniformMatrix4X4("model", model.Modelmatrix);
             //shader.SetUniformMatrix4X4("model",model.Modelmatrix);
             model.Draw(shader);

@@ -5,8 +5,11 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Assimp;
 using BulletSharp;
+using MyEngine.DataStructures;
+using MyEngine.DataStructures.Vectors;
 using MyEngine.Helpers;
 using MyEngine.Models;
+using MyEngine.Models.Voxel;
 using OpenTK;
 
 namespace MyEngine
@@ -15,45 +18,46 @@ namespace MyEngine
     {
         private static void Main(string[] args)
         {
-            
+            /*
             var width = 1400;
             var height = 900;
             var userprofilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             var cam = new Camera(width, height, 0.1f, 200f, PROJECTIONTYPE.Perspective);
-            cam.Position = new Vector3(0, 20, 0);
+            cam.Position = Vector3(0, 20, 110);
             var engine = new Engine(width, height, cam);
-            engine.enableCrossHair(new Vector4(1f, 1f, 1f, 0.5f));
+            engine.enableCrossHair(new MyEngine.DataStructures.Vectors.Vector4(1f, 1f, 1f, 0.5f));
             engine.AddShader("Shaders\\DefaultVoxelShader.vs", "Shaders\\DefaultVoxelShader.fs");
+            /*
+                        //var result = HeightmapImporter.getOpenElevation(48.755238f, 9.146392f);
+                       HeightmapImporter.getOpenStreetXMLBBox(new Vector2(48.756846f, 9.156012f),
+                            new Vector2(48.8f, 9.2f), "Heslach",4);
 
-            //var result = HeightmapImporter.getOpenElevation(48.755238f, 9.146392f);
-            /*HeightmapImporter.getOpenStreetXMLBBox(new Vector2(48.756846f, 9.156012f),
-                new Vector2(48.8f, 9.2f), "Heslach",4);*/
+                        var heslachFrom = new Vector2(48.755238f, 9.146392f);
+                        var heslachTo = new Vector2(48.767457f, 9.167524f);
 
-            var heslachFrom = new Vector2(48.755238f, 9.146392f);
-            var heslachTo = new Vector2(48.767457f, 9.167524f);
 
-           
-            var heslachHeight = HeightmapImporter.GetOpenElevationData(heslachFrom, heslachTo, new Vector2(10, 10));
-            Mapgenerator mapgen = new Mapgenerator();
-            var vol = mapgen.GenerateMapFromHeightData(heslachHeight, new Vector2(10, 10), 20);
-            engine.SetWorld(vol);
+                        var heslachHeight = HeightmapImporter.GetOpenElevationData(heslachFrom, heslachTo, new Vector2(10, 10));
+                        Mapgenerator mapgen = new Mapgenerator();
+                        var vol = mapgen.GenerateMapFromHeightData(heslachHeight, new Vector2(10, 10), 20);
+                        engine.SetWorld(vol);
 
-            engine.LoadModelFromFile(Path.Combine(userprofilePath, "3D Objects\\chr_rain.vox"));
+                         engine.LoadModelFromFile(Path.Combine(userprofilePath, "3D Objects\\chr_rain.vox"));
+
+                        engine.LoadModelFromFile(Path.Combine(userprofilePath, "3D Objects\\chr_gumi.vox"));
+
+                        var model = engine.GetModel("chr_rain").First();
+                        model.Scales = new Vector3(0.3f);
+                        model.Position.Y = 30;
+                        model.mass = 0.1f;
+                        
             engine.LoadModelFromFile(Path.Combine(userprofilePath, "3D Objects\\chr_fox.vox"));
-            engine.LoadModelFromFile(Path.Combine(userprofilePath, "3D Objects\\chr_gumi.vox"));
-            
-            var model = engine.GetModel("chr_rain").First();
-            model.Scales = new Vector3(0.3f);
-            model.Position.Y = 30;
-            model.mass = 0.1f;
-
             var model1 = engine.GetModel("chr_fox").First();   
             model1.Scales = new Vector3(0.3f);
             model1.Position.Y = 30;
             model1.mass = 0.1f;
             model1.Position.X = 20;
             model1.CalculatePhysics = false;
-            var model2 = engine.GetModel("chr_gumi").First();
+            /*var model2 = engine.GetModel("chr_gumi").First();
             model2.Scales = new Vector3(0.3f);
             model2.Position.Y = 30;
             model2.mass = 0.1f;
@@ -70,9 +74,26 @@ namespace MyEngine
                 cube.mass = 0.1f;
                 engine.AddModel(cube);
             }
-            engine.Run(90);
+            PositionColorVertex[] vertices =
+            {
+                new PositionColorVertex{ Color = new Vector4(1f), Position = new Vector3(-1f,-0.1f,1f)},
+                new PositionColorVertex{ Color = new Vector4(1f), Position = new Vector3(1f,-0.1f,1f)},
+                new PositionColorVertex{ Color = new Vector4(1f), Position = new Vector3(-1f,0.1f,1f)},
+                new PositionColorVertex{ Color = new Vector4(1f), Position = new Vector3(1f,0.1f,1f)},
+            };
+            uint[] indices = {0,1,3,0,3,2};
+            var model = new PositionColorModel(vertices,indices,"model");
+            model.Scales = new Vector3(
+                1f);
+            Line line = new Line(new Vector3(1f,2f,5f), new Vector3(1f,3f,1f), 0.01f);
+            engine.AddModel(line);
+            engine.AddModel(model);
+            BoundingBox BoundingBox = new BoundingBox(line);
+            engine.AddModel(BoundingBox);
+            
+            engine.Run(90); */
         }
-
+       
         
     }
 
@@ -82,3 +103,4 @@ namespace MyEngine
         
     }
 }
+ 

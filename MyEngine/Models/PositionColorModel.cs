@@ -14,7 +14,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace MyEngine
 {
-    public class PositionColorModel : Model
+    public class PositionColorModel : Model,IBoundinBox
     {
         public event Action<PositionColorModel> OnUpdate;
         public PositionColorModel(PositionColorVertex[] vertices, uint[] indices,string modelname = "untitled")
@@ -22,16 +22,17 @@ namespace MyEngine
             Vertices = vertices;
             Indices = indices;
             name = modelname + ID;
+            BoundingBox = new BoundingBox(this); 
         }
 
         public uint[] Indices { get; set; }
 
-        public PositionColorVertex[] Vertices;
+        public new PositionColorVertex[] Vertices;
 
         public override void InitBuffers()
 
         {
-            if(IsInitialized || Vertices == null || Indices == null)
+            if(IsReady || Vertices == null || Indices == null)
                 return;
 
             VAO = GL.GenVertexArray();
@@ -52,7 +53,7 @@ namespace MyEngine
             GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, sizeof(float)*7, 3 * sizeof(float));
             GL.EnableVertexAttribArray(1);
             GL.BindVertexArray(0);
-            IsInitialized = true;
+            IsReady = true;
             OnUpdate?.Invoke(this);
         }
 
@@ -95,7 +96,7 @@ namespace MyEngine
 
         public override void Draw(ShaderProgram shader)
         {
-            if (!IsInitialized){
+            if (!IsReady){
                 InitBuffers();
             }
             
@@ -105,5 +106,7 @@ namespace MyEngine
             
             
         }
+
+        public BoundingBox BoundingBox { get; set; }
     }
 }

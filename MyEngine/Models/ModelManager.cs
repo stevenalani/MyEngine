@@ -80,7 +80,7 @@ namespace MyEngine
                     UninitializedModels.TryDequeue(out model);
                     model?.InitBuffers();
                     _models.Add(model.ID, model);
-                    _engine.physics.AddRigidBody(model);
+                    _engine.physics?.AddRigidBody(model);
                 }
             }
             else if (!UninitializedEngineModels.IsEmpty)
@@ -97,24 +97,22 @@ namespace MyEngine
                     engineModels[model.series].Add(model);
                 }
             }
-            else
-            {
-                HasModelUpdates = false;
-            }
+            HasModelUpdates = false;
+
         }
 
         public void DrawModels(ShaderProgram shader, int[] modelIDs = null)
         {
             if (this.World != null)
             {
-                if (!World.IsInitialized) { World.InitBuffers(); }
+                if (!World.IsReady) { World.InitBuffers(); }
                 shader.SetUniformMatrix4X4("model", World.Modelmatrix);
                 World.Draw(shader);
             }
             if (modelIDs == null)
                 foreach (var model in _models.Values)
                 {
-                    if (!model.IsInitialized){ model.InitBuffers();}
+                    if (!model.IsReady){ model.InitBuffers();}
                     _engine.physics.UpdateModelPhysicsModelmatrix(model);
                     
                     shader.SetUniformMatrix4X4("model", model.Modelmatrix);
@@ -126,7 +124,7 @@ namespace MyEngine
                 foreach (var modelID in modelIDs)
                     if (_models.ContainsKey(modelID))
                     {
-                        if (_models[modelID].IsInitialized)
+                        if (_models[modelID].IsReady)
                         _models[modelID].InitBuffers();
                         _engine.physics.UpdateModelPhysicsModelmatrix(_models[modelID]);
                         shader.SetUniformMatrix4X4("model", _models[modelID].Modelmatrix);
@@ -137,7 +135,7 @@ namespace MyEngine
             foreach (var engineModels in engineModels.Values)
             foreach (var model in engineModels)
             {
-                if (!((Model) model).IsInitialized) ((Model) model).InitBuffers();
+                if (!((Model) model).IsReady) ((Model) model).InitBuffers();
                 ((Model) model).Draw(shader);
             }
         }

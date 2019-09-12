@@ -29,5 +29,7 @@ namespace MyEngine.DataStructures
         {
             return sizeof(float) * 7;
         }
+
+        public BoundingBox BoundingBox { get; set; }
     }
 }

@@ -1,0 +1,1611 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <META http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>HiveCareDB.db Database Schema</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <style type="text/css">
+                    body { background-color: #fff; color: #000; font-family: Consolas, monospace}
+                    a:link { color: #03d; }
+                    a:visited { color: #039; }
+                    a:hover { color: #09f; }
+                    table { border-collapse: collapse; width: 100%; }
+                    table caption { color: #666; text-align: right; font-size: 65%; margin-bottom: .5ex; }
+                    table td, table th { border: solid 1px #666; border-collapse: collapse; padding: .3ex .5ex; vertical-align: top; }
+                    table tbody tr:hover { background-color: #ffc; }
+                    table thead th { text-align: left; background-color: #ccc; }
+                    table tbody th { text-align: left; white-space: nowrap; }
+                    .table { page-break-inside: avoid; }
+                    .pk { float: right; cursor: arrow; color: #999; }
+                    .type { white-space: nowrap; }
+                    .null { text-align: center; }
+                    .flag { white-space: nowrap; font-size: 70%; display: inline-block; border: solid 1px #ccc; padding: .25ex .5ex; background-color: #ddd; margin-right: 1ex; }
+                    .tocref { float: right; text-decoration: none; font-weight: normal; }
+                    .footer { text-align: center; margin-top: 1em; font-size: 80%;}
+                    li.view:before { content: "VIEW"; font-size: 70%; display: inline-block; border: solid 1px #ccc; padding: .25ex .5ex; background-color: #ddd; margin-right: 1ex; }
+                    @media print {
+                    body { font-size: .8em; }
+                    #toc, .tocref { display: none; }
+                    a:link, a:visited { color: #000; text-decoration: none; }
+                    }
+                </style>
+  </head>
+  <body>
+    <h1>HiveCareDB.db Database Schema</h1>
+    <div id="toc">
+      <ul>
+        <li class="table"><a href="#Apiaries">Apiaries</a></li>
+        <li class="table"><a href="#ApiaryApplicationUsers">ApiaryApplicationUsers</a></li>
+        <li class="table"><a href="#AspNetRoleClaims">AspNetRoleClaims</a></li>
+        <li class="table"><a href="#AspNetRoles">AspNetRoles</a></li>
+        <li class="table"><a href="#AspNetUserClaims">AspNetUserClaims</a></li>
+        <li class="table"><a href="#AspNetUserLogins">AspNetUserLogins</a></li>
+        <li class="table"><a href="#AspNetUserRoles">AspNetUserRoles</a></li>
+        <li class="table"><a href="#AspNetUsers">AspNetUsers</a></li>
+        <li class="table"><a href="#AspNetUserTokens">AspNetUserTokens</a></li>
+        <li class="table"><a href="#Diaries">Diaries</a></li>
+        <li class="table"><a href="#Feeds">Feeds</a></li>
+        <li class="table"><a href="#HiveApplicationUsers">HiveApplicationUsers</a></li>
+        <li class="table"><a href="#Hives">Hives</a></li>
+        <li class="table"><a href="#HiveYieldAmounts">HiveYieldAmounts</a></li>
+        <li class="table"><a href="#LocationApplicationUsers">LocationApplicationUsers</a></li>
+        <li class="table"><a href="#Locations">Locations</a></li>
+        <li class="table"><a href="#Observations">Observations</a></li>
+        <li class="table"><a href="#Processes">Processes</a></li>
+        <li class="table"><a href="#Queens">Queens</a></li>
+        <li class="table"><a href="#Treatments">Treatments</a></li>
+        <li class="table"><a href="#Yields">Yields</a></li>
+      </ul>
+    </div>
+    <div class="table">
+      <h2 id=""><a href="#toc" class="tocref">⇧</a>
+        Database Properties
+      </h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="type">Database</td>
+            <td class="type">C:\Users\Steven\source\repos\HiveCare1\HiveCare1\HiveCareDB.db</td>
+          </tr>
+          <tr>
+            <td class="type">ServerVersion</td>
+            <td class="type">3.27.2</td>
+          </tr>
+          <tr>
+            <td class="type">DatabaseSize</td>
+            <td class="type">304 KB</td>
+          </tr>
+          <tr>
+            <td class="type">Created</td>
+            <td class="type">18.07.2019 10:01</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table">
+      <h2 id="Apiaries"><a href="#toc" class="tocref">⇧</a>Table Apiaries</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30ex">Name</th>
+            <th style="width:20ex">Type</th>
+            <th style="width:4ex">NULL</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_master_PK_Apiaries">◆</span>ApiaryId</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td><span class="flag">IDENTITY (1,1)</span></td>
+          </tr>
+          <tr>
+            <th>CreatorId1</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_Apiaries_0_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th>CreationDate</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Name</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table">
+      <h2 id="ApiaryApplicationUsers"><a href="#toc" class="tocref">⇧</a>Table ApiaryApplicationUsers</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30ex">Name</th>
+            <th style="width:20ex">Type</th>
+            <th style="width:4ex">NULL</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_autoindex_ApiaryApplicationUsers_1">◆</span>ApplicationUserId</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td><span class="flag" title="FK_ApiaryApplicationUsers_0_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_autoindex_ApiaryApplicationUsers_1">◆</span>ApiaryId</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td><span class="flag">IDENTITY (1,1)</span><span class="flag" title="FK_ApiaryApplicationUsers_1_0">⇨ <a href="#Apiaries">Apiaries</a>.ApiaryId</span></td>
+          </tr>
+          <tr>
+            <th>IsAdmin</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table">
+      <h2 id="AspNetRoleClaims"><a href="#toc" class="tocref">⇧</a>Table AspNetRoleClaims</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30ex">Name</th>
+            <th style="width:20ex">Type</th>
+            <th style="width:4ex">NULL</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_master_PK_AspNetRoleClaims">◆</span>Id</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td><span class="flag">IDENTITY (1,1)</span></td>
+          </tr>
+          <tr>
+            <th>RoleId</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td><span class="flag" title="FK_AspNetRoleClaims_0_0">⇨ <a href="#AspNetRoles">AspNetRoles</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th>ClaimType</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>ClaimValue</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table">
+      <h2 id="AspNetRoles"><a href="#toc" class="tocref">⇧</a>Table AspNetRoles</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30ex">Name</th>
+            <th style="width:20ex">Type</th>
+            <th style="width:4ex">NULL</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_autoindex_AspNetRoles_1">◆</span>Id</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Name</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>NormalizedName</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>ConcurrencyStamp</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Description</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table">
+      <h2 id="AspNetUserClaims"><a href="#toc" class="tocref">⇧</a>Table AspNetUserClaims</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30ex">Name</th>
+            <th style="width:20ex">Type</th>
+            <th style="width:4ex">NULL</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_master_PK_AspNetUserClaims">◆</span>Id</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td><span class="flag">IDENTITY (1,1)</span></td>
+          </tr>
+          <tr>
+            <th>UserId</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td><span class="flag" title="FK_AspNetUserClaims_0_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th>ClaimType</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>ClaimValue</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table">
+      <h2 id="AspNetUserLogins"><a href="#toc" class="tocref">⇧</a>Table AspNetUserLogins</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30ex">Name</th>
+            <th style="width:20ex">Type</th>
+            <th style="width:4ex">NULL</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_autoindex_AspNetUserLogins_1">◆</span>LoginProvider</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_autoindex_AspNetUserLogins_1">◆</span>ProviderKey</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>ProviderDisplayName</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>UserId</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td><span class="flag" title="FK_AspNetUserLogins_0_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table">
+      <h2 id="AspNetUserRoles"><a href="#toc" class="tocref">⇧</a>Table AspNetUserRoles</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30ex">Name</th>
+            <th style="width:20ex">Type</th>
+            <th style="width:4ex">NULL</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_autoindex_AspNetUserRoles_1">◆</span>UserId</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td><span class="flag" title="FK_AspNetUserRoles_0_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_autoindex_AspNetUserRoles_1">◆</span>RoleId</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td><span class="flag" title="FK_AspNetUserRoles_1_0">⇨ <a href="#AspNetRoles">AspNetRoles</a>.Id</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table">
+      <h2 id="AspNetUsers"><a href="#toc" class="tocref">⇧</a>Table AspNetUsers</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30ex">Name</th>
+            <th style="width:20ex">Type</th>
+            <th style="width:4ex">NULL</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_autoindex_AspNetUsers_1">◆</span>Id</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>UserName</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>NormalizedUserName</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Email</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>NormalizedEmail</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>EmailConfirmed</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>PasswordHash</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>SecurityStamp</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>ConcurrencyStamp</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>PhoneNumber</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>PhoneNumberConfirmed</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>TwoFactorEnabled</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>LockoutEnd</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>LockoutEnabled</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>AccessFailedCount</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Password</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Street</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>HouseNo</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>City</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Zip</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Firstname</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Familyname</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>CreatorId1</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_AspNetUsers_0_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th>CreationDate</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table">
+      <h2 id="AspNetUserTokens"><a href="#toc" class="tocref">⇧</a>Table AspNetUserTokens</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30ex">Name</th>
+            <th style="width:20ex">Type</th>
+            <th style="width:4ex">NULL</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_autoindex_AspNetUserTokens_1">◆</span>UserId</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td><span class="flag" title="FK_AspNetUserTokens_0_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_autoindex_AspNetUserTokens_1">◆</span>LoginProvider</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_autoindex_AspNetUserTokens_1">◆</span>Name</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Value</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table">
+      <h2 id="Diaries"><a href="#toc" class="tocref">⇧</a>Table Diaries</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30ex">Name</th>
+            <th style="width:20ex">Type</th>
+            <th style="width:4ex">NULL</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_master_PK_Diaries">◆</span>DiaryId</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td><span class="flag">IDENTITY (1,1)</span></td>
+          </tr>
+          <tr>
+            <th>CreatorId1</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_Diaries_0_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th>CreationDate</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Description</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Text</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table">
+      <h2 id="Feeds"><a href="#toc" class="tocref">⇧</a>Table Feeds</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30ex">Name</th>
+            <th style="width:20ex">Type</th>
+            <th style="width:4ex">NULL</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_master_PK_Feeds">◆</span>FeedId</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td><span class="flag">IDENTITY (1,1)</span></td>
+          </tr>
+          <tr>
+            <th>CreatorId1</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_Feeds_2_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th>CreationDate</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>HiveId1</th>
+            <td class="type">bigint</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_Feeds_0_0">⇨ <a href="#Hives">Hives</a>.HiveId</span></td>
+          </tr>
+          <tr>
+            <th>DueDateTime</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>DoneDateTime</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>DoneById</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_Feeds_1_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th>IsDone</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>FeedType</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Amout</th>
+            <td class="type">real (53, 0)</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Comment</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table">
+      <h2 id="HiveApplicationUsers"><a href="#toc" class="tocref">⇧</a>Table HiveApplicationUsers</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30ex">Name</th>
+            <th style="width:20ex">Type</th>
+            <th style="width:4ex">NULL</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_autoindex_HiveApplicationUsers_1">◆</span>ApplicationUserId</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td><span class="flag" title="FK_HiveApplicationUsers_1_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_autoindex_HiveApplicationUsers_1">◆</span>HiveId</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td><span class="flag">IDENTITY (1,1)</span><span class="flag" title="FK_HiveApplicationUsers_0_0">⇨ <a href="#Hives">Hives</a>.HiveId</span></td>
+          </tr>
+          <tr>
+            <th>IsAdmin</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table">
+      <h2 id="Hives"><a href="#toc" class="tocref">⇧</a>Table Hives</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30ex">Name</th>
+            <th style="width:20ex">Type</th>
+            <th style="width:4ex">NULL</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_master_PK_Hives">◆</span>HiveId</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td><span class="flag">IDENTITY (1,1)</span></td>
+          </tr>
+          <tr>
+            <th>CreatorId1</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_Hives_1_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th>CreationDate</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Name</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Type</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>ApiaryId1</th>
+            <td class="type">bigint</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_Hives_2_0">⇨ <a href="#Apiaries">Apiaries</a>.ApiaryId</span></td>
+          </tr>
+          <tr>
+            <th>Gentleness</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Loyalty</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Inertia</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Aggressiveness</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>LocationId1</th>
+            <td class="type">bigint</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_Hives_0_0">⇨ <a href="#Locations">Locations</a>.LocationId</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table">
+      <h2 id="HiveYieldAmounts"><a href="#toc" class="tocref">⇧</a>Table HiveYieldAmounts</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30ex">Name</th>
+            <th style="width:20ex">Type</th>
+            <th style="width:4ex">NULL</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_master_PK_HiveYieldAmounts">◆</span>HiveYieldAmountId</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td><span class="flag">IDENTITY (1,1)</span></td>
+          </tr>
+          <tr>
+            <th>CreatorId1</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_HiveYieldAmounts_3_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th>CreationDate</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>HiveId1</th>
+            <td class="type">bigint</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_HiveYieldAmounts_1_0">⇨ <a href="#Hives">Hives</a>.HiveId</span></td>
+          </tr>
+          <tr>
+            <th>DueDateTime</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>DoneDateTime</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>DoneById</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_HiveYieldAmounts_2_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th>IsDone</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>YieldId1</th>
+            <td class="type">bigint</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_HiveYieldAmounts_0_0">⇨ <a href="#Yields">Yields</a>.YieldId</span></td>
+          </tr>
+          <tr>
+            <th>HoneycombCount</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Amount</th>
+            <td class="type">real (53, 0)</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>WaterShare</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table">
+      <h2 id="LocationApplicationUsers"><a href="#toc" class="tocref">⇧</a>Table LocationApplicationUsers</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30ex">Name</th>
+            <th style="width:20ex">Type</th>
+            <th style="width:4ex">NULL</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_autoindex_LocationApplicationUsers_1">◆</span>LocationId</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td><span class="flag">IDENTITY (1,1)</span><span class="flag" title="FK_LocationApplicationUsers_0_0">⇨ <a href="#Locations">Locations</a>.LocationId</span></td>
+          </tr>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_autoindex_LocationApplicationUsers_1">◆</span>ApplicationUserId</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td><span class="flag" title="FK_LocationApplicationUsers_1_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th>IsAdmin</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table">
+      <h2 id="Locations"><a href="#toc" class="tocref">⇧</a>Table Locations</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30ex">Name</th>
+            <th style="width:20ex">Type</th>
+            <th style="width:4ex">NULL</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_master_PK_Locations">◆</span>LocationId</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td><span class="flag">IDENTITY (1,1)</span></td>
+          </tr>
+          <tr>
+            <th>CreatorId1</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_Locations_0_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th>CreationDate</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Street</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>HouseNo</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>City</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Zip</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Latitude</th>
+            <td class="type">real (53, 0)</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Longitude</th>
+            <td class="type">real (53, 0)</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>ApiaryId1</th>
+            <td class="type">bigint</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_Locations_1_0">⇨ <a href="#Apiaries">Apiaries</a>.ApiaryId</span></td>
+          </tr>
+          <tr>
+            <th>Name</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table">
+      <h2 id="Observations"><a href="#toc" class="tocref">⇧</a>Table Observations</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30ex">Name</th>
+            <th style="width:20ex">Type</th>
+            <th style="width:4ex">NULL</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_master_PK_Observations">◆</span>ObservationId</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td><span class="flag">IDENTITY (1,1)</span></td>
+          </tr>
+          <tr>
+            <th>CreatorId1</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_Observations_2_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th>CreationDate</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>HiveId1</th>
+            <td class="type">bigint</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_Observations_0_0">⇨ <a href="#Hives">Hives</a>.HiveId</span></td>
+          </tr>
+          <tr>
+            <th>DueDateTime</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>DoneDateTime</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>DoneById</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_Observations_1_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th>IsDone</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>QueenCells</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Pans</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Liningcells</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Queen</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Brood</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Beepen</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Varrora</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>PollenEntry</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>AirTraffic</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Temperature</th>
+            <td class="type">real (53, 0)</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Weather</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>MiteInfestation</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Weight</th>
+            <td class="type">real (53, 0)</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Comment</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table">
+      <h2 id="Processes"><a href="#toc" class="tocref">⇧</a>Table Processes</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30ex">Name</th>
+            <th style="width:20ex">Type</th>
+            <th style="width:4ex">NULL</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_master_PK_Processes">◆</span>ProcessId</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td><span class="flag">IDENTITY (1,1)</span></td>
+          </tr>
+          <tr>
+            <th>CreatorId1</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_Processes_2_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th>CreationDate</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>HiveId1</th>
+            <td class="type">bigint</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_Processes_0_0">⇨ <a href="#Hives">Hives</a>.HiveId</span></td>
+          </tr>
+          <tr>
+            <th>DueDateTime</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>DoneDateTime</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>DoneById</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_Processes_1_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th>IsDone</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>DronesFrames</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>BrutFrames</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>EmptyFrames</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>LiningFrames</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>MiddlewallFrame</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>HoneyBox</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>EmptyBox</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>BeesEscape</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Fence</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Diaper</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>FlightholeWedge</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Comment</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table">
+      <h2 id="Queens"><a href="#toc" class="tocref">⇧</a>Table Queens</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30ex">Name</th>
+            <th style="width:20ex">Type</th>
+            <th style="width:4ex">NULL</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_master_PK_Queens">◆</span>QueenId</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td><span class="flag">IDENTITY (1,1)</span></td>
+          </tr>
+          <tr>
+            <th>CreatorId1</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_Queens_1_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th>CreationDate</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>HiveId</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td><span class="flag" title="FK_Queens_0_0">⇨ <a href="#Hives">Hives</a>.HiveId</span></td>
+          </tr>
+          <tr>
+            <th>QueenBirthYear</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>QueenPainted</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>QueenNo</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table">
+      <h2 id="Treatments"><a href="#toc" class="tocref">⇧</a>Table Treatments</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30ex">Name</th>
+            <th style="width:20ex">Type</th>
+            <th style="width:4ex">NULL</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_master_PK_Treatments">◆</span>TreatmentId</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td><span class="flag">IDENTITY (1,1)</span></td>
+          </tr>
+          <tr>
+            <th>CreatorId1</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_Treatments_2_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th>CreationDate</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>HiveId1</th>
+            <td class="type">bigint</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_Treatments_0_0">⇨ <a href="#Hives">Hives</a>.HiveId</span></td>
+          </tr>
+          <tr>
+            <th>DueDateTime</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>DoneDateTime</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>DoneById</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_Treatments_1_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th>IsDone</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>TypeOfAgenttype</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Amount</th>
+            <td class="type">real (53, 0)</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Brood</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>BeePen</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Varroa</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Weight</th>
+            <td class="type">real (53, 0)</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>Comment</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table">
+      <h2 id="Yields"><a href="#toc" class="tocref">⇧</a>Table Yields</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30ex">Name</th>
+            <th style="width:20ex">Type</th>
+            <th style="width:4ex">NULL</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><span class="pk" title="PRIMARY KEY sqlite_master_PK_Yields">◆</span>YieldId</th>
+            <td class="type">bigint</td>
+            <td class="null">☐</td>
+            <td><span class="flag">IDENTITY (1,1)</span></td>
+          </tr>
+          <tr>
+            <th>CreatorId1</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td><span class="flag" title="FK_Yields_0_0">⇨ <a href="#AspNetUsers">AspNetUsers</a>.Id</span></td>
+          </tr>
+          <tr>
+            <th>CreationDate</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>YieldType</th>
+            <td class="type">text</td>
+            <td class="null">☐</td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>YieldTypeText</th>
+            <td class="type">text</td>
+            <td class="null">☒</td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="footer">
+                    Generated by <a href="http://SqlDbDoc.codeplex.com/">DB&gt;doc</a> and <a href="https://github.com/ErikEJ/SqlCeToolbox">SQLite/SQL Server Compact Toolbox</a> on
+                    August 31, 2019, 20:40:12</div>
+  </body>
+</html>

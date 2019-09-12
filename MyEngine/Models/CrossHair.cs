@@ -6,6 +6,7 @@ using MyEngine.Logging;
 using MyEngine.ShaderImporter;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using Vector3 = OpenTK.Vector3;
 
 
 namespace MyEngine.Assets.Models
@@ -22,7 +23,7 @@ namespace MyEngine.Assets.Models
             this.engine = engine;
             Position = Vector3.Zero;
             Scales = Vector3.One * 0.01f;
-            this.Color = color;
+            Color = color;
             // new ShaderProgram("Shaders\\DefaultCrosshairShader.vs", "Shaders\\DefaultCrosshairShader.fs");
             Vertices = new[]
             {
@@ -62,7 +63,7 @@ namespace MyEngine.Assets.Models
         }
         public override void Draw(ShaderProgram shader)
         {
-            if (IsInitialized)
+            if (IsReady)
             {
                 Matrix4 proj = engine.Camera.GetProjection(PROJECTIONTYPE.Orthogonal);
                 Matrix4 view = engine.Camera.GetView();

@@ -26,7 +26,7 @@ namespace MyEngine
         public new Matrix4 Modelmatrix { get; set; }
         public BoundingBox(Model model, Vector4 color = default(Vector4))
         {
-            purgesiblings = true;
+            purgesiblings = false;
             this.color = color == default(Vector4)?new Vector4(0.1f, 0.7f, 1f, 0.1f) : color;
             if (model is PositionColorModel)
             {
@@ -37,34 +37,33 @@ namespace MyEngine
         private void update(PositionColorModel inmodel)
         {
             var vertices = inmodel.Vertices.Select(x => Vector3.TransformPosition(x.Position, inmodel.Modelmatrix)).ToArray();
-            var min_y = vertices.Min(x => x.Y);
-            var max_y = vertices.Max(x => x.Y);
-            var min_x = vertices.Min(x => x.X);
-            var max_x = vertices.Max(x => x.X);
-            var min_z = vertices.Min(x => x.Z);
-            var max_z = vertices.Max(x => x.Z);
+            var minY = vertices.Min(x => x.Y);
+            var maxY = vertices.Max(x => x.Y);
+            var minX = vertices.Min(x => x.X);
+            var maxX = vertices.Max(x => x.X);
+            var minZ = vertices.Min(x => x.Z);
+            var maxZ = vertices.Max(x => x.Z);
 
-            var size = new Vector3(max_x - min_x, max_y - min_y, max_z - min_z);
+            var size = new Vector3(maxX - minX, maxY - minY, maxZ - minZ);
             var center = new Vector3(size.X/ 2, size.Y / 2, size.Z / 2);
-            Modelmatrix = Matrix4.CreateTranslation(center) * Matrix4.CreateScale(size);
+            Modelmatrix = Matrix4.CreateTranslation(center);
 
-            leftlownear = new Vector3(min_x, min_y, max_z);
-            rightlownear = new Vector3(max_x, min_y, max_z);
-            rightupnear = new Vector3(max_x, max_y, max_z);
-            leftupnear = new Vector3(min_x, max_y, max_z);
+            leftlownear = new Vector3(minX, minY, maxZ);
+            rightlownear = new Vector3(maxX, minY, maxZ);
+            rightupnear = new Vector3(maxX, maxY, maxZ);
+            leftupnear = new Vector3(minX, maxY, maxZ);
 
-            leftlowfar = new Vector3(min_x, min_y, min_z);
-            rightlowfar = new Vector3(max_x, min_y, min_z);
-            rightupfar = new Vector3(max_x, max_y, min_z);
-            leftupfar = new Vector3(min_x, max_y, min_z);
+            leftlowfar = new Vector3(minX, minY, minZ);
+            rightlowfar = new Vector3(maxX, minY, minZ);
+            rightupfar = new Vector3(maxX, maxY, minZ);
+            leftupfar = new Vector3(minX, maxY, minZ);
 
             Vertices = ToArray()?.Select(x => new PositionColorVertex()
                 {
-                    //Position = Vector3.TransformPerspective(x, Camera.GetProjection().Inverted() * Camera.GetView().Inverted()),
-                    Position = x,
+                    Position = x - center,
                     Color = color
                 }).ToArray();
-            IsInitialized = false;
+            IsReady = false;
         }
 
 
@@ -104,7 +103,7 @@ namespace MyEngine
             leftupfar = new Vector3(left, highest, farest);
             Vertices = ToArray().Select(x => new PositionColorVertex()
                 { Position = x, Color = color }).ToArray();
-            IsInitialized = false;
+            IsReady = false;
         }
 
         public string series { get; set; } = "default";

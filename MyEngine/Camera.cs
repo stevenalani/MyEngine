@@ -1,6 +1,6 @@
 ﻿using System;
-using MyEngine.Logging;
 using OpenTK;
+
 
 namespace MyEngine
 {
@@ -15,6 +15,11 @@ namespace MyEngine
         
         public Vector3 Position = new Vector3(0,0,1);
 
+        public void SetPosition(DataStructures.Vectors.Vector3 position)
+        {
+            Position = position._depVector3;
+
+        }
         public const float SPEED = 15f;
         public const float SENSITIVITY = 0.1f;
         public const float ZOOM = 45.0f;

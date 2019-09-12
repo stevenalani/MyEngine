@@ -94,13 +94,13 @@ namespace MyEngine.Assets.Models
 
 
             GL.BindVertexArray(0);
-            IsInitialized = true;
+            IsReady = true;
         }
 
 
         public bool Ready()
         {
-            return this.IsInitialized;
+            return this.IsReady;
         }
     }
 }

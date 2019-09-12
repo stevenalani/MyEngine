@@ -13,7 +13,7 @@ using OpenTK.Input;
 namespace MyEngine
 
 {
-    internal partial class Engine : GameWindow
+    public partial class Engine : GameWindow
     {
         private readonly ModelManager modelManager;
 
@@ -26,7 +26,7 @@ namespace MyEngine
         private bool IsWireframe;
         private double lasttime;
         private DateTime nextWireframeSwitch = DateTime.Now;
-        internal Physics physics = new Physics();
+        internal Physics physics;
         internal ShaderManager shaderManager = new ShaderManager();
 
 
@@ -114,23 +114,30 @@ namespace MyEngine
             shader.SetUniformFloat("diffuseStrength", 2f);
             shader.SetUniformFloat("specularStrength", 1f);
             var world = modelManager.World;
-            shader.SetUniformMatrix4X4("model",world.Modelmatrix);
-            world.Draw(shader);
+            if (world != null)
+            {
+                shader.SetUniformMatrix4X4("model", world.Modelmatrix);
+                world.Draw(shader);
+            }
+
             //modelManager.DrawModels(shader);
             var models = modelManager.GetModels();
             foreach (var model in models)
             {
-                physics.UpdateModelPhysicsModelmatrix(model);
-                model.IsInitialized = false;
+                if (physics != null)
+                {
+                    physics?.UpdateModelPhysicsModelmatrix(model);
+                    model.IsReady = false;
+                }
                 shader.SetUniformMatrix4X4("model",model.Modelmatrix);
                 model.Draw(shader);
             }
 
-            var enginemodels = modelManager.GetEngineModels();
+            var dictEngineModels = modelManager.GetEngineModels();
             
-            foreach (var enginemodel in enginemodels)
+            foreach (var listEnginemodel in dictEngineModels)
             {
-                foreach (var engineModel in enginemodel)
+                foreach (var engineModel in listEnginemodel)
                 {
                     
                     shader.SetUniformMatrix4X4("model",engineModel.Modelmatrix);
@@ -147,7 +154,7 @@ namespace MyEngine
         {
             base.OnUpdateFrame(e);
             HandleKeyboard((float) e.Time);
-            physics.Update((float)e.Time);
+            physics?.Update((float)e.Time);
             lasttime = e.Time;
         }
 
@@ -166,7 +173,7 @@ namespace MyEngine
 
             var results = CheckHit();
             var volumes = results.Where(x => x.model is Volume);
-            var rand = new Random(DateTime.Now.Millisecond);
+            
             var colorval = 240;
             foreach (var volumehit in volumes)
             {
@@ -187,12 +194,12 @@ namespace MyEngine
                         volume.SetVoxel((int) ray.X, (int) ray.Y,
                             (int) ray.Z, new Vector4(colorval, colorval, colorval, 255f));
                         IsVoxelSet = true;
-                        volume.IsInitialized = false;
+                        volume.IsReady = false;
                         break;
                     }
                 }
 
-                if (IsVoxelSet) volume.IsInitialized = false;
+                if (IsVoxelSet) volume.IsReady = false;
             }
         }
 
@@ -224,7 +231,7 @@ namespace MyEngine
 
         protected override void OnUnload(EventArgs e)
         {
-            physics.ExitPhysics();
+            physics?.ExitPhysics();
             base.OnUnload(e);
         }
 
@@ -274,46 +281,5 @@ namespace MyEngine
         {
             return modelManager.GetModel(name);
         }
-    }
- 
-    public struct RayHitResult
-    {
-        public Model model;
-        public Vector3 HitPositionWorld;
-        public Vector3 RayDirectionWorld;
-    }
-
-    public interface IEngineModel
-    {
-        string series { get; set; }
-        bool purgesiblings { get; set; }
-        Matrix4 Modelmatrix { get; set; }
-    }
-
-    internal struct MousePositionState
-    {
-        public float X;
-        public float Y;
-
-        public MousePositionState(float value)
-        {
-            X = Y = value;
-        }
-
-        public MousePositionState(float x, float y)
-        {
-            X = x;
-            Y = y;
-        }
-    }
-
-    public enum CameraMovement
-    {
-        FORWARD,
-        BACKWARD,
-        LEFT,
-        RIGHT,
-        UP,
-        DOWN
     }
 }

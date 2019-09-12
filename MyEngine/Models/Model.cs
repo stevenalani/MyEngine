@@ -21,8 +21,8 @@ namespace MyEngine
         protected int VBO;
         protected int EBO;
 
-        protected internal Vector3 Position = Vector3.Zero;
-        protected internal Vector3 Scales = Vector3.One;
+        public OpenTK.Vector3 Position = Vector3.Zero;
+        public Vector3 Scales = Vector3.One;
         protected internal Vector3 Rotations = Vector3.Zero;
 
         protected IVertextype[] Vertices;
@@ -46,7 +46,7 @@ namespace MyEngine
             ID = Model.nextid++;
         }
 
-        public bool IsInitialized { get; set; }
+        public bool IsReady { get; set; }
 
 
         public abstract void Draw(ShaderProgram shaderProgram);
@@ -61,11 +61,11 @@ namespace MyEngine
         {
             if (disposing)
             {
-                if (IsInitialized)
+                if (IsReady)
                 {
                     GL.DeleteVertexArray(VAO);
                     GL.DeleteBuffer(VBO);
-                    IsInitialized = false;
+                    IsReady = false;
                 }
             }
         }
