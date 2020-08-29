@@ -105,7 +105,6 @@ namespace MyEngine
             //var matrix = _engine.physics.UpdateModelPhysicsModelmatrix(model);
             var matrix = MathHelpers.MatrixtoMatrix4(model.collisionObject.WorldTransform);
             shader.SetUniformMatrix4X4("model", matrix);
-            //shader.SetUniformMatrix4X4("model",model.Modelmatrix);
             model.Draw(shader);
         }
 
@@ -113,7 +112,6 @@ namespace MyEngine
         {
             if (!model.IsReady) { model.InitBuffers(); }
             shader.SetUniformMatrix4X4("model", model.Modelmatrix);
-            //shader.SetUniformMatrix4X4("model",model.Modelmatrix);
             model.Draw(shader);
         }
     }

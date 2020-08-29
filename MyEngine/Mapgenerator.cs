@@ -6,7 +6,7 @@ using OpenTK;
 
 namespace MyEngine
 {
-    internal class Mapgenerator
+    public class Mapgenerator
     {
         private const float Water = 0.1f;
         private const float Sand = 0.2f;

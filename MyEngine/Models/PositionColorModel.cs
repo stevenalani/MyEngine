@@ -22,7 +22,7 @@ namespace MyEngine
             Vertices = vertices;
             Indices = indices;
             name = modelname + ID;
-            BoundingBox = new BoundingBox(this); 
+            //BoundingBox = new BoundingBox(this); 
         }
 
         public uint[] Indices { get; set; }
