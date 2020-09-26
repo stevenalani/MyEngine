@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using BulletSharp;
 using MyEngine.Assets.Models;
 using MyEngine.Logging;
 using MyEngine.Models.Voxel;
@@ -55,7 +54,6 @@ namespace MyEngine
             Update += modelManager.Update;
             Update += shaderManager.Update;
             UpdateFrame += OnUpdate;
-            UpdateFrame += (sender, args) => Physics.Update((float) args.Time);
             EngineLogger = new Logger();
             EngineLogger.Start();
                     
@@ -250,7 +248,6 @@ namespace MyEngine
 
         protected override void OnUnload(EventArgs e)
         {
-            Physics.ExitPhysics();
             base.OnUnload(e);
             
         }
@@ -297,11 +294,7 @@ namespace MyEngine
 
         public void LoadModelFromFile(string modelPath, string name = "")
         {
-            var model = modelManager.LoadModelFromFile(modelPath, name);
-            foreach (var model1 in model)
-            {
-                Physics.World.AddRigidBody(model1.GetRigitBody());
-            }
+            modelManager.LoadModelFromFile(modelPath, name);
         }
 
         public void AddShader(string vsShaderPath, string fsShaderPath = "")
@@ -312,13 +305,10 @@ namespace MyEngine
         public void AddModel(Model model)
         {
             modelManager.AddModel(model);
-            Physics.World.AddRigidBody(model.GetRigitBody());
         }
         public void SetWorld(VoxelMap world)
         {
             modelManager.SetWorld(world);
-            Physics.CollisionShapes.Add(world.CollisionShape);
-            Physics.World.AddRigidBody(world.GetRigitBody());
         }
         public void ClearWorld()
         {

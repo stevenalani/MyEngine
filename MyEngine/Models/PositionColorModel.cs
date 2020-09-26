@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BulletSharp;
-using BulletSharp.Math;
 using MyEngine.Assets.Models;
 using MyEngine.Assets.Models.Voxel;
 using MyEngine.DataStructures;
@@ -17,6 +15,7 @@ namespace MyEngine
     public class PositionColorModel : Model
     {
         public event Action<PositionColorModel> OnUpdate;
+        
         public PositionColorModel(PositionColorVertex[] vertices, uint[] indices,string modelname = "untitled")
         {
             Vertices = vertices;
@@ -26,7 +25,7 @@ namespace MyEngine
 
         public uint[] Indices { get; set; }
 
-        public PositionColorVertex[] Vertices;
+        public PositionColorVertex[] Vertices { get; set; }
 
         public override void InitBuffers()
 
@@ -55,40 +54,7 @@ namespace MyEngine
             IsInitialized = true;
 
             OnUpdate?.Invoke(this);
-        }
-
-        public override RigidBody GetRigitBody()
-        {
-            var minX = Vertices.Min(x => x.Position.X);
-            var maxX = Vertices.Max(x => x.Position.X);
-            var minY = Vertices.Min(x => x.Position.Y);
-            var maxY = Vertices.Max(x => x.Position.Y);
-            var minZ = Vertices.Min(x => x.Position.Z);
-            var maxZ = Vertices.Max(x => x.Position.Z);
-            var shape = new BoxShape(maxX - minX,maxY-minY,maxZ - minZ);
-            var localInertia = shape.CalculateLocalInertia(mass);
-            var motionstat = new DefaultMotionState(MathHelpers.Matrix4toMatrix(Modelmatrix));
-            var rbInfo = new RigidBodyConstructionInfo(mass, motionstat, shape, localInertia);
-            var rigidbody = new RigidBody(rbInfo);
-            rigidbody.UserObject = name;
-            return rigidbody;
-        }
-        public override RigidBody GetRigitBody(Matrix4 view)
-        {
-            var minX = Vertices.Min(x => x.Position.X);
-            var maxX = Vertices.Max(x => x.Position.X);
-            var minY = Vertices.Min(x => x.Position.Y);
-            var maxY = Vertices.Max(x => x.Position.Y);
-            var minZ = Vertices.Min(x => x.Position.Z);
-            var maxZ = Vertices.Max(x => x.Position.Z);
-            var shape = new BoxShape(maxX - minX,maxY-minY,maxZ - minZ);
-            var localInertia = shape.CalculateLocalInertia(mass);
-            var motionstat = new DefaultMotionState(MathHelpers.Matrix4toMatrix(Modelmatrix*view));
-            var rbInfo = new RigidBodyConstructionInfo(mass, motionstat, shape, localInertia);
-            var rigidbody = new RigidBody(rbInfo);
-            rigidbody.UserObject = name;
-            return rigidbody;
-        }
+        }        
 
         public override void Draw(ShaderProgram shader)
         {

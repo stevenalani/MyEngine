@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing.Drawing2D;
-using BulletSharp;
 using GlmNet;
 using MyEngine.Assets.Models;
 using MyEngine.DataStructures;
@@ -25,26 +24,17 @@ namespace MyEngine
         protected internal Vector3 Scales = Vector3.One;
         protected internal Vector3 Rotations = Vector3.Zero;
 
-        protected IVertextype[] Vertices;
-
         public Vector3 Direction = -Vector3.UnitZ;
-        public float mass;
 
         public Matrix4 Modelmatrix
         {
-            get  
+            get
             {
-               return (physicsModelmatrix == Matrix4.Zero)? MathHelpers.getRotation(Rotations.X, Rotations.Y, Rotations.Z) * Matrix4.CreateScale(Scales) *
-                       Matrix4.CreateTranslation(Position) : physicsModelmatrix;
+                return MathHelpers.getRotation(Rotations.X, Rotations.Y, Rotations.Z) * Matrix4.CreateScale(Scales) *
+                        Matrix4.CreateTranslation(Position);
             }
         }
 
-        public Matrix4 physicsModelmatrix { get; set; }
-
-        protected CollisionShape collisionShape;
-
-        public abstract RigidBody GetRigitBody();
-        public abstract RigidBody GetRigitBody(Matrix4 view);
 
         protected Model()
         {

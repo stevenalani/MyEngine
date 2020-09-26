@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using BulletSharp;
 using MyEngine.Assets;
 using MyEngine.Models.Voxel;
 using MyEngine.ShaderImporter;
@@ -109,9 +108,7 @@ namespace MyEngine
                 foreach (var model in _models.Values)
                 {
                     if (!model.IsInitialized){ model.InitBuffers();}
-                    var matrix = Physics.GetPhysicsModelmatrix(model);
-                    shader.SetUniformMatrix4X4("model", matrix);
-                    //shader.SetUniformMatrix4X4("model",model.Modelmatrix);
+                    shader.SetUniformMatrix4X4("model",model.Modelmatrix);
                     model.Draw(shader);
                     
                 }
@@ -121,9 +118,7 @@ namespace MyEngine
                     {
                         if (_models[modelID].IsInitialized)
                         _models[modelID].InitBuffers();
-                        var matrix = Physics.GetPhysicsModelmatrix(_models[modelID]);
-                        shader.SetUniformMatrix4X4("model", matrix);
-                        //shader.SetUniformMatrix4X4("model", _models[modelID].Modelmatrix);
+                        shader.SetUniformMatrix4X4("model", _models[modelID].Modelmatrix);
                         _models[modelID].Draw(shader);
                     }
 

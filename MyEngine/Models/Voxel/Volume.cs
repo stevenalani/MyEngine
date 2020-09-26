@@ -7,6 +7,7 @@ namespace MyEngine.Models.Voxel
 {
     public class Volume : PositionColorModel
     {
+        
         public Vector3 size;
         protected Voxel[,,] VolumeData;
 
@@ -20,7 +21,7 @@ namespace MyEngine.Models.Voxel
 
         public Volume(int witdh, int height, int depth) : base(CubeData.Vertices.Select(x=> new PositionColorVertex(){Position = x, Color = new Vector4(0)}).ToArray(), CubeData.Indices)
         {
-            size = new Vector3(witdh, height, depth);
+            size = new Vector3(witdh+1, height+1, depth+1);
             InitializeVolumeData();
         }
 
@@ -53,7 +54,11 @@ namespace MyEngine.Models.Voxel
 
         public void SetVoxel(int posx, int posy, int posz, Vector4 color)
         {
-            SetVoxel(new Vector3(posx, posy, posz), color);
+            if (posx >= size.X || posy >= size.Y || posz >= size.Z || posx <= -1 || posy <= -1 ||
+            posz <= -1)
+                return;
+                VolumeData[posx,posy,posz] = new Voxel(posx, posy, posz, color);
+            IsInitialized = false;
         }
 
         public void ClearVolume()
@@ -370,6 +375,12 @@ namespace MyEngine.Models.Voxel
         {
             Color = color;
             Posindices = position;
+            checkedin = false;
+        }
+        public Voxel(int x, int y, int z, Vector4 color)
+        {
+            Color = color;
+            Posindices = new Vector3(x,y,z);
             checkedin = false;
         }
     }
