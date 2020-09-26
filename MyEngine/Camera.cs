@@ -13,7 +13,7 @@ namespace MyEngine
     public partial class Camera
     {
         
-        public Vector3 Position = new Vector3(0,0,1);
+        public Vector3 Position = new Vector3(0,0,5);
 
         public const float SPEED = 10f;
         public const float SENSITIVITY = 0.1f;

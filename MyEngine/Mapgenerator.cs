@@ -55,7 +55,7 @@ namespace MyEngine
         }
         public HgtMapVolume GenerateMapFromHeightData(short[,] heights)
         {
-            var colNRowCnt = (int)(Math.Sqrt(heights.Length)/100);
+            var colNRowCnt = (int)(Math.Sqrt(heights.Length)/10);
             List<HeightmapImporter.LocationResult> locationResults = new List<HeightmapImporter.LocationResult>();
             for (int y = 0; y < colNRowCnt; y++)
                 for (int x = 0; x < colNRowCnt; x++)

@@ -1,6 +1,5 @@
 ﻿using MyEngine.DataStructures;
 using MyEngine.Models;
-using MyEngine.Models.Voxel;
 using OpenTK;
 using System;
 using System.Collections.Generic;
@@ -19,7 +18,7 @@ namespace MyEngine.HgtImporter
         public ColorVolume(int DimensionsX, int DimensionsY, int DimensionsZ, int chunksize = 16) : base(null, null)
         {
             Dimensions = new Vector3(DimensionsX, DimensionsY, DimensionsZ);
-            VolumeData = new int[DimensionsX, DimensionsY+1, DimensionsZ];
+            VolumeData = new int[DimensionsX, DimensionsY + 1, DimensionsZ];
             this.Chunksize = chunksize;
             var csx = Dimensions.X / chunksize;
             var csy = Dimensions.Y / chunksize;
@@ -38,12 +37,12 @@ namespace MyEngine.HgtImporter
         }
         public void SetVoxel(int x, int y, int z, Vector4 color)
         {
-            if(!Colors.Contains(color))
+            if (!Colors.Contains(color))
             {
                 Colors.Add(color);
             }
             var colorIndex = Colors.IndexOf(color);
-            
+
             SetVoxel(x, y, z, colorIndex);
         }
 
@@ -107,84 +106,91 @@ namespace MyEngine.HgtImporter
             var _checked = 0;
             var poscolresult = new List<PositionColorVertex>();
             CheckedInVoxels = new bool[(int)Dimensions.X, (int)Dimensions.Y, (int)Dimensions.Z];
-            for (var currentCunkX = 0; currentCunkX < ChunkCount.X; currentCunkX++)
+            
+            /*for (var currentCunkZ = 0; currentCunkZ < ChunkCount.Z; currentCunkZ++)
             {
-                for (var currentZ = 0; currentZ < Dimensions.Z; currentZ++)
+                for (var currentCunkY = 0; currentCunkY < ChunkCount.Y; currentCunkY++)
                 {
-                    for (var currentY = 0; currentY < Dimensions.Y; currentY++)
-                    {
-                        for (var currentX = 0; currentX < Dimensions.X; currentX++)
+                    for (var currentCunkX = 0; currentCunkX < ChunkCount.X; currentCunkX++)
+                    {*/
+                        for (var currentZ = 0; currentZ < Dimensions.Z; currentZ++)
                         {
-                            if (VolumeData[currentX, currentY, currentZ] == 0 || CheckedInVoxels[currentX, currentY, currentZ])
-                                continue;
-
-                            _checked++;
-                            countX = GetNeighborsX(currentX, currentY, currentZ);
-                            countY = GetNeighborsY(currentX, currentY, currentZ);
-                            countZ = GetNeighborsZ(currentX, currentY, currentZ);
-                            if (countX >= countY && countX >= countZ)
-                                for (var i = currentX; i <= currentX + countX; i++)
-                                {
-                                    var voxelsAbove = GetNeighborsY(i, currentY, currentZ);
-                                    var voxelsInfront = GetNeighborsZ(i, currentY, currentZ);
-                                    if (voxelsAbove < countY || countY == -1)
-                                        countY = voxelsAbove;
-                                    if (voxelsInfront < countZ || countZ == -1)
-                                        countZ = voxelsInfront;
-                                }
-                            else if (countY >= countX && countY >= countZ)
-                                for (var i = currentY; i <= currentY + countY; i++)
-                                {
-                                    var voxelsRight = GetNeighborsX(currentX, i, currentZ);
-                                    var voxelsInfront = GetNeighborsZ(currentX, i, currentZ);
-                                    if (voxelsRight < countX || countX == -1)
-                                        countX = voxelsRight;
-                                    if (voxelsInfront < countZ || countZ == -1)
-                                        countZ = voxelsInfront;
-                                }
-                            else if (countZ >= countX && countZ >= countY)
-                                for (var i = (int)currentZ; i <= currentZ + countZ; i++)
-                                {
-                                    var voxelsAbove = GetNeighborsY(currentX, currentY, i);
-                                    var voxelsRight = GetNeighborsX(currentX, currentY, i);
-                                    if (voxelsAbove < countY || countY == -1)
-                                        countY = voxelsAbove;
-                                    if (voxelsRight < countX || countX == -1)
-                                        countX = voxelsRight;
-                                }
-
-                            var posxColorVertex = new PositionColorVertex
+                            for (var currentY = 0; currentY < Dimensions.Y; currentY++)
                             {
-                                Color = Colors[VolumeData[currentX, currentY, currentZ]] / 255,
-                                Position = new Vector3(currentX, currentY, currentZ)
-                            };
-                            posxColorVertex.Position.Z = currentZ + countZ + 1;
-                            poscolresult.Add(posxColorVertex);
-                            posxColorVertex.Position.X = currentX + countX + 1;
-                            poscolresult.Add(posxColorVertex);
-                            posxColorVertex.Position.Y = currentY + countY + 1;
-                            poscolresult.Add(posxColorVertex);
-                            posxColorVertex.Position.X = currentX;
-                            poscolresult.Add(posxColorVertex);
+                                for (var currentX = 0; currentX < Dimensions.X; currentX++)
+                                {
+                                    if (VolumeData[currentX, currentY, currentZ] == 0 || CheckedInVoxels[currentX, currentY, currentZ])
+                                        continue;
 
-                            //Backface Vertex
-                            posxColorVertex.Position.X = currentX;
-                            posxColorVertex.Position.Y = currentY;
-                            posxColorVertex.Position.Z = currentZ;
-                            poscolresult.Add(posxColorVertex);
-                            posxColorVertex.Position.X = currentX + countX + 1;
-                            poscolresult.Add(posxColorVertex);
-                            posxColorVertex.Position.Y = currentY + countY + 1;
-                            poscolresult.Add(posxColorVertex);
-                            posxColorVertex.Position.X = currentX;
-                            poscolresult.Add(posxColorVertex);
-                            var end = new Vector3(currentX + countX + 1, currentY + countY + 1,
-                                currentZ + countZ + 1);
-                            checkin(new Vector3(currentX, currentY, currentZ), end);
+                                    _checked++;
+                                    countX = GetNeighborsX(currentX, currentY, currentZ);
+                                    countY = GetNeighborsY(currentX, currentY, currentZ);
+                                    countZ = GetNeighborsZ(currentX, currentY, currentZ);
+                                    if (countX >= countY && countX >= countZ)
+                                        for (var i = currentX; i <= currentX + countX; i++)
+                                        {
+                                            var voxelsAbove = GetNeighborsY(i, currentY, currentZ);
+                                            var voxelsInfront = GetNeighborsZ(i, currentY, currentZ);
+                                            if (voxelsAbove < countY || countY == -1)
+                                                countY = voxelsAbove;
+                                            if (voxelsInfront < countZ || countZ == -1)
+                                                countZ = voxelsInfront;
+                                        }
+                                    else if (countY >= countX && countY >= countZ)
+                                        for (var i = currentY; i <= currentY + countY; i++)
+                                        {
+                                            var voxelsRight = GetNeighborsX(currentX, i, currentZ);
+                                            var voxelsInfront = GetNeighborsZ(currentX, i, currentZ);
+                                            if (voxelsRight < countX || countX == -1)
+                                                countX = voxelsRight;
+                                            if (voxelsInfront < countZ || countZ == -1)
+                                                countZ = voxelsInfront;
+                                        }
+                                    else if (countZ >= countX && countZ >= countY)
+                                        for (var i = (int)currentZ; i <= currentZ + countZ; i++)
+                                        {
+                                            var voxelsAbove = GetNeighborsY(currentX, currentY, i);
+                                            var voxelsRight = GetNeighborsX(currentX, currentY, i);
+                                            if (voxelsAbove < countY || countY == -1)
+                                                countY = voxelsAbove;
+                                            if (voxelsRight < countX || countX == -1)
+                                                countX = voxelsRight;
+                                        }
+
+                                    var posxColorVertex = new PositionColorVertex
+                                    {
+                                        Color = Colors[VolumeData[currentX, currentY, currentZ]] / 255,
+                                        Position = new Vector3(currentX, currentY, currentZ)
+                                    };
+                                    posxColorVertex.Position.Z = currentZ + countZ + 1;
+                                    poscolresult.Add(posxColorVertex);
+                                    posxColorVertex.Position.X = currentX + countX + 1;
+                                    poscolresult.Add(posxColorVertex);
+                                    posxColorVertex.Position.Y = currentY + countY + 1;
+                                    poscolresult.Add(posxColorVertex);
+                                    posxColorVertex.Position.X = currentX;
+                                    poscolresult.Add(posxColorVertex);
+
+                                    //Backface Vertex
+                                    posxColorVertex.Position.X = currentX;
+                                    posxColorVertex.Position.Y = currentY;
+                                    posxColorVertex.Position.Z = currentZ;
+                                    poscolresult.Add(posxColorVertex);
+                                    posxColorVertex.Position.X = currentX + countX + 1;
+                                    poscolresult.Add(posxColorVertex);
+                                    posxColorVertex.Position.Y = currentY + countY + 1;
+                                    poscolresult.Add(posxColorVertex);
+                                    posxColorVertex.Position.X = currentX;
+                                    poscolresult.Add(posxColorVertex);
+                                    var end = new Vector3(currentX + countX + 1, currentY + countY + 1,
+                                        currentZ + countZ + 1);
+                                    checkin(new Vector3(currentX, currentY, currentZ), end);
+                                }
+                            }
                         }
-                    }
+                    /*}
                 }
-            }
+            }*/
 
             if (poscolresult.Count != 0)
             {
@@ -233,7 +239,7 @@ namespace MyEngine.HgtImporter
         {
             var neighborsX = 0;
             while (x < Dimensions.X - 1 && IsSameColorRight(x, y, z) &&
-                   !CheckedInVoxels[x,y,z])
+                   !CheckedInVoxels[x + 1, y, z])
             {
                 neighborsX++;
                 x++;
@@ -244,8 +250,8 @@ namespace MyEngine.HgtImporter
         private int GetNeighborsY(int x, int y, int z)
         {
             var neighborsY = 0;
-            while (y < Dimensions.Y - 1 && IsSameColorUp(x,y,z) &&
-                   !CheckedInVoxels[x, y, z])
+            while (y < Dimensions.Y - 1 && IsSameColorUp(x, y, z) &&
+                   !CheckedInVoxels[x, y + 1, z])
             {
                 y++;
                 neighborsY++;
@@ -257,8 +263,8 @@ namespace MyEngine.HgtImporter
         private int GetNeighborsZ(int x, int y, int z)
         {
             var neighborsZ = 0;
-            while (z < Dimensions.Z - 1 && IsSameColorFront(x,y,z) &&
-                   !CheckedInVoxels[x, y, z])
+            while (z < Dimensions.Z - 1 && IsSameColorFront(x, y, z) &&
+                   !CheckedInVoxels[x, y, z + 1])
             {
                 z++;
                 neighborsZ++;

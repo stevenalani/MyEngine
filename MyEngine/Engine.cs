@@ -108,7 +108,7 @@ namespace MyEngine
             shader.SetUniformMatrix4X4("projection", projection);
             var view = Camera.GetView();
             shader.SetUniformMatrix4X4("view", view);
-            shader.SetUniformVector3("lightPos", new Vector3(0,100,0));
+            shader.SetUniformVector3("lightPos", new Vector3(100,1000,100));
             shader.SetUniformVector3("lightColor", new Vector3(1, 1, 1));
             shader.SetUniformVector3("viewpos", Camera.Position);
             shader.SetUniformFloat("ambientStrength", 1);
@@ -134,13 +134,11 @@ namespace MyEngine
         }
         public List<RayHitResult> CheckHit()
         {
-            
-            
             var hitResults = new List<RayHitResult>();
             var BoundingBoxes = modelManager.GetModelsAndWorld().Where(x => x is PositionColorModel)
                 .Select(x =>
                 {
-                    var bb = new BoundingBox((PositionColorModel)x,this.Camera);
+                    var bb = ((PositionColorModel)x).BoundingBox;
                     return new KeyValuePair<PositionColorModel, BoundingBox>((PositionColorModel)x, bb);
                 });
 
@@ -162,10 +160,11 @@ namespace MyEngine
                             isinz = boundingbox.leftlownear.Z >= ray.Z && ray.Z >= boundingbox.rightlowfar.Z;
                             ray -= Camera.ViewDirection * 0.5f;
                         }
-                        var bb2 = new BoundingBox(values.Key, Camera,new Vector4(0.8f, 0.2f, 0.2f, 0.1f));
-                        bb2.series = "Checkhit";
-                        bb2.purgesiblings = true;
-                        modelManager.AddModel(bb2);
+
+                        //var bb2 = new BoundingBox(values.Key, new Vector4(0.8f, 0.2f, 0.2f, 0.1f));
+                        //bb2.series = "Checkhit";
+                        //bb2.purgesiblings = true;
+                        modelManager.AddModel(values.Key.BoundingBox);
                         var hit = new RayHitResult
                         {
                             model = values.Key,
@@ -183,41 +182,40 @@ namespace MyEngine
         protected override void OnMouseUp(MouseButtonEventArgs e)
         {
             base.OnMouseUp(e);
-            var visualray = new VisualRay(Camera.Position,Camera.ViewDirection);
+            var visualray = new VisualRay(Camera.Position, Camera.ViewDirection);
             visualray.series = "showray";
             visualray.purgesiblings = true;
             AddModel(visualray);
 
             var results = CheckHit();
             var volumes = results.Where(x => x.model is Volume);
-            Random rand = new Random(DateTime.Now.Millisecond);
+
             var colorval = 240;
             foreach (var volumehit in volumes)
             {
-                Volume volume = (Volume)volumehit.model;
-                var hitinobjectspace = Vector3.TransformPosition(volumehit.HitPositionWorld, volume.Modelmatrix.Inverted()) + volume.size/2;
-                var directionModelSpace = Vector3.Normalize(Vector3.TransformVector(volumehit.RayDirectionWorld,volume.Modelmatrix.Inverted())) ;
+                var volume = (Volume)volumehit.model;
+                var hitinobjectspace =
+                    Vector3.TransformPosition(volumehit.HitPositionWorld, volume.Modelmatrix.Inverted()) +
+                    volume.size / 2;
+                var directionModelSpace =
+                    Vector3.Normalize(Vector3.TransformVector(volumehit.RayDirectionWorld,
+                        volume.Modelmatrix.Inverted()));
 
                 var IsVoxelSet = false;
-                for (double i = 0; i < Camera.far*2; i+=0.1)
+                for (double i = 0; i < Camera.far * 2; i += 0.1)
                 {
                     var ray = hitinobjectspace + directionModelSpace * (float)i;
-                    if (volume.IsValidVoxelPosition((int) ray.X, (int) ray.Y, (int) ray.Z))
+                    if (volume.IsValidVoxelPosition((int)ray.X, (int)ray.Y, (int)ray.Z))
                     {
-                         volume.SetVoxel((int)ray.X, (int)ray.Y,
-                    (int)ray.Z, new Vector4(colorval, colorval, colorval, 255f));
-                         IsVoxelSet = true;
-                         volume.IsInitialized = false;
+                        volume.SetVoxel((int)ray.X, (int)ray.Y,
+                            (int)ray.Z, new Vector4(colorval, colorval, colorval, 255f));
+                        IsVoxelSet = true;
                         break;
-                    }                   
-                }
-
-                if (IsVoxelSet)
-                {
-                    volume.IsInitialized = false;
+                    }
                 }
             }
         }
+
 
 
         protected override void OnMouseMove(MouseMoveEventArgs e)

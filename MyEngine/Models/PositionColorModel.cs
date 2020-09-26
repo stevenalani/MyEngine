@@ -26,6 +26,7 @@ namespace MyEngine
         public uint[] Indices { get; set; }
 
         public PositionColorVertex[] Vertices { get; set; }
+        public BoundingBox BoundingBox => new BoundingBox(this);
 
         public override void InitBuffers()
 
