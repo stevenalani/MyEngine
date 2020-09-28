@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using MyEngine.Assets.Models;
 using MyEngine.Assets.Models.Voxel;
+using MyEngine.HgtImporter;
 using MyEngine.Models.Voxel;
 using OpenTK;
 
@@ -15,7 +16,7 @@ namespace MyEngine.VoxelImporter
     {
         private static float VoxelSizeFactor = 0.5f;
 
-        public static Volume LoadVoxelModelFromVox(string path)
+        public static ColorVolume LoadVoxelModelFromVox(string path)
         {
             List<Vector4> colorsList = new List<Vector4>();
             
@@ -27,7 +28,7 @@ namespace MyEngine.VoxelImporter
             var colorInformation = (RgbaChunk) chunk.ChildChunks.Select(x => x).Where(x => x is RgbaChunk).First();
             var voxelInformation = (XyziChunk) chunk.ChildChunks.Select(x => x).Where(x => x is XyziChunk).First();
             var dimensions = new Vector3(sizeInformation.X,sizeInformation.Y,sizeInformation.Z);
-            Volume vol = new Volume(dimensions);
+            ColorVolume vol = new ColorVolume((int)dimensions.X, (int)dimensions.X, (int)dimensions.X);
 
             foreach (var color in colorInformation.RGBA)
             {

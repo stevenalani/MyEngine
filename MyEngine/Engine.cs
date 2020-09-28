@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using MyEngine.Assets.Models;
+using MyEngine.HgtImporter;
 using MyEngine.Logging;
 using MyEngine.Models.Voxel;
 using OpenTK;
@@ -188,15 +189,15 @@ namespace MyEngine
             AddModel(visualray);
 
             var results = CheckHit();
-            var volumes = results.Where(x => x.model is Volume);
+            var volumes = results.Where(x => x.model is ColorVolume);
 
             var colorval = 240;
             foreach (var volumehit in volumes)
             {
-                var volume = (Volume)volumehit.model;
+                var volume = (ColorVolume)volumehit.model;
                 var hitinobjectspace =
                     Vector3.TransformPosition(volumehit.HitPositionWorld, volume.Modelmatrix.Inverted()) +
-                    volume.size / 2;
+                    volume.Dimensions / 2;
                 var directionModelSpace =
                     Vector3.Normalize(Vector3.TransformVector(volumehit.RayDirectionWorld,
                         volume.Modelmatrix.Inverted()));
@@ -304,7 +305,7 @@ namespace MyEngine
         {
             modelManager.AddModel(model);
         }
-        public void SetWorld(VoxelMap world)
+        public void SetWorld(ColorVolume world)
         {
             modelManager.SetWorld(world);
         }

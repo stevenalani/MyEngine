@@ -7,105 +7,21 @@ using System.Linq;
 
 namespace MyEngine.HgtImporter
 {
-    public class ColorVolume : Volume
+    public class BigColorVolumeChunk : ColorVolume
     {     
-        public List<Vector4> Colors = new List<Vector4>() { Vector4.Zero };
-        public ColorVolume(int DimensionsX, int DimensionsY, int DimensionsZ) : base()
-        {
-            Dimensions = new Vector3(DimensionsX, DimensionsY, DimensionsZ);
-            VolumeData = new int[DimensionsX, DimensionsY, DimensionsZ];
-        }
+        private uint ChunkIdX;
+        private uint ChunkIdY;
+        private uint ChunkIdZ;
 
-        private void InitializeVolumeData()
+        public BigColorVolumeChunk(int dimensions, uint idX, uint idY, uint idZ) : base(dimensions,dimensions,dimensions)
         {
-            VolumeData = new int[(int)Dimensions.X, (int)Dimensions.Y, (int)Dimensions.Z];
-        }
-
-        public override void SetVoxel(int x, int y, int z, int colorIndex)
-        {
-            VolumeData[x, y, z] = colorIndex;
-        }
-        public override void SetVoxel(int x, int y, int z, Vector4 color)
-        {
-            if (!Colors.Contains(color))
-            {
-                Colors.Add(color);
-            }
-            var colorIndex = Colors.IndexOf(color);
-
-            SetVoxel(x, y, z, colorIndex);
-        }
-        public override void SetVoxel(Vector3 position, Vector4 color)
-        {
-            SetVoxel((int)position.X, (int)position.Y, (int)position.Z, color);
-        }
-
-        public void ClearVolume()
-        {
-            InitializeVolumeData();
-        }
-
-        public override void ClearVoxel(int x, int y, int z)
-        {
-            if (!(x <= Dimensions.X && y <= Dimensions.Y && z <= Dimensions.Z)) return;
-            VolumeData[x, y, z] = 0;
-        }
-
-        protected bool IsSameColorFront(int x, int y, int z)
-        {
-            return VolumeData[x, y, z] == VolumeData[x, y, z + 1];
-        }
-
-        protected bool IsSameColorBack(int x, int y, int z)
-        {
-            return VolumeData[x, y, z] == VolumeData[x, y, z - 1];
-        }
-
-        protected bool IsSameColorRight(int x, int y, int z)
-        {
-            return VolumeData[x, y, z] == VolumeData[x + 1, y, z];
-        }
-
-        public void AddColor(Vector4 color)
-        {
-            if (!Colors.Contains(color))
-            {
-                Colors.Add(color);
-            }
-        }
-
-        public int GetColorIndex(Vector4 color)
-        {
-            return Colors.IndexOf(color);
-        }
-
-        protected bool IsSameColorLeft(int x, int y, int z)
-        {
-            return VolumeData[x, y, z] == VolumeData[x - 1, y, z];
-        }
-
-        protected bool IsSameColorUp(int x, int y, int z)
-        {
-            return VolumeData[x, y, z] == VolumeData[x, y + 1, z];
-        }
-
-        protected bool IsSameColorDown(int x, int y, int z)
-        {
-            return VolumeData[x, y, z] == VolumeData[x, y - 1, z];
-        }
-        public virtual void ComputeIndices()
-        {
-            if (Vertices == null) return;
             
-                var vxlcnt = Vertices.Length / 8;
-                var indices = new List<uint>();
-                for (uint i = 0; i < vxlcnt; i++)
-                    indices.AddRange(CubeData.Indices.Select(x => x + i * 8).ToList());
-
-                Indices = indices.ToArray();
-            
+            ChunkIdX = idX;
+            ChunkIdY = idY;
+            ChunkIdZ = idZ;
         }
-        public virtual void ComputeVertices()
+
+        public override void ComputeVertices()
         {
             int countX, countY, countZ;
             var _checked = 0;
@@ -199,7 +115,7 @@ namespace MyEngine.HgtImporter
                         return new PositionColorVertex
                         {
                             Color = x.Color,
-                            Position = x.Position - Dimensions / 2
+                            Position = x.Position - Dimensions / 2 + Position
                         };
                     }
                     ).ToArray();
@@ -221,7 +137,7 @@ namespace MyEngine.HgtImporter
                         return new PositionColorVertex
                         {
                             Color = x.Color,
-                            Position = x.Position - Dimensions / 2 
+                            Position = x.Position - Dimensions / 2 + Position
                         };
                     }
                     ));
@@ -230,113 +146,18 @@ namespace MyEngine.HgtImporter
             }
         }
 
-        protected int GetNeighborsX(int x, int y, int z)
-        {
-            var neighborsX = 0;
-            while (x < Dimensions.X - 1 && IsSameColorRight(x, y, z) &&
-                   !CheckedInVoxels[x + 1, y, z])
-            {
-                neighborsX++;
-                x++;
-            }
-
-            return neighborsX;
-        }
-        protected int GetNeighborsY(int x, int y, int z)
-        {
-            var neighborsY = 0;
-            while (y < Dimensions.Y - 1 && IsSameColorUp(x, y, z) &&
-                   !CheckedInVoxels[x, y + 1, z])
-            {
-                y++;
-                neighborsY++;
-            }
-
-            return neighborsY;
-        }
-
-        protected int GetNeighborsZ(int x, int y, int z)
-        {
-            var neighborsZ = 0;
-            while (z < Dimensions.Z - 1 && IsSameColorFront(x, y, z) &&
-                   !CheckedInVoxels[x, y, z + 1])
-            {
-                z++;
-                neighborsZ++;
-            }
-
-            return neighborsZ;
-        }
-
+        
         public override void InitBuffers()
         {
             ComputeVerticesAndIndices();
             base.InitBuffers();
         }
 
-        protected void checkin(Vector3 start, Vector3 end)
-        {
-            for (var i = (int)start.X; i < end.X; i++)
-                for (var j = (int)start.Y; j < end.Y; j++)
-                    for (var k = (int)start.Z; k < end.Z; k++)
-                    {
-                        var voxel = VolumeData[i, j, k];
-                        if (voxel != 0)
-                            CheckedInVoxels[i, j, k] = true;
-                    }
-        }
-
-        protected void checkout(Vector3 start, Vector3 end)
-        {
-            for (var i = (int)start.X; i < end.X; i++)
-                for (var j = (int)start.Y; j < end.Y; j++)
-                    for (var k = (int)start.Z; k < end.Z; k++)
-                        CheckedInVoxels[i, j, k] = false;
-        }
-
-
-
-        public int GetVoxelCount()
-        {
-            var _voxelscount = 0;
-            for (var i = 0; i < Dimensions.X; i++)
-                for (var j = 0; j < Dimensions.Y; j++)
-                    for (var k = 0; k < Dimensions.Z; k++)
-                        if (VolumeData[i, j, k] != 0)
-                            _voxelscount++;
-            return _voxelscount;
-        }
-
-        public int GetCheckedInCount()
-        {
-            var _voxelscount = 0;
-            for (var i = 0; i < Dimensions.X; i++)
-                for (var j = 0; j < Dimensions.Y; j++)
-                    for (var k = 0; k < Dimensions.Z; k++)
-                        if (CheckedInVoxels[i, j, k])
-                            _voxelscount++;
-            return _voxelscount;
-        }
+        
         public override void ComputeVerticesAndIndices()
         {
             ComputeVertices();
             ComputeIndices();
-        }
-
-
-        public bool IsVoxel(int x, int y, int z)
-        {
-            if (x >= 0 && x < Dimensions.X && y >= 0 && y < Dimensions.Y && z >= 0 && z < Dimensions.Z)
-                return VolumeData[x, y, z] != 0;
-
-            return false;
-        }
-
-        public bool IsValidVoxelPosition(int x, int y, int z)
-        {
-            if (x >= 0 && x < Dimensions.X && y >= 0 && y < Dimensions.Y && z >= 0 && z < Dimensions.Z) return true;
-
-            return false;
         }
     }
 }

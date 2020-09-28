@@ -23,9 +23,9 @@ namespace MyEngine
             name = modelname + ID;
         }
 
-        public uint[] Indices { get; set; }
+        public virtual uint[] Indices { get; set; }
 
-        public PositionColorVertex[] Vertices { get; set; }
+        public virtual PositionColorVertex[] Vertices { get; set; }
         public BoundingBox BoundingBox => new BoundingBox(this);
 
         public override void InitBuffers()

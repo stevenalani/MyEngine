@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using MyEngine.Helpers;
 using MyEngine.HgtImporter;
+using MyEngine.Models.Voxel;
 using OpenTK;
 
 namespace MyEngine
@@ -35,12 +36,24 @@ namespace MyEngine
 //            engine.SetWorld(vol);
             var hgtdata = new HgtReader().GetElevationData("C:\\Users\\Steven\\Documents\\Eigene Dokumente\\Studium\\Softwaretechnik\\Thesis\\Procedural Generation of Content\\N48E009.hgt");
             var vol = mapgen.GenerateMapFromHeightData(hgtdata);
-            vol.Position = new Vector3();
-            vol.Scales.X = 3;
-            vol.Scales.Z = 3;
+            vol.Scales.X = 30;
+            vol.Scales.Z = 30;
             engine.AddModel(vol);
-
-            var color1 = new Vector4(255, 0, 0, 255);
+            BigColorVolume colorvol = new BigColorVolume(32, 32, 32, 16);
+            
+            for (int z = 0;z < 32; z++)
+            {
+                for (int y = 0; y < 32; y++)
+                {
+                    for (int x = 0; x < 32; x++)
+                    {
+                        var color1 = new Vector4(255-x, 255-y, 255-z, 100);
+                        colorvol.SetVoxel(x, y, z, color1);
+                    }
+                }
+            }
+           // engine.AddModel(colorvol);
+ /*           var color1 = new Vector4(255, 0, 0, 255);
             var color2 = new Vector4(0, 255, 0, 255);
             var color3 = new Vector4(0, 0, 255, 255);
 
@@ -96,9 +109,9 @@ namespace MyEngine
             volume2.SetVoxel(0, 0, 4, 3);
 
             //engine.AddModel(volume);
-            //engine.AddModel(volume2);
+            engine.AddModel(volume2);
 
-
+            volume2.Position.Y = 1000;*/
             engine.LoadModelFromFile(Path.Combine(userprofilePath, "3D Objects\\chr_rain.vox"));
             var model = engine.GetModel("chr_rain").First();
            

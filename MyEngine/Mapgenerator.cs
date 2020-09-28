@@ -24,14 +24,13 @@ namespace MyEngine
         private Vector4 rock = new Vector4(190, 190, 190, 255);
         private Vector4 snow = new Vector4(200, 200, 200, 255);
 
-        private VoxelMap vol;
         private Random rand = RandomProvider.GetThreadRandom();
         private int Y(int x, double slope, int y0)
         {
             return (int)Math.Round(x * slope + y0);
         }
 
-        private Vector4 color(float y, int deltaheight)
+        private Vector4 Color(float y, int deltaheight)
         {
             var heightpitch = rand.NextDouble() * 2 - 1.0;
             var heightcolorscale = 1.0;
@@ -53,7 +52,7 @@ namespace MyEngine
                 color = snow;
             return color;
         }
-        public HgtMapVolume GenerateMapFromHeightData(short[,] heights)
+        public BigColorVolume GenerateMapFromHeightData(short[,] heights)
         {
             var colNRowCnt = (int)(Math.Sqrt(heights.Length)/10);
             List<HeightmapImporter.LocationResult> locationResults = new List<HeightmapImporter.LocationResult>();
@@ -62,23 +61,23 @@ namespace MyEngine
                     locationResults.Add(new HeightmapImporter.LocationResult() { latitude = x, longitude = y, elevation = heights[y, x] });
             int minVal = locationResults.Min(location => location.elevation);
             var deltaheight = locationResults.Max(location => location.elevation) - minVal;
-            var volume = new HgtMapVolume(colNRowCnt, locationResults.Max(location => location.elevation) - minVal, colNRowCnt);
+            var volume = new BigColorVolume(colNRowCnt, locationResults.Max(location => location.elevation) - minVal, colNRowCnt);
             var color = new Vector4(200, 200, 200, 255);
             foreach (var result in locationResults)
             {
-                for (int i = 0; i < result.elevation - minVal; i++)
-                    volume.SetVoxel((int)result.latitude, i, (int)result.longitude, color);
+                for (int i = 0; i < result.elevation - minVal ; i++)
+                    volume.SetVoxel((int)result.latitude, i, (int)result.longitude,Color(i,deltaheight));
             }
             return volume;
         }
 
-        public VoxelMap GenerateMapFromHeightData(List<HeightmapImporter.LocationResult> heights,
+        /*public BigColorVolume GenerateMapFromHeightData(List<HeightmapImporter.LocationResult> heights,
            Vector2 itemsperaxis, int offset = -1)
         {
             offset = offset == -1 ? 3 : offset;
             var deltaheight = heights.Max(location => location.elevation) - heights.Min(location => location.elevation);
             var indexcount = itemsperaxis.X * itemsperaxis.Y;
-            vol = new VoxelMap(itemsperaxis, offset, heights.Select(x => x.elevation).ToArray());
+            vol = new BigColorVolume(itemsperaxis, offset, heights.Select(x => x.elevation).ToArray());
             // //vol = new VoxelMap((int) itemsperaxis.X * offset, deltaheight,
             //    (int) itemsperaxis.Y * offset);
 
@@ -141,12 +140,12 @@ namespace MyEngine
                     }
                 }
             return vol;
-        }
+        }*/
 
-        public Volume generateLineFillLower(int y0, int y1, int lengthInVoxels, bool fill = false,
+        public ColorVolume generateLineFillLower(int y0, int y1, int lengthInVoxels, bool fill = false,
             Vector3 direction = default(Vector3))
         {
-            Volume vol = null;
+            ColorVolume vol = null;
             var slope = (y1 - y0) / (double)lengthInVoxels;
             direction = direction == default(Vector3) ? Vector3.UnitX : Vector3.Normalize(direction);
 
@@ -159,20 +158,20 @@ namespace MyEngine
                         if (direction == Vector3.UnitX)
                         {
                             if (vol == null)
-                                vol = new Volume(lengthInVoxels, y1, 1);
+                                vol = new ColorVolume(lengthInVoxels, y1, 1);
                             vol.SetVoxel(i, yn, 0, new Vector4(0, 120, 255, 255));
                         }
 
                         else if (direction == Vector3.UnitY)
                         {
                             if (vol == null)
-                                vol = new Volume(y1, lengthInVoxels, 1);
+                                vol = new ColorVolume(y1, lengthInVoxels, 1);
                             vol.SetVoxel(yn, i, 0, new Vector4(0, 120, 255, 255));
                         }
                         else
                         {
                             if (vol == null)
-                                vol = new Volume(1, y1, lengthInVoxels);
+                                vol = new ColorVolume(1, y1, lengthInVoxels);
                             vol.SetVoxel(0, yn, i, new Vector4(0, 120, 255, 255));
                         }
                 }
@@ -181,20 +180,20 @@ namespace MyEngine
                     if (direction == Vector3.UnitX)
                     {
                         if (vol == null)
-                            vol = new Volume(lengthInVoxels, y1, 1);
+                            vol = new ColorVolume(lengthInVoxels, y1, 1);
                         vol.SetVoxel(i, y, 0, new Vector4(0, 120, 255, 255));
                     }
 
                     else if (direction == Vector3.UnitY)
                     {
                         if (vol == null)
-                            vol = new Volume(y1, lengthInVoxels, 1);
+                            vol = new ColorVolume(y1, lengthInVoxels, 1);
                         vol.SetVoxel(y, i, 0, new Vector4(0, 120, 255, 255));
                     }
                     else
                     {
                         if (vol == null)
-                            vol = new Volume(1, y1, lengthInVoxels);
+                            vol = new ColorVolume(1, y1, lengthInVoxels);
                         vol.SetVoxel(0, y, i, new Vector4(0, 120, 255, 255));
                     }
                 }

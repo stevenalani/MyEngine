@@ -1,28 +1,29 @@
 ﻿using System;
 using MyEngine.DataStructures;
+using MyEngine.HgtImporter;
 using MyEngine.Models.Voxel;
 using MyEngine.ShaderImporter;
 using OpenTK;
 
 namespace MyEngine.Assets.Models.Voxel
 {
-    internal class RandomDiscoVolume : Volume
+    internal class RandomDiscoVolume : ColorVolume
     {
         private int drawings;
 
-        public RandomDiscoVolume(Vector3 size) : base(size)
+        public RandomDiscoVolume(Vector3 Dimensions) : base((int)Dimensions.X, (int)Dimensions.Y, (int)Dimensions.Z)
         {
             var rand = new Random(DateTime.Now.Millisecond);
-            for (var i = 0; i < size.X; i++)
-            for (var j = 0; j < size.Y; j++)
-            for (var k = 0; k < size.Z; k++)
+            for (var i = 0; i < Dimensions.X; i++)
+            for (var j = 0; j < Dimensions.Y; j++)
+            for (var k = 0; k < Dimensions.Z; k++)
                 SetVoxel(new Vector3(i, j, k),
                     new Vector4(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 200)));
-            SetVoxel(new Vector3(size.X-1, 0, 0),
+            SetVoxel(new Vector3(Dimensions.X-1, 0, 0),
                 new Vector4(255, 0, 0, 255));
-            SetVoxel(new Vector3(0, size.Y - 1, 0),
+            SetVoxel(new Vector3(0, Dimensions.Y - 1, 0),
                 new Vector4(0, 255, 0, 255));
-            SetVoxel(new Vector3(0, 0, size.Z - 1),
+            SetVoxel(new Vector3(0, 0, Dimensions.Z - 1),
                 new Vector4(0, 0, 255, 255));
             Update();
         }
@@ -36,32 +37,38 @@ namespace MyEngine.Assets.Models.Voxel
         public void Update()
         {
             var rand = new Random(DateTime.Now.Millisecond);
-            /*for (var i = 0; i < size.X; i++)
-            for (var j = 0; j < size.Y; j++)
-            for (var k = 0; k < size.Z; k++)*/
-            var x = rand.Next(0, (int) (size.X - 1));
-            var y = rand.Next(0, (int) (size.Y - 1));
-            var z = rand.Next(0, (int) (size.Z - 1));
+            /*for (var i = 0; i < Dimensions.X; i++)
+            for (var j = 0; j < Dimensions.Y; j++)
+            for (var k = 0; k < Dimensions.Z; k++)*/
+            var x = rand.Next(0, (int) (Dimensions.X - 1));
+            var y = rand.Next(0, (int) (Dimensions.Y - 1));
+            var z = rand.Next(0, (int) (Dimensions.Z - 1));
             ClearVoxel(x, y, z);
-            x = rand.Next(0, (int) (size.X - 1));
-            y = rand.Next(0, (int) (size.Y - 1));
-            z = rand.Next(0, (int) (size.Z - 1));
+            x = rand.Next(0, (int) (Dimensions.X - 1));
+            y = rand.Next(0, (int) (Dimensions.Y - 1));
+            z = rand.Next(0, (int) (Dimensions.Z - 1));
             ClearVoxel(x, y, z);
-            x = rand.Next(0, (int) (size.X - 1));
-            y = rand.Next(0, (int) (size.Y - 1));
-            z = rand.Next(0, (int) (size.Z - 1));
+            x = rand.Next(0, (int) (Dimensions.X - 1));
+            y = rand.Next(0, (int) (Dimensions.Y - 1));
+            z = rand.Next(0, (int) (Dimensions.Z - 1));
             SetVoxel(new Vector3(x, y, z),
                 new Vector4(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 200)));
-            for (var zz = 0; zz < size.Z; zz++)
-            for (var yy = 0; yy < size.Y; yy++)
-            for (var xx = 0; xx < size.X; xx++)   
-                VolumeData[xx, yy, zz].checkedin = false;
+            for (var zz = 0; zz < Dimensions.Z; zz++)
+            {
+                for (var yy = 0; yy < Dimensions.Y; yy++)
+                {
+                    for (var xx = 0; xx < Dimensions.X; xx++)
+                    {
+                        CheckedInVoxels[xx, yy, zz] = false;
+                    }
+                }
+            }
 
-            SetVoxel(new Vector3(size.X - 1, 0, 0),
+            SetVoxel(new Vector3(Dimensions.X - 1, 0, 0),
                 new Vector4(255, 0, 0, 255));
-            SetVoxel(new Vector3(0, size.Y - 1, 0),
+            SetVoxel(new Vector3(0, Dimensions.Y - 1, 0),
                 new Vector4(0, 255, 0, 255));
-            SetVoxel(new Vector3(0, 0, size.Z - 1),
+            SetVoxel(new Vector3(0, 0, Dimensions.Z - 1),
                 new Vector4(0, 0, 255, 255));
 
             IsInitialized = false;

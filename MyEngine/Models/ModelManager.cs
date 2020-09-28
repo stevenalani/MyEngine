@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MyEngine.Assets;
+using MyEngine.HgtImporter;
 using MyEngine.Models.Voxel;
 using MyEngine.ShaderImporter;
 using OpenTK.Graphics.ES20;
@@ -170,13 +171,13 @@ namespace MyEngine
             Update(null, null);
         }
 
-        public void SetWorld(VoxelMap world)
+        public void SetWorld(ColorVolume world)
         {
             this.hasWorld = true;
             this.World = world;
         }
 
-        public VoxelMap World { get; set; }
+        public ColorVolume World { get; set; }
 
         public void ClearWorld()
         {
