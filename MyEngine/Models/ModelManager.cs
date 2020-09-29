@@ -1,13 +1,11 @@
-﻿using System;
+﻿using MyEngine.Assets;
+using MyEngine.Models.Voxel;
+using MyEngine.ShaderImporter;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using MyEngine.Assets;
-using MyEngine.HgtImporter;
-using MyEngine.Models.Voxel;
-using MyEngine.ShaderImporter;
-using OpenTK.Graphics.ES20;
 
 namespace MyEngine
 {
@@ -38,10 +36,10 @@ namespace MyEngine
             if (!joined)
             {
                 var models = _models.Values.ToList();
-                models.Insert(0,World);
+                models.Insert(0, World);
                 return models;
             }
-                
+
             var res = new List<Model>();
             res.AddRange(UninitializedModels);
             res.AddRange(_models.Values);
@@ -58,7 +56,7 @@ namespace MyEngine
             HasModelUpdates = true;
             if (model is IEngineModel)
             {
-                UninitializedEngineModels.Enqueue((IEngineModel) model);
+                UninitializedEngineModels.Enqueue((IEngineModel)model);
                 return;
             }
 
@@ -83,7 +81,7 @@ namespace MyEngine
                 while (!UninitializedEngineModels.IsEmpty)
                 {
                     UninitializedEngineModels.TryDequeue(out model);
-                    ((Model) model)?.InitBuffers();
+                    ((Model)model)?.InitBuffers();
                     if (!engineModels.ContainsKey(model.series))
                         engineModels.Add(model.series, new List<IEngineModel>());
                     if (model.purgesiblings)
@@ -108,27 +106,27 @@ namespace MyEngine
             if (modelIDs == null)
                 foreach (var model in _models.Values)
                 {
-                    if (!model.IsInitialized){ model.InitBuffers();}
-                    shader.SetUniformMatrix4X4("model",model.Modelmatrix);
+                    if (!model.IsInitialized) { model.InitBuffers(); }
+                    shader.SetUniformMatrix4X4("model", model.Modelmatrix);
                     model.Draw(shader);
-                    
+
                 }
             else
                 foreach (var modelID in modelIDs)
                     if (_models.ContainsKey(modelID))
                     {
                         if (_models[modelID].IsInitialized)
-                        _models[modelID].InitBuffers();
+                            _models[modelID].InitBuffers();
                         shader.SetUniformMatrix4X4("model", _models[modelID].Modelmatrix);
                         _models[modelID].Draw(shader);
                     }
 
             foreach (var engineModels in engineModels.Values)
-            foreach (var model in engineModels)
-            {
-                if (!((Model) model).IsInitialized) ((Model) model).InitBuffers();
-                ((Model) model).Draw(shader);
-            }
+                foreach (var model in engineModels)
+                {
+                    if (!((Model)model).IsInitialized) ((Model)model).InitBuffers();
+                    ((Model)model).Draw(shader);
+                }
         }
 
         public List<Model> LoadModelFromFile(string modelpath, string name)

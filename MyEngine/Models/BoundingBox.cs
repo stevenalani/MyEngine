@@ -1,11 +1,7 @@
-﻿using System.Linq;
-using System.Runtime.CompilerServices;
-using MyEngine.Assets.Models;
-using MyEngine.DataStructures;
-using MyEngine.Logging;
+﻿using MyEngine.DataStructures;
 using MyEngine.Models;
 using OpenTK;
-using OpenTK.Graphics;
+using System.Linq;
 
 namespace MyEngine
 {

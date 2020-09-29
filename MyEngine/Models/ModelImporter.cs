@@ -1,11 +1,5 @@
-﻿using System;
+﻿using Assimp;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Assimp;
-using MyEngine.Assets.Models;
-using MyEngine.Models.Voxel;
 
 namespace MyEngine.Assets
 {
@@ -33,11 +27,11 @@ namespace MyEngine.Assets
                         Vector3D[] vertices = sceneMesh.Vertices.ToArray();
                         int[] indices = sceneMesh.GetIndices();
                         Vector3D[] normals = sceneMesh.Normals.ToArray();
-                        
+
                         for (int i = 0; i < sceneMesh.Vertices.Count; i++)
                         {
                             var cc = sceneMesh.VertexColorChannels;
-                            PositionColorNormalVertex positionColorVertex = new PositionColorNormalVertex(vertices[i],new Color4D(0,0.5f,0.7f),normals[i]);
+                            PositionColorNormalVertex positionColorVertex = new PositionColorNormalVertex(vertices[i], new Color4D(0, 0.5f, 0.7f), normals[i]);
                         }
                     }
                 }

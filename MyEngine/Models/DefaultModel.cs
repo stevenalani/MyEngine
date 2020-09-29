@@ -1,24 +1,22 @@
-﻿using System;
-using System.Linq;
-using MyEngine.DataStructures;
+﻿using MyEngine.DataStructures;
 using MyEngine.ShaderImporter;
-using OpenTK;
 using OpenTK.Graphics.OpenGL4;
+using System;
 
-namespace MyEngine.Assets.Models
+namespace MyEngine.Models
 {
 
 
-    public class DefaultModel :Model
+    public class DefaultModel : Model
     {
         private readonly int[] _vertices;
         private readonly int[] _indices;
 
-        public unsafe DefaultModel(int[] vertices, int[] indices, int[]normals)
+        public unsafe DefaultModel(int[] vertices, int[] indices, int[] normals)
         {
             _vertices = vertices;
             _indices = indices;
-            this.IndicesCnt = indices.Length;
+            IndicesCnt = indices.Length;
         }
         public PositionColorVertex[] Vertices { get; set; }
 
@@ -66,7 +64,7 @@ namespace MyEngine.Assets.Models
 
         public bool Ready()
         {
-            return this.IsInitialized;
+            return IsInitialized;
         }
     }
 }

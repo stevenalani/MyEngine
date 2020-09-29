@@ -1,8 +1,8 @@
-﻿using System;
+﻿using MyEngine.ShaderImporter;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using MyEngine.ShaderImporter;
 
 namespace MyEngine
 {
@@ -46,7 +46,7 @@ namespace MyEngine
 
         public void Update()
         {
-            Update(null,null);
+            Update(null, null);
         }
     }
 }

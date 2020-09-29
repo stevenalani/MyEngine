@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Assimp;
+﻿using Assimp;
 
 namespace MyEngine
 {
@@ -13,7 +8,7 @@ namespace MyEngine
             r, g, b, a,
             nx, ny, nz;
 
-        public PositionColorNormalVertex(float x, float y, float z, float r, float g, float b, float a,float nx,float ny, float nz)
+        public PositionColorNormalVertex(float x, float y, float z, float r, float g, float b, float a, float nx, float ny, float nz)
         {
             this.x = x;
             this.y = y;
@@ -45,7 +40,7 @@ namespace MyEngine
 
         public float[] ToArray()
         {
-            return new float[10] { x, y, z, r, g, b, a,nx,ny,nz};
+            return new float[10] { x, y, z, r, g, b, a, nx, ny, nz };
         }
     }
 }

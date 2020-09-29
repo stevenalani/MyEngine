@@ -1,5 +1,4 @@
-﻿using MyEngine.HgtImporter;
-using MyEngine.Models.Voxel;
+﻿using MyEngine.Models.Voxel;
 using OpenTK;
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using System.Linq;
 
 namespace MyEngine
 {
-    internal class Mapgenerator
+    public class Mapgenerator
     {
         private const float Water = 0.1f;
         private const float Sand = 0.2f;
@@ -54,7 +53,7 @@ namespace MyEngine
         }
         public BigColorVolume GenerateMapFromHeightData(short[,] heights)
         {
-            var colNRowCnt = (int)(Math.Sqrt(heights.Length)/10);
+            var colNRowCnt = (int)(Math.Sqrt(heights.Length) / 10);
             List<HeightmapImporter.LocationResult> locationResults = new List<HeightmapImporter.LocationResult>();
             for (int y = 0; y < colNRowCnt; y++)
                 for (int x = 0; x < colNRowCnt; x++)
@@ -65,8 +64,8 @@ namespace MyEngine
             var color = new Vector4(200, 200, 200, 255);
             foreach (var result in locationResults)
             {
-                for (int i = 0; i < result.elevation - minVal ; i++)
-                    volume.SetVoxel((int)result.latitude, i, (int)result.longitude,Color(i,deltaheight));
+                for (int i = 0; i < result.elevation - minVal; i++)
+                    volume.SetVoxel((int)result.latitude, i, (int)result.longitude, Color(i, deltaheight));
             }
             return volume;
         }
@@ -76,16 +75,16 @@ namespace MyEngine
         {
             offset = offset == -1 ? 3 : offset;
             var deltaheight = heights.Max(location => location.elevation) - heights.Min(location => location.elevation);
-            var indexcount = itemsperaxis.X * itemsperaxis.Y;
-            vol = new BigColorVolume(itemsperaxis, offset, heights.Select(x => x.elevation).ToArray());
-            // //vol = new VoxelMap((int) itemsperaxis.X * offset, deltaheight,
+            var indexcount = itemsperaxis.Value * itemsperaxis.Y;
+            vol = new BigColorVolume(itemsperaxis, offset, heights.Select(value => value.elevation).ToArray());
+            // //vol = new VoxelMap((int) itemsperaxis.Value * offset, deltaheight,
             //    (int) itemsperaxis.Y * offset);
 
 
             for (var z = 0; z < itemsperaxis.Y; z++)
-                for (var x = 0; x < itemsperaxis.X; x++)
+                for (var value = 0; value < itemsperaxis.Value; value++)
                 {
-                    var currentindex = (int)(x + z * itemsperaxis.X);
+                    var currentindex = (int)(value + z * itemsperaxis.Value);
                     var elevationCurrent = heights[currentindex].elevation;
                     int elevationRight = -1, elevationInfront = -1, elevationRightFront = -1;
                     int[] resultFrontFace = null;
@@ -128,13 +127,13 @@ namespace MyEngine
                             for (var y = 0; y < heightsAlongZ[forward]; y++)
                             {
                                 var colorr = color(y, deltaheight);
-                                vol.SetVoxel(x * offset + i, y, z * offset + forward, colorr);
+                                vol.SetVoxel(value * offset + i, y, z * offset + forward, colorr);
                             }
 
                             for (var y = 0; y < heightsAlongX[forward]; y++)
                             {
                                 var colorr = color(y, deltaheight);
-                                vol.SetVoxel(x * offset + forward, y, z * offset + i, colorr);
+                                vol.SetVoxel(value * offset + forward, y, z * offset + i, colorr);
                             }
                         }
                     }

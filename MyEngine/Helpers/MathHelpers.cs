@@ -6,7 +6,7 @@ namespace MyEngine
 {
     public static class MathHelpers
     {
-        public static Matrix4 getRotation(float yaw, float pitch,float roll)
+        public static Matrix4 getRotation(float yaw, float pitch, float roll)
         {
             Quaternion qPitch = Quaternion.FromAxisAngle(Vector3.UnitX, pitch);
             Quaternion qYaw = Quaternion.FromAxisAngle(Vector3.UnitY, yaw);
@@ -19,5 +19,5 @@ namespace MyEngine
             return rotate;
         }
     }
-    
+
 }

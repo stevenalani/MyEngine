@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenTK;
+﻿using OpenTK;
+using System;
 
 namespace MyEngine
 {
@@ -21,7 +17,7 @@ namespace MyEngine
         private Matrix4 GetRotationMatrix()
         {
             Quaternion qYaw = Quaternion.FromAxisAngle(Vector3.UnitY, (float)(Yaw * (Math.PI / 180)));
-            Quaternion qPitch = Quaternion.FromAxisAngle(Vector3.UnitX, (float) (Pitch * (Math.PI/180)));
+            Quaternion qPitch = Quaternion.FromAxisAngle(Vector3.UnitX, (float)(Pitch * (Math.PI / 180)));
             Quaternion orientation = qPitch * qYaw;
             orientation = Quaternion.Normalize(orientation);
             Matrix4 rotate = Matrix4.CreateFromQuaternion(orientation);

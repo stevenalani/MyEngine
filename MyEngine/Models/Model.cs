@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing.Drawing2D;
 using GlmNet;
-using MyEngine.Assets.Models;
+using MyEngine.Models;
 using MyEngine.DataStructures;
 using MyEngine.ShaderImporter;
 using OpenTK;
@@ -9,31 +9,25 @@ using OpenTK.Graphics.OpenGL;
 
 namespace MyEngine
 {
-    public abstract class Model:IDisposable
+    public abstract class Model : IDisposable
     {
         private static int nextid = 0;
         public readonly int ID;
         public string name;
-       
+
         public int VAO;
 
         protected int VBO;
         protected int EBO;
 
-        protected internal Vector3 Position = Vector3.Zero;
-        protected internal Vector3 Scales = Vector3.One;
+        public OpenTK.Vector3 Position = Vector3.Zero;
+        public Vector3 Scales = Vector3.One;
         protected internal Vector3 Rotations = Vector3.Zero;
 
-        public Vector3 Direction = -Vector3.UnitZ;
 
-        public Matrix4 Modelmatrix
-        {
-            get
-            {
-                return MathHelpers.getRotation(Rotations.X, Rotations.Y, Rotations.Z) * Matrix4.CreateScale(Scales) *
-                        Matrix4.CreateTranslation(Position);
-            }
-        }
+        public Vector3 Direction = -Vector3.UnitZ;
+        public Matrix4 Modelmatrix => MathHelpers.getRotation(Rotations.X, Rotations.Y, Rotations.Z) * Matrix4.CreateScale(Scales) *
+                                      Matrix4.CreateTranslation(Position);
 
 
         protected Model()
@@ -41,7 +35,7 @@ namespace MyEngine
             ID = Model.nextid++;
         }
 
-        public bool IsInitialized { get; set; }
+        public bool IsReady { get; set; }
 
 
         public abstract void Draw(ShaderProgram shaderProgram);
@@ -56,11 +50,11 @@ namespace MyEngine
         {
             if (disposing)
             {
-                if (IsInitialized)
+                if (IsReady)
                 {
                     GL.DeleteVertexArray(VAO);
                     GL.DeleteBuffer(VBO);
-                    IsInitialized = false;
+                    IsReady = false;
                 }
             }
         }
@@ -84,13 +78,13 @@ namespace MyEngine
 
         public void rotateY(float pitch)
         {
-            var rotationMatrix4 = MathHelpers.getRotation(0f,pitch, 0f);
+            var rotationMatrix4 = MathHelpers.getRotation(0f, pitch, 0f);
             this.Direction = Vector3.TransformNormal(Direction, rotationMatrix4);
             Rotations.Y += pitch;
         }
         public void rotateZ(float roll)
         {
-            var rotationMatrix4 = MathHelpers.getRotation(0f,0f, roll);
+            var rotationMatrix4 = MathHelpers.getRotation(0f, 0f, roll);
             this.Direction = Vector3.TransformNormal(Direction, rotationMatrix4);
             Rotations.Z = roll;
         }
@@ -102,10 +96,10 @@ namespace MyEngine
         }
         public void rotate(Vector3 yawpitchroll)
         {
-            var rotationMatrix4 = MathHelpers.getRotation(yawpitchroll.X,yawpitchroll.Y,yawpitchroll.Z);
+            var rotationMatrix4 = MathHelpers.getRotation(yawpitchroll.X, yawpitchroll.Y, yawpitchroll.Z);
             this.Direction = Vector3.TransformNormal(Direction, rotationMatrix4);
         }
 
-        
+
     }
 }

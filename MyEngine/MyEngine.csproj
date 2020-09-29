@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{83D1303E-1664-47FC-A1C1-9C52FDD37160}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <RootNamespace>MyEngine</RootNamespace>
     <AssemblyName>MyEngine</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
@@ -17,7 +17,7 @@
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -48,7 +48,8 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>MyEngine.Program</StartupObject>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -99,9 +100,9 @@
   <ItemGroup>
     <Compile Include="DataStructures\IVertextype.cs" />
     <Compile Include="Helpers\ClickHandlers.cs" />
-    <Compile Include="HgtImporter\BigColorVolume.cs" />
-    <Compile Include="HgtImporter\BigColorVolumeChunk.cs" />
-    <Compile Include="HgtImporter\ColorVolume.cs" />
+    <Compile Include="Models\Voxel\BigColorVolume.cs" />
+    <Compile Include="Models\Voxel\BigColorVolumeChunk.cs" />
+    <Compile Include="Models\Voxel\ColorVolume.cs" />
     <Compile Include="HgtImporter\HgtMapVolume.cs" />
     <Compile Include="HgtImporter\HgtReader.cs" />
     <Compile Include="Mapgenerator.cs" />

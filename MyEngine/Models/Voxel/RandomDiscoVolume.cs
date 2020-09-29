@@ -1,11 +1,8 @@
-﻿using System;
-using MyEngine.DataStructures;
-using MyEngine.HgtImporter;
-using MyEngine.Models.Voxel;
-using MyEngine.ShaderImporter;
+﻿using MyEngine.ShaderImporter;
 using OpenTK;
+using System;
 
-namespace MyEngine.Assets.Models.Voxel
+namespace MyEngine.Models.Voxel
 {
     internal class RandomDiscoVolume : ColorVolume
     {
@@ -15,11 +12,11 @@ namespace MyEngine.Assets.Models.Voxel
         {
             var rand = new Random(DateTime.Now.Millisecond);
             for (var i = 0; i < Dimensions.X; i++)
-            for (var j = 0; j < Dimensions.Y; j++)
-            for (var k = 0; k < Dimensions.Z; k++)
-                SetVoxel(new Vector3(i, j, k),
-                    new Vector4(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 200)));
-            SetVoxel(new Vector3(Dimensions.X-1, 0, 0),
+                for (var j = 0; j < Dimensions.Y; j++)
+                    for (var k = 0; k < Dimensions.Z; k++)
+                        SetVoxel(new Vector3(i, j, k),
+                            new Vector4(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 200)));
+            SetVoxel(new Vector3(Dimensions.X - 1, 0, 0),
                 new Vector4(255, 0, 0, 255));
             SetVoxel(new Vector3(0, Dimensions.Y - 1, 0),
                 new Vector4(0, 255, 0, 255));
@@ -37,20 +34,20 @@ namespace MyEngine.Assets.Models.Voxel
         public void Update()
         {
             var rand = new Random(DateTime.Now.Millisecond);
-            /*for (var i = 0; i < Dimensions.X; i++)
+            /*for (var i = 0; i < Dimensions.Value; i++)
             for (var j = 0; j < Dimensions.Y; j++)
             for (var k = 0; k < Dimensions.Z; k++)*/
-            var x = rand.Next(0, (int) (Dimensions.X - 1));
-            var y = rand.Next(0, (int) (Dimensions.Y - 1));
-            var z = rand.Next(0, (int) (Dimensions.Z - 1));
+            var x = rand.Next(0, (int)(Dimensions.X - 1));
+            var y = rand.Next(0, (int)(Dimensions.Y - 1));
+            var z = rand.Next(0, (int)(Dimensions.Z - 1));
             ClearVoxel(x, y, z);
-            x = rand.Next(0, (int) (Dimensions.X - 1));
-            y = rand.Next(0, (int) (Dimensions.Y - 1));
-            z = rand.Next(0, (int) (Dimensions.Z - 1));
+            x = rand.Next(0, (int)(Dimensions.X - 1));
+            y = rand.Next(0, (int)(Dimensions.Y - 1));
+            z = rand.Next(0, (int)(Dimensions.Z - 1));
             ClearVoxel(x, y, z);
-            x = rand.Next(0, (int) (Dimensions.X - 1));
-            y = rand.Next(0, (int) (Dimensions.Y - 1));
-            z = rand.Next(0, (int) (Dimensions.Z - 1));
+            x = rand.Next(0, (int)(Dimensions.X - 1));
+            y = rand.Next(0, (int)(Dimensions.Y - 1));
+            z = rand.Next(0, (int)(Dimensions.Z - 1));
             SetVoxel(new Vector3(x, y, z),
                 new Vector4(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 200)));
             for (var zz = 0; zz < Dimensions.Z; zz++)

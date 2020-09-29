@@ -1,7 +1,7 @@
-﻿using System.Linq;
-using MyEngine.DataStructures;
+﻿using MyEngine.DataStructures;
 using MyEngine.ShaderImporter;
 using OpenTK;
+using System.Linq;
 
 namespace MyEngine.Models
 {
@@ -11,7 +11,7 @@ namespace MyEngine.Models
             new Vector3(-0.5f,-0.5f,0.5f),
             new Vector3(0.5f,-0.5f,0.5f),
             new Vector3(0.5f,0.5f,0.5f),
-            new Vector3(-0.5f,0.5f,0.5f), 
+            new Vector3(-0.5f,0.5f,0.5f),
 
             new Vector3(-0.5f,-0.5f,-0.5f),
             new Vector3(0.5f,-0.5f,-0.5f),
@@ -47,12 +47,12 @@ namespace MyEngine.Models
         public Cube() : base(null, CubeData.Indices)
         {
             Vertices = CubeData.Vertices.Select(x => new PositionColorVertex
-                {Position = x, Color = new Vector4(0.1f, 0.5f, 0.2f, 0.4f)}).ToArray();
+            { Position = x, Color = new Vector4(0.1f, 0.5f, 0.2f, 0.4f) }).ToArray();
         }
         public Cube(BoundingBox boundingBox) : base(null, CubeData.Indices)
         {
             Vertices = boundingBox.ToArray().Select(x => new PositionColorVertex
-                {Position = x, Color = new Vector4(0.1f, 0.5f, 0.2f, 0.2f)}).ToArray();
+            { Position = x, Color = new Vector4(0.1f, 0.5f, 0.2f, 0.2f) }).ToArray();
         }
 
         public override void Draw(ShaderProgram shaderProgram)

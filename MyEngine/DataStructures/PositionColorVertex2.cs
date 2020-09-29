@@ -12,7 +12,7 @@ namespace MyEngine.DataStructures
             return new PositionColorVertex2
             {
                 position = left.position + right,
-                Color =  left.Color
+                Color = left.Color
             };
         }
         public static PositionColorVertex2 operator +(PositionColorVertex2 left, PositionColorVertex2 right)
@@ -24,7 +24,8 @@ namespace MyEngine.DataStructures
             };
         }
 
-        public Vector3 Position {
+        public Vector3 Position
+        {
             get => new Vector3(position);
             set => position = new Vector2(value.X, value.Y);
         }

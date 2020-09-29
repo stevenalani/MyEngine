@@ -1,9 +1,8 @@
-﻿using System;
-using System.IO;
-using GlmNet;
-using MyEngine.Logging;
+﻿using MyEngine.Logging;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using System;
+using System.IO;
 
 namespace MyEngine.ShaderImporter
 {
@@ -30,7 +29,7 @@ namespace MyEngine.ShaderImporter
         private int CompileVertexShader(string vertexPath)
         {
             var vertexShader = GL.CreateShader(ShaderType.VertexShader);
-            var shaderString = File.ReadAllText(vertexPath).Replace("\n","\n ");
+            var shaderString = File.ReadAllText(vertexPath).Replace("\n", "\n ");
             GL.ShaderSource(vertexShader, shaderString);
             GL.CompileShader(vertexShader);
             int vsSuccess;
@@ -96,12 +95,12 @@ namespace MyEngine.ShaderImporter
             GL.DeleteShader(fragmentShader);
         }
 
-        public void SetUniformMatrix4X4(string name,Matrix4 matrix)
+        public void SetUniformMatrix4X4(string name, Matrix4 matrix)
         {
-            if(!IsCompiled)return;
-            
+            if (!IsCompiled) return;
+
             var location = GL.GetUniformLocation(ID, name);
-            GL.UniformMatrix4(location,false,ref matrix);
+            GL.UniformMatrix4(location, false, ref matrix);
         }
 
         public void SetUniformFloat(string name, float _float)
@@ -128,12 +127,12 @@ namespace MyEngine.ShaderImporter
         {
             if (!IsCompiled) return;
             var location = GL.GetUniformLocation(this.ID, name);
-            GL.Uniform4(location,vec4);
+            GL.Uniform4(location, vec4);
         }
 
         public void use()
         {
-            if(!IsCompiled) return;
+            if (!IsCompiled) return;
             GL.UseProgram(this.ID);
         }
 
@@ -142,6 +141,6 @@ namespace MyEngine.ShaderImporter
             GL.UseProgram(0);
         }
 
-        
+
     }
 }

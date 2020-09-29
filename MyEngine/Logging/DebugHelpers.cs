@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Linq;
-using System.Reflection;
 using System.Threading;
 
 namespace MyEngine.Logging
@@ -22,11 +20,11 @@ namespace MyEngine.Logging
             while (_doLog)
             {
                 LogMessage logMessage;
-                if(!loggingQueue.TryDequeue(out logMessage))
+                if (!loggingQueue.TryDequeue(out logMessage))
                     continue;
                 if (logMessage.Title != "" && logMessage.Message != "")
                 {
-                    DebugHelpers.Log(logMessage.Title,logMessage.Message);
+                    DebugHelpers.Log(logMessage.Title, logMessage.Message);
                 }
                 else if (logMessage.Message != "")
                 {
@@ -44,7 +42,7 @@ namespace MyEngine.Logging
 
         public void Stop()
         {
-            if(!_doLog) return;
+            if (!_doLog) return;
             _doLog = false;
             LoggingTask.Join();
         }
@@ -59,22 +57,22 @@ namespace MyEngine.Logging
 
         internal static void Log(string title, string message)
         {
-            
+
             if (title.Contains("<clear>"))
             {
                 Console.Clear();
             }
-            Console.WriteLine("\n"+ title.Replace("<clear>",""));
+            Console.WriteLine("\n" + title.Replace("<clear>", ""));
             Console.WriteLine(String.Empty.PadLeft(Console.BufferWidth - 1, '-'));
             Console.Write(message);
-            Console.WriteLine(Environment.NewLine+String.Empty.PadLeft(Console.BufferWidth - 1, '=')+ Environment.NewLine);
+            Console.WriteLine(Environment.NewLine + String.Empty.PadLeft(Console.BufferWidth - 1, '=') + Environment.NewLine);
         }
         internal static void Log(string value)
         {
             if (value.Contains("<clear>"))
             {
                 Console.Clear();
-                value.Replace("<clear>","");
+                value.Replace("<clear>", "");
             }
             Console.WriteLine(value);
         }
@@ -82,12 +80,12 @@ namespace MyEngine.Logging
 
     public struct LogMessage
     {
-       public string Title;
-       public string Message;
-       public LogMessage(string message, string title = "")
-       {
-           Title = title;
-           Message = message;
-       }
+        public string Title;
+        public string Message;
+        public LogMessage(string message, string title = "")
+        {
+            Title = title;
+            Message = message;
+        }
     }
 }

@@ -1,7 +1,5 @@
-﻿using System;
-using MyEngine.Logging;
-using OpenTK;
-
+﻿using OpenTK;
+using System;
 namespace MyEngine
 {
     public enum PROJECTIONTYPE
@@ -12,10 +10,15 @@ namespace MyEngine
 
     public partial class Camera
     {
-        
-        public Vector3 Position = new Vector3(0,0,5);
 
-        public const float SPEED = 10f;
+        public Vector3 Position = new Vector3(0, 0, 1);
+
+        public void SetPosition(Vector3 position)
+        {
+            Position = position;
+
+        }
+        public const float SPEED = 15f;
         public const float SENSITIVITY = 0.1f;
         public const float ZOOM = 45.0f;
 
@@ -23,12 +26,12 @@ namespace MyEngine
 
         public Vector3 ViewDirection = -Vector3.UnitZ;
         private Vector3 Up = Vector3.UnitY;
-        private Vector3 Right => Vector3.Normalize(Vector3.Cross(ViewDirection,Up));
-        
+        private Vector3 Right => Vector3.Normalize(Vector3.Cross(ViewDirection, Up));
+
 
 
         public float Speed = SPEED;
-        
+
         public float Zoom = ZOOM;
 
         private float aspect;
@@ -43,17 +46,17 @@ namespace MyEngine
         public EventHandler<CameraMovedEventArgs> CameraMoved = (param1, param2) => { };
         public Camera(int width, int height, PROJECTIONTYPE projection = PROJECTIONTYPE.Perspective)
         {
-            this.aspect = width/height;
+            this.aspect = width / height;
             this.near = 0.1f;
             this.far = 100f;
             this._projectionType = projection;
             Update();
-            pProjection = Matrix4.CreatePerspectiveFieldOfView((float) (fov * (Math.PI / 180)), aspect, near, far);
+            pProjection = Matrix4.CreatePerspectiveFieldOfView((float)(fov * (Math.PI / 180)), aspect, near, far);
             oProjection = Matrix4.CreateOrthographic(width, height, near, far);
         }
         public Camera(int width, int height, float near, float far, PROJECTIONTYPE projection = PROJECTIONTYPE.Perspective)
         {
-            this.aspect = width/height;
+            this.aspect = width / height;
             this.near = near;
             this.far = far;
             this._projectionType = projection;
@@ -65,7 +68,7 @@ namespace MyEngine
         public Matrix4 GetView()
         {
             if (_projectionType == PROJECTIONTYPE.Perspective)
-            return Matrix4.LookAt(Position,Target,Up);
+                return Matrix4.LookAt(Position, Target, Up);
             return Matrix4.Identity * Matrix4.CreateTranslation(Position);
         }
         public Matrix4 GetProjection(PROJECTIONTYPE projectiontype)
@@ -91,9 +94,9 @@ namespace MyEngine
         {
             var rotate = GetRotationMatrix();
             ViewDirection = Vector3.Normalize(Vector3.TransformNormal(ViewDirection, rotate));
-            OnCameraMoved(new CameraMovedEventArgs(){Orientation = ViewDirection,Orgin = Position,ViewMatrix = GetView()});
+            OnCameraMoved(new CameraMovedEventArgs() { Orientation = ViewDirection, Orgin = Position, ViewMatrix = GetView() });
         }
-        
+
         public void ProcessKeyboard(CameraMovement direction, float deltaTime)
         {
             switch (direction)
@@ -102,7 +105,7 @@ namespace MyEngine
                     Position += ViewDirection * deltaTime * Speed;
                     break;
                 case CameraMovement.RIGHT:
-                    Position += Vector3.Cross(ViewDirection,Up)* deltaTime * Speed;
+                    Position += Vector3.Cross(ViewDirection, Up) * deltaTime * Speed;
                     break;
                 case CameraMovement.BACKWARD:
                     Position -= ViewDirection * deltaTime * Speed;
@@ -122,10 +125,10 @@ namespace MyEngine
 
         public void ProcessMouseMovement(float xoffset, float yoffset)
         {
-            
+
             Yaw -= xoffset * Sensitivity;
-            Pitch -= yoffset * Sensitivity * ViewDirection.Z/Math.Abs(ViewDirection.Z);
-           
+            Pitch -= yoffset * Sensitivity * ViewDirection.Z / Math.Abs(ViewDirection.Z);
+
             Update();
         }
 

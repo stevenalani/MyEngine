@@ -111,7 +111,7 @@ namespace MyEngine.VoxelImporter
                 bytesProcessed += 1;
                 int colorindex = chunkData.Skip(bytesProcessed).First();
                 bytesProcessed += 1;
-                Voxels.Add(new Tuple<int, int, int, int>(x,y,z, colorindex));
+                Voxels.Add(new Tuple<int, int, int, int>(x, y, z, colorindex));
             }
         }
     }
@@ -136,9 +136,9 @@ namespace MyEngine.VoxelImporter
                 bytesProcessed += 1; ;
                 int A = chunkData.Skip(bytesProcessed).First();
                 bytesProcessed += 1; ;
-                RGBA.Add(new Tuple<int, int, int, int>(R,G,B,A));
+                RGBA.Add(new Tuple<int, int, int, int>(R, G, B, A));
             }
-            
+
         }
     }
 
@@ -148,7 +148,7 @@ namespace MyEngine.VoxelImporter
         public int type { get; set; }
         public float weight { get; set; }
         public int prop { get; set; }
-        public List<float> normalizedProp{ get; set; }
+        public List<float> normalizedProp { get; set; }
         public MattChunk(byte[] chunkData, int size, int sizeChildren)
         {
             Id = "MATT";

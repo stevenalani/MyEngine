@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using MyEngine.Assets.Models;
-using MyEngine.Assets.Models.Voxel;
+using MyEngine.Models;
+using MyEngine.Models.Voxel;
 using MyEngine.DataStructures;
 using MyEngine.Models.Voxel;
 using MyEngine.ShaderImporter;
@@ -12,26 +12,25 @@ using OpenTK.Graphics.OpenGL;
 
 namespace MyEngine
 {
-    public class PositionColorModel : Model
+    public class PositionColorModel : Model, IBoundinBox
     {
         public event Action<PositionColorModel> OnUpdate;
-        
-        public PositionColorModel(PositionColorVertex[] vertices, uint[] indices,string modelname = "untitled")
+        public PositionColorModel(PositionColorVertex[] vertices, uint[] indices, string modelname = "untitled")
         {
             Vertices = vertices;
             Indices = indices;
             name = modelname + ID;
+            //BoundingBox = new BoundingBox(this); 
         }
 
-        public virtual uint[] Indices { get; set; }
+        public uint[] Indices { get; set; }
 
-        public virtual PositionColorVertex[] Vertices { get; set; }
-        public BoundingBox BoundingBox => new BoundingBox(this);
+        public new PositionColorVertex[] Vertices;
 
         public override void InitBuffers()
 
         {
-            if(IsInitialized || Vertices == null || Indices == null)
+            if (IsReady || Vertices == null || Indices == null)
                 return;
 
             VAO = GL.GenVertexArray();
@@ -39,31 +38,37 @@ namespace MyEngine
             EBO = GL.GenBuffer();
             GL.BindVertexArray(VAO);
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-            GL.BufferData(BufferTarget.ArrayBuffer,new IntPtr(Vertices.Length*sizeof(float)*7), Vertices, BufferUsageHint.StaticDraw );
+            GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(Vertices.Length * sizeof(float) * 7), Vertices, BufferUsageHint.StaticDraw);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, new IntPtr(Indices.Length * sizeof(uint)),Indices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, new IntPtr(Indices.Length * sizeof(uint)), Indices, BufferUsageHint.StaticDraw);
 
-            
+
             // Vertices positions
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, sizeof(float)*7, 0);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, sizeof(float) * 7, 0);
             GL.EnableVertexAttribArray(0);
             // Color attribute
-            
-            GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, sizeof(float)*7, 3 * sizeof(float));
+
+            GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, sizeof(float) * 7, 3 * sizeof(float));
             GL.EnableVertexAttribArray(1);
             GL.BindVertexArray(0);
-            IsInitialized = true;
-
+            IsReady = true;
             OnUpdate?.Invoke(this);
-        }        
+        }
 
         public override void Draw(ShaderProgram shader)
         {
-            if (IsInitialized){ 
-                GL.BindVertexArray(VAO);
-                GL.DrawElements(BeginMode.Triangles, Indices.Length, DrawElementsType.UnsignedInt, 0);
+            if (!IsReady)
+            {
+                InitBuffers();
             }
-            
+
+            GL.BindVertexArray(VAO);
+            GL.DrawElements(BeginMode.Triangles, Indices.Length, DrawElementsType.UnsignedInt, 0);
+
+
+
         }
+
+        public BoundingBox BoundingBox { get; set; }
     }
 }

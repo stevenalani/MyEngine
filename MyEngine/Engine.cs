@@ -1,20 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using MyEngine.Assets.Models;
-using MyEngine.HgtImporter;
-using MyEngine.Logging;
+﻿using MyEngine.Logging;
+using MyEngine.Models;
 using MyEngine.Models.Voxel;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace MyEngine
 
 {
-    internal class Engine : GameWindow
+    public class Engine : GameWindow
     {
         private readonly ModelManager modelManager = new ModelManager();
         private bool _firstMouse = true;
@@ -49,7 +48,7 @@ namespace MyEngine
                 Camera = new Camera(Width, Height);
             else
                 Camera = camera;
-            
+
 
             Load += OnUpdate;
             Update += modelManager.Update;
@@ -57,7 +56,7 @@ namespace MyEngine
             UpdateFrame += OnUpdate;
             EngineLogger = new Logger();
             EngineLogger.Start();
-                    
+
         }
 
 
@@ -109,13 +108,13 @@ namespace MyEngine
             shader.SetUniformMatrix4X4("projection", projection);
             var view = Camera.GetView();
             shader.SetUniformMatrix4X4("view", view);
-            shader.SetUniformVector3("lightPos", new Vector3(100,1000,100));
+            shader.SetUniformVector3("lightPos", new Vector3(180, 500, 180));
             shader.SetUniformVector3("lightColor", new Vector3(1, 1, 1));
             shader.SetUniformVector3("viewpos", Camera.Position);
             shader.SetUniformFloat("ambientStrength", 1);
             shader.SetUniformFloat("diffuseStrength", 2f);
             shader.SetUniformFloat("specularStrength", 1f);
-            
+
             modelManager.DrawModels(shader);
             CrossHair?.Draw();
             SwapBuffers();
@@ -125,7 +124,7 @@ namespace MyEngine
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             base.OnUpdateFrame(e);
-            HandleKeyboard((float) e.Time);
+            HandleKeyboard((float)e.Time);
             lasttime = e.Time;
         }
 
@@ -189,12 +188,12 @@ namespace MyEngine
             AddModel(visualray);
 
             var results = CheckHit();
-            var volumes = results.Where(x => x.model is ColorVolume);
+            var volumes = results.Where(x => x.model is Volume);
 
             var colorval = 240;
             foreach (var volumehit in volumes)
             {
-                var volume = (ColorVolume)volumehit.model;
+                var volume = (Volume)volumehit.model;
                 var hitinobjectspace =
                     Vector3.TransformPosition(volumehit.HitPositionWorld, volume.Modelmatrix.Inverted()) +
                     volume.Dimensions / 2;
@@ -211,9 +210,12 @@ namespace MyEngine
                         volume.SetVoxel((int)ray.X, (int)ray.Y,
                             (int)ray.Z, new Vector4(colorval, colorval, colorval, 255f));
                         IsVoxelSet = true;
+                        volume.IsReady = false;
                         break;
                     }
                 }
+
+                if (IsVoxelSet) volume.IsReady = false;
             }
         }
 
@@ -240,7 +242,7 @@ namespace MyEngine
 
         protected override void OnMouseWheel(MouseWheelEventArgs e)
         {
-            
+
             Camera.ProcessMouseScroll(e.Y);
             base.OnMouseWheel(e);
         }
@@ -248,7 +250,7 @@ namespace MyEngine
         protected override void OnUnload(EventArgs e)
         {
             base.OnUnload(e);
-            
+
         }
 
         private void HandleKeyboard(float deltaTime)

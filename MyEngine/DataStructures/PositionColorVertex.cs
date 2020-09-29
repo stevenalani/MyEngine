@@ -2,7 +2,7 @@
 
 namespace MyEngine.DataStructures
 {
-    public struct PositionColorVertex: IVertextype
+    public struct PositionColorVertex : IVertextype
     {
         public Vector3 Position;
         public Vector4 Color;
@@ -12,7 +12,7 @@ namespace MyEngine.DataStructures
             return new PositionColorVertex
             {
                 Position = left.Position + right,
-                Color =  left.Color
+                Color = left.Color
             };
         }
         public static PositionColorVertex operator +(PositionColorVertex left, PositionColorVertex right)
@@ -20,7 +20,7 @@ namespace MyEngine.DataStructures
             return new PositionColorVertex
             {
                 Position = left.Position + right.Position,
-                Color =  left.Color + right.Color
+                Color = left.Color + right.Color
             };
         }
 
