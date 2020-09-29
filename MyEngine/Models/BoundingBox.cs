@@ -1,7 +1,11 @@
-﻿using MyEngine.DataStructures;
+﻿using System.Linq;
+using System.Runtime.CompilerServices;
+using MyEngine.Assets.Models;
+using MyEngine.DataStructures;
+using MyEngine.Logging;
 using MyEngine.Models;
 using OpenTK;
-using System.Linq;
+using OpenTK.Graphics;
 
 namespace MyEngine
 {
@@ -32,33 +36,38 @@ namespace MyEngine
         }
         private void update(PositionColorModel inmodel)
         {
-            var vertices = inmodel.Vertices.Select(x => Vector3.TransformPosition(x.Position, inmodel.Modelmatrix)).ToArray();
-            var minY = vertices.Min(x => x.Y);
-            var maxY = vertices.Max(x => x.Y);
-            var minX = vertices.Min(x => x.X);
-            var maxX = vertices.Max(x => x.X);
-            var minZ = vertices.Min(x => x.Z);
-            var maxZ = vertices.Max(x => x.Z);
-
-            var size = new Vector3(maxX - minX, maxY - minY, maxZ - minZ);
-            var center = new Vector3(size.X / 2, size.Y / 2, size.Z / 2);
-            Modelmatrix = Matrix4.CreateTranslation(center);
-
-            leftlownear = new Vector3(minX, minY, maxZ);
-            rightlownear = new Vector3(maxX, minY, maxZ);
-            rightupnear = new Vector3(maxX, maxY, maxZ);
-            leftupnear = new Vector3(minX, maxY, maxZ);
-
-            leftlowfar = new Vector3(minX, minY, minZ);
-            rightlowfar = new Vector3(maxX, minY, minZ);
-            rightupfar = new Vector3(maxX, maxY, minZ);
-            leftupfar = new Vector3(minX, maxY, minZ);
-
-            Vertices = ToArray()?.Select(x => new PositionColorVertex()
+            if (inmodel.IsReady)
             {
-                Position = x - center,
-                Color = color
-            }).ToArray();
+                var vertices = inmodel.Vertices.Select(x => Vector3.TransformPosition(x.Position, inmodel.Modelmatrix))
+                    .ToArray();
+                var minY = vertices.Min(x => x.Y);
+                var maxY = vertices.Max(x => x.Y);
+                var minX = vertices.Min(x => x.X);
+                var maxX = vertices.Max(x => x.X);
+                var minZ = vertices.Min(x => x.Z);
+                var maxZ = vertices.Max(x => x.Z);
+
+                var size = new Vector3(maxX - minX, maxY - minY, maxZ - minZ);
+                var center = new Vector3(size.X / 2, size.Y / 2, size.Z / 2);
+                Modelmatrix = Matrix4.CreateTranslation(center);
+
+                leftlownear = new Vector3(minX, minY, maxZ);
+                rightlownear = new Vector3(maxX, minY, maxZ);
+                rightupnear = new Vector3(maxX, maxY, maxZ);
+                leftupnear = new Vector3(minX, maxY, maxZ);
+
+                leftlowfar = new Vector3(minX, minY, minZ);
+                rightlowfar = new Vector3(maxX, minY, minZ);
+                rightupfar = new Vector3(maxX, maxY, minZ);
+                leftupfar = new Vector3(minX, maxY, minZ);
+
+                Vertices = ToArray()?.Select(x => new PositionColorVertex()
+                {
+                    Position = x - center,
+                    Color = color
+                }).ToArray();
+                IsReady = false;
+            }
         }
 
 
@@ -98,6 +107,7 @@ namespace MyEngine
             leftupfar = new Vector3(left, highest, farest);
             Vertices = ToArray().Select(x => new PositionColorVertex()
             { Position = x, Color = color }).ToArray();
+            IsReady = false;
         }
 
         public string series { get; set; } = "default";

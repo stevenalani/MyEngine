@@ -15,7 +15,7 @@ namespace MyEngine
 {
     public class Engine : GameWindow
     {
-        private readonly ModelManager modelManager = new ModelManager();
+        private readonly ModelManager modelManager;
         private bool _firstMouse = true;
 
         private MousePositionState _lastPositionState;
@@ -40,6 +40,7 @@ namespace MyEngine
             0,
             GraphicsContextFlags.Default)
         {
+            modelManager = new ModelManager(this);
             Title += GL.GetString(StringName.Version);
             VSync = VSyncMode.Off;
             _lastPositionState = new MousePositionState(Width / 2f, Height / 2f);
@@ -307,9 +308,9 @@ namespace MyEngine
         {
             modelManager.AddModel(model);
         }
-        public void SetWorld(ColorVolume world)
+        public void SetWorld(BigColorVolume world)
         {
-            modelManager.SetWorld(world);
+            modelManager.World = world;
         }
         public void ClearWorld()
         {

@@ -1,8 +1,12 @@
-﻿using MyEngine.DataStructures;
+﻿using System;
+using System.Runtime.CompilerServices;
+using Assimp.Configs;
+using MyEngine.DataStructures;
+using MyEngine.Logging;
 using MyEngine.ShaderImporter;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using System;
+using Vector3 = OpenTK.Vector3;
 
 
 namespace MyEngine.Models
@@ -48,7 +52,7 @@ namespace MyEngine.Models
 
         private void Update(object sender, CameraMovedEventArgs e)
         {
-            //Modelmatrix = MathHelpers.getRotation(Rotations.Value, Rotations.Y, Rotations.Z) * Matrix4.CreateTranslation(Orgin) * Matrix4.CreateScale(Scales) * e.ViewMatrix;
+            //Modelmatrix = MathHelpers.getRotation(Rotations.X, Rotations.Y, Rotations.Z) * Matrix4.CreateTranslation(Orgin) * Matrix4.CreateScale(Scales) * e.ViewMatrix;
             //Orgin = e.Orgin + Vector3.Normalize(e.Orientation);
         }
 
@@ -59,7 +63,7 @@ namespace MyEngine.Models
         }
         public override void Draw(ShaderProgram shader)
         {
-            if (IsInitialized)
+            if (IsReady)
             {
                 Matrix4 proj = engine.Camera.GetProjection(PROJECTIONTYPE.Orthogonal);
                 Matrix4 view = engine.Camera.GetView();

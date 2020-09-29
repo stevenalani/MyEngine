@@ -58,6 +58,7 @@ namespace MyEngine.Models.Voxel
             {
                 Chunks[chunkIdxX, chunkIdxY, chunkIdxZ].SetVoxel(voxelPosX, voxelPosY, voxelPosZ, colorIndex);
                 ChunkHasChanges[chunkIdxX, chunkIdxY, chunkIdxZ] = true;
+                IsReady = false;
             }
         }
 
@@ -82,6 +83,7 @@ namespace MyEngine.Models.Voxel
             {
                 Chunks[chunkIdxX, chunkIdxY, chunkIdxZ].SetVoxel(voxelPosX, voxelPosY, voxelPosZ, color);
                 ChunkHasChanges[chunkIdxX, chunkIdxY, chunkIdxZ] = true;
+                IsReady = false;
             }
         }
 
@@ -92,6 +94,18 @@ namespace MyEngine.Models.Voxel
 
         public override void ComputeVerticesAndIndices()
         {
+            ComputeVertices();
+            ComputeIndices();
+            
+        }
+        public override void InitBuffers()
+        {
+            ComputeVerticesAndIndices();
+            base.InitBuffers();
+        }
+
+        public void ComputeVertices()
+        {
             List<PositionColorVertex> vertices = new List<PositionColorVertex>();
             for (var z = 0; z < ChunkCount.Z; z++)
             {
@@ -100,20 +114,18 @@ namespace MyEngine.Models.Voxel
                     for (var x = 0; x < ChunkCount.X; x++)
                     {
                         var chunk = Chunks[x, y, z];
-                        chunk.ComputeVertices();
+                        if (ChunkHasChanges[x, y, z])
+                        {
+                            chunk.ComputeVertices();
+                        }
+                        ChunkHasChanges[x, y, z] = false;
                         if (chunk.Vertices == null) continue;
                         vertices.AddRange(chunk.Vertices);
                     }
                 }
             }
             Vertices = vertices.ToArray();
-            ComputeIndices();
             vertices.Clear();
-        }
-        public override void InitBuffers()
-        {
-            ComputeVerticesAndIndices();
-            base.InitBuffers();
         }
         public void ComputeIndices()
         {

@@ -1,24 +1,30 @@
-﻿using MyEngine.Assets;
-using MyEngine.Models.Voxel;
-using MyEngine.ShaderImporter;
-using System;
+﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using MyEngine.Assets;
+using MyEngine.Models.Voxel;
+using MyEngine.ShaderImporter;
+using OpenTK.Graphics.ES20;
 
 namespace MyEngine
 {
     internal class ModelManager
     {
         private readonly Dictionary<int, Model> _models = new Dictionary<int, Model>();
-
         private readonly Dictionary<string, List<IEngineModel>> engineModels =
             new Dictionary<string, List<IEngineModel>>();
-
         private readonly ConcurrentQueue<IEngineModel> UninitializedEngineModels = new ConcurrentQueue<IEngineModel>();
         private readonly ConcurrentQueue<Model> UninitializedModels = new ConcurrentQueue<Model>();
-        private bool hasWorld;
+        public bool hasWorld;
+        private Engine _engine;
+
+        public ModelManager(Engine engine)
+        {
+            this._engine = engine;
+        }
 
         public bool HasModelUpdates { get; set; }
 
@@ -89,25 +95,25 @@ namespace MyEngine
                     engineModels[model.series].Add(model);
                 }
             }
-            else
-            {
-                HasModelUpdates = false;
-            }
+            HasModelUpdates = false;
+
         }
 
         public void DrawModels(ShaderProgram shader, int[] modelIDs = null)
         {
             if (this.World != null)
             {
-                if (!World.IsInitialized) { World.InitBuffers(); }
+                if (!World.IsReady) { World.InitBuffers(); }
                 shader.SetUniformMatrix4X4("model", World.Modelmatrix);
                 World.Draw(shader);
             }
             if (modelIDs == null)
                 foreach (var model in _models.Values)
                 {
-                    if (!model.IsInitialized) { model.InitBuffers(); }
+                    if (!model.IsReady) { model.InitBuffers(); }
+
                     shader.SetUniformMatrix4X4("model", model.Modelmatrix);
+                    //shader.SetUniformMatrix4X4("model",model.Modelmatrix);
                     model.Draw(shader);
 
                 }
@@ -115,16 +121,17 @@ namespace MyEngine
                 foreach (var modelID in modelIDs)
                     if (_models.ContainsKey(modelID))
                     {
-                        if (_models[modelID].IsInitialized)
+                        if (_models[modelID].IsReady)
                             _models[modelID].InitBuffers();
                         shader.SetUniformMatrix4X4("model", _models[modelID].Modelmatrix);
+                        //shader.SetUniformMatrix4X4("model", _models[modelID].Modelmatrix);
                         _models[modelID].Draw(shader);
                     }
 
             foreach (var engineModels in engineModels.Values)
                 foreach (var model in engineModels)
                 {
-                    if (!((Model)model).IsInitialized) ((Model)model).InitBuffers();
+                    if (!((Model)model).IsReady) ((Model)model).InitBuffers();
                     ((Model)model).Draw(shader);
                 }
         }
@@ -149,7 +156,7 @@ namespace MyEngine
         }
 
 
-        public void Update(object sender, EventArgs eventArgs)
+        public void Update()
         {
             if (HasModelUpdates)
                 InitModels();
@@ -164,23 +171,19 @@ namespace MyEngine
             return l1;
         }
 
-        public void Update()
-        {
-            Update(null, null);
-        }
 
-        public void SetWorld(ColorVolume world)
-        {
-            this.hasWorld = true;
-            this.World = world;
-        }
 
-        public ColorVolume World { get; set; }
+        public BigColorVolume World { get; set; }
 
         public void ClearWorld()
         {
             this.hasWorld = false;
             World = null;
+        }
+
+        public Dictionary<string, List<IEngineModel>>.ValueCollection GetEngineModels()
+        {
+            return this.engineModels.Values;
         }
     }
 }

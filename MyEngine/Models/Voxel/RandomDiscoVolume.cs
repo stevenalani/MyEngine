@@ -68,7 +68,7 @@ namespace MyEngine.Models.Voxel
             SetVoxel(new Vector3(0, 0, Dimensions.Z - 1),
                 new Vector4(0, 0, 255, 255));
 
-            IsInitialized = false;
+            IsReady = false;
         }
 
         public override void Draw(ShaderProgram shader)

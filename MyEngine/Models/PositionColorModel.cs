@@ -4,7 +4,6 @@ using System.Linq;
 using MyEngine.Models;
 using MyEngine.Models.Voxel;
 using MyEngine.DataStructures;
-using MyEngine.Models.Voxel;
 using MyEngine.ShaderImporter;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -20,12 +19,13 @@ namespace MyEngine
             Vertices = vertices;
             Indices = indices;
             name = modelname + ID;
-            //BoundingBox = new BoundingBox(this); 
+            if(!(this is BoundingBox))
+                BoundingBox = new BoundingBox(this); 
         }
 
         public uint[] Indices { get; set; }
 
-        public new PositionColorVertex[] Vertices;
+        public PositionColorVertex[] Vertices;
 
         public override void InitBuffers()
 

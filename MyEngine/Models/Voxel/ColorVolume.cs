@@ -17,6 +17,7 @@ namespace MyEngine.Models.Voxel
         private void InitializeVolumeData()
         {
             VolumeData = new int[(int)Dimensions.X, (int)Dimensions.Y, (int)Dimensions.Z];
+            IsReady = false;
         }
 
         public override void SetVoxel(int x, int y, int z, int colorIndex)

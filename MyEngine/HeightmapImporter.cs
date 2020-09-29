@@ -10,6 +10,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading;
+using MyEngine.Logging;
 
 
 namespace MyEngine
@@ -161,6 +162,7 @@ namespace MyEngine
                     //result.elevation = HeightmapImporter.testdata[i];
                     result.elevation = random.Next(0, 50);
                     testdata.Add(result);
+                    DebugHelpers.Log(e.ToString());
                 }
 
 

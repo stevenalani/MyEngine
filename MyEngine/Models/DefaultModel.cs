@@ -1,9 +1,11 @@
-﻿using MyEngine.DataStructures;
+﻿using System;
+using System.Linq;
+using MyEngine.DataStructures;
 using MyEngine.ShaderImporter;
+using OpenTK;
 using OpenTK.Graphics.OpenGL4;
-using System;
 
-namespace MyEngine.Models
+namespace MyEngine.Assets.Models
 {
 
 
@@ -16,9 +18,9 @@ namespace MyEngine.Models
         {
             _vertices = vertices;
             _indices = indices;
-            IndicesCnt = indices.Length;
+            this.IndicesCnt = indices.Length;
         }
-        public PositionColorVertex[] Vertices { get; set; }
+        public PositionColorVertex[] Vertices;
 
         public override void Draw(ShaderProgram shader)
         {
@@ -58,13 +60,13 @@ namespace MyEngine.Models
 
 
             GL.BindVertexArray(0);
-            IsInitialized = true;
+            IsReady = true;
         }
 
 
         public bool Ready()
         {
-            return IsInitialized;
+            return this.IsReady;
         }
     }
 }

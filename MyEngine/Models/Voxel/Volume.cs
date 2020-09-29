@@ -8,7 +8,6 @@ namespace MyEngine.Models.Voxel
         protected int[,,] VolumeData;
         protected bool[,,] CheckedInVoxels;
         protected Volume(string name = "unnamed") : base(null, null, name) { }
-        public bool IsReady;
         public int GetVoxel(int x, int y, int z)
         {
             return VolumeData[x, y, z];
@@ -26,7 +25,8 @@ namespace MyEngine.Models.Voxel
 
         public bool IsValidVoxelPosition(int x, int y, int z)
         {
-            if (x >= 0 && x < Dimensions.X && y >= 0 && y < Dimensions.Y && z >= 0 && z < Dimensions.Z) return true;
+            if (x >= 0 && x < Dimensions.X && y >= 0 && y < Dimensions.Y && z >= 0 && z < Dimensions.Z) 
+                return true;
 
             return false;
         }

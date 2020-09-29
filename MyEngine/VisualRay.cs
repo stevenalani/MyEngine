@@ -36,7 +36,7 @@ namespace MyEngine
     }
     internal class VisualRay : PositionColorModel, IEngineModel
     {
-        public VisualRay(Vector3 position, Vector3 direction, float length = 1000f) : base(null, VisualRayData.Indices)
+        public VisualRay(Vector3 position, Vector3 direction, float length = 100f) : base(null, VisualRayData.Indices)
         {
             Vector4 color = Vector4.One;
             Scales = new Vector3(0.1f, 0.1f, 0.1f);
