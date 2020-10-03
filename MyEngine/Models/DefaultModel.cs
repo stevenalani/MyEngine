@@ -41,16 +41,16 @@ namespace MyEngine.Assets.Models
 
         public override void InitBuffers()
         {
-            VAO = GL.GenVertexArray();
-            VBO = GL.GenBuffer();
-            EBO = GL.GenBuffer();
+            Vao = GL.GenVertexArray();
+            Vbo = GL.GenBuffer();
+            Ebo = GL.GenBuffer();
 
-            GL.BindVertexArray(VAO);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
+            GL.BindVertexArray(Vao);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, Vbo);
 
             GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * PositionColorNormalVertex.Size, _vertices, BufferUsageHint.StaticDraw);
 
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, Ebo);
             GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(int), _indices, BufferUsageHint.StaticDraw);
 
             // Vertices positions

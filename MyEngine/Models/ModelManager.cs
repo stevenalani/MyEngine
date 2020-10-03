@@ -132,6 +132,8 @@ namespace MyEngine
                 foreach (var model in engineModels)
                 {
                     if (!((Model)model).IsReady) ((Model)model).InitBuffers();
+                    
+                    shader.SetUniformMatrix4X4("model", ((Model)model).Modelmatrix);
                     ((Model)model).Draw(shader);
                 }
         }

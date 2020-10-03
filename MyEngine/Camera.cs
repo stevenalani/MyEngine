@@ -25,7 +25,7 @@ namespace MyEngine
         private readonly float fov = 45;
 
         public Vector3 ViewDirection = -Vector3.UnitZ;
-        private Vector3 Up = Vector3.UnitY;
+        public static Vector3 Up { get; private set; } = Vector3.UnitY;
         private Vector3 Right => Vector3.Normalize(Vector3.Cross(ViewDirection, Up));
 
 

@@ -1,4 +1,6 @@
-﻿namespace MyEngine.DataStructures
+﻿using OpenTK;
+
+namespace MyEngine.DataStructures
 {
     public interface IVertextype
     {

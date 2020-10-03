@@ -188,7 +188,7 @@ namespace MyEngine.Models.Voxel
                         poscolresult.Add(posxColorVertex);
                         var end = new Vector3(currentX + countX + 1, currentY + countY + 1,
                             currentZ + countZ + 1);
-                        checkin(new Vector3(currentX, currentY, currentZ), end);
+                        CheckIn(new Vector3(currentX, currentY, currentZ), end);
                     }
                 }
             }
@@ -196,16 +196,18 @@ namespace MyEngine.Models.Voxel
 
             if (poscolresult.Count != 0)
             {
+                Vertices = poscolresult.Select(x => new PositionColorVertex
+                {
+                    Color = x.Color,
+                    Position = x.Position
+                }).ToArray();
+                /*
                 if (Vertices == null)
-                    Vertices = poscolresult.Select(x =>
+                    Vertices = poscolresult.Select(x => new PositionColorVertex
                     {
-                        return new PositionColorVertex
-                        {
-                            Color = x.Color,
-                            Position = x.Position - Dimensions / 2
-                        };
-                    }
-                    ).ToArray();
+                        Color = x.Color,
+                        Position = x.Position
+                    }).ToArray();
                 else
                 {
                     var list1 = new List<PositionColorVertex>(Vertices);
@@ -213,23 +215,19 @@ namespace MyEngine.Models.Voxel
                     {
                         for (var i = 0; i < Vertices.Length; i++)
                         {
-                            if (Vertices[i].Position == positionColorVertex.Position - Dimensions / 2)
+                            if (Vertices[i].Position == positionColorVertex.Position)
                             {
                                 Vertices[i].Color = positionColorVertex.Color;
                             }
                         }
                     }
-                    list1.AddRange(poscolresult.Select(x =>
+                    list1.AddRange(poscolresult.Select(x => new PositionColorVertex
                     {
-                        return new PositionColorVertex
-                        {
-                            Color = x.Color,
-                            Position = x.Position - Dimensions / 2
-                        };
-                    }
-                    ));
+                        Color = x.Color,
+                        Position = x.Position
+                    }));
                     Vertices = list1.ToArray();
-                }
+                }*/
             }
         }
 
@@ -277,7 +275,7 @@ namespace MyEngine.Models.Voxel
             base.InitBuffers();
         }
 
-        protected void checkin(Vector3 start, Vector3 end)
+        protected void CheckIn(Vector3 start, Vector3 end)
         {
             for (var i = (int)start.X; i < end.X; i++)
                 for (var j = (int)start.Y; j < end.Y; j++)
@@ -289,7 +287,7 @@ namespace MyEngine.Models.Voxel
                     }
         }
 
-        protected void checkout(Vector3 start, Vector3 end)
+        protected void CheckOut(Vector3 start, Vector3 end)
         {
             for (var i = (int)start.X; i < end.X; i++)
                 for (var j = (int)start.Y; j < end.Y; j++)

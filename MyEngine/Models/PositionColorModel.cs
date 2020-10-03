@@ -11,7 +11,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace MyEngine
 {
-    public class PositionColorModel : Model, IBoundinBox
+    public class PositionColorModel : Model
     {
         public event Action<PositionColorModel> OnUpdate;
         public PositionColorModel(PositionColorVertex[] vertices, uint[] indices, string modelname = "untitled")
@@ -19,8 +19,6 @@ namespace MyEngine
             Vertices = vertices;
             Indices = indices;
             name = modelname + ID;
-            if(!(this is BoundingBox))
-                BoundingBox = new BoundingBox(this); 
         }
 
         public uint[] Indices { get; set; }
@@ -28,19 +26,18 @@ namespace MyEngine
         public PositionColorVertex[] Vertices;
 
         public override void InitBuffers()
-
         {
             if (IsReady || Vertices == null || Indices == null)
                 return;
 
-            VAO = GL.GenVertexArray();
-            VBO = GL.GenBuffer();
-            EBO = GL.GenBuffer();
-            GL.BindVertexArray(VAO);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-            GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(Vertices.Length * sizeof(float) * 7), Vertices, BufferUsageHint.StaticDraw);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, new IntPtr(Indices.Length * sizeof(uint)), Indices, BufferUsageHint.StaticDraw);
+            Vao = GL.GenVertexArray();
+            Vbo = GL.GenBuffer();
+            Ebo = GL.GenBuffer();
+            GL.BindVertexArray(Vao);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, Vbo);
+            GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(Vertices.Length * sizeof(float) * 7), Vertices, BufferUsageHint.DynamicDraw);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, Ebo);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, new IntPtr(Indices.Length * sizeof(uint)), Indices, BufferUsageHint.DynamicDraw);
 
 
             // Vertices positions
@@ -62,13 +59,12 @@ namespace MyEngine
                 InitBuffers();
             }
 
-            GL.BindVertexArray(VAO);
+            GL.BindVertexArray(Vao);
             GL.DrawElements(BeginMode.Triangles, Indices.Length, DrawElementsType.UnsignedInt, 0);
 
 
 
         }
 
-        public BoundingBox BoundingBox { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Linq;
 using MyEngine.DataStructures;
 using MyEngine.ShaderImporter;
@@ -36,20 +37,20 @@ namespace MyEngine
     }
     internal class VisualRay : PositionColorModel, IEngineModel
     {
-        public VisualRay(Vector3 position, Vector3 direction, float length = 100f) : base(null, VisualRayData.Indices)
+        public Vector4 Color = Vector4.One;
+        public VisualRay(Vector3 position, Vector3 direction, float length = 1000f) : base(null, VisualRayData.Indices)
         {
-            Vector4 color = Vector4.One;
             Scales = new Vector3(0.1f, 0.1f, 0.1f);
             Position = position;
             var target = direction * length;
             purgesiblings = true;
             Vertices = new PositionColorVertex[]
             {
-                new PositionColorVertex(){ Position = new Vector3(-0.01f,-0.01f,0),Color = color },
-                new PositionColorVertex(){ Position = new Vector3(0.01f,-0.01f,0),Color = color },
-                new PositionColorVertex(){ Position = new Vector3(0.01f,0.01f,0),Color = color },
-                new PositionColorVertex(){ Position = new Vector3(-0.01f,0.01f,0),Color = color },
-                new PositionColorVertex(){ Position = target,Color = color },
+                new PositionColorVertex(){ Position = new Vector3(-0.01f,-0.01f,0),Color = Color },
+                new PositionColorVertex(){ Position = new Vector3(0.01f,-0.01f,0),Color = Color },
+                new PositionColorVertex(){ Position = new Vector3(0.01f,0.01f,0),Color = Color },
+                new PositionColorVertex(){ Position = new Vector3(-0.01f,0.01f,0),Color = Color },
+                new PositionColorVertex(){ Position = target,Color = Color },
             };
 
         }
@@ -64,11 +65,6 @@ namespace MyEngine
         public string series { get; set; } = "default";
         public bool purgesiblings { get; set; } = false;
 
-        public new Matrix4 Modelmatrix
-        {
-            get => ((Model)this).Modelmatrix;
-            set => Modelmatrix = value;
-        }
     }
 
 }

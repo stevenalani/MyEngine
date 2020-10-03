@@ -100,7 +100,7 @@ namespace MyEngine.Models.Voxel
                         poscolresult.Add(posxColorVertex);
                         var end = new Vector3(currentX + countX + 1, currentY + countY + 1,
                             currentZ + countZ + 1);
-                        checkin(new Vector3(currentX, currentY, currentZ), end);
+                        CheckIn(new Vector3(currentX, currentY, currentZ), end);
                     }
                 }
             }
@@ -114,7 +114,7 @@ namespace MyEngine.Models.Voxel
                         return new PositionColorVertex
                         {
                             Color = x.Color,
-                            Position = x.Position - Dimensions / 2 + Position
+                            Position = x.Position + Position
                         };
                     }
                     ).ToArray();
@@ -136,7 +136,7 @@ namespace MyEngine.Models.Voxel
                         return new PositionColorVertex
                         {
                             Color = x.Color,
-                            Position = x.Position - Dimensions / 2 + Position
+                            Position = x.Position + Position
                         };
                     }
                     ));

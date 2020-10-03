@@ -12,7 +12,7 @@ namespace MyEngine
         public float Pitch = PITCH;
         public float Sensitivity = SENSITIVITY;
 
-        private Vector3 Target => Position + ViewDirection;
+        internal Vector3 Target => Position + ViewDirection;
 
         private Matrix4 GetRotationMatrix()
         {

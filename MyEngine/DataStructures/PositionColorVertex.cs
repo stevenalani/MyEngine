@@ -24,7 +24,6 @@ namespace MyEngine.DataStructures
             };
         }
 
-
         public int getStructSize()
         {
             return sizeof(float) * 7;

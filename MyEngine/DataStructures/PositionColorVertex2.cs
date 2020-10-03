@@ -29,7 +29,7 @@ namespace MyEngine.DataStructures
             get => new Vector3(position);
             set => position = new Vector2(value.X, value.Y);
         }
-
+        
         public int getStructSize()
         {
             return sizeof(float) * 6;

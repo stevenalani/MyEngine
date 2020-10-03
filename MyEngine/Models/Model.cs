@@ -11,28 +11,27 @@ namespace MyEngine
 {
     public abstract class Model : IDisposable
     {
-        private static int nextid = 0;
+        private static int _nextId = 0;
         public readonly int ID;
         public string name;
 
-        public int VAO;
-
-        protected int VBO;
-        protected int EBO;
+        protected int Vao = -1;
+        protected int Vbo = -1;
+        protected int Ebo = -1;
 
         public OpenTK.Vector3 Position = Vector3.Zero;
         public Vector3 Scales = Vector3.One;
         protected internal Vector3 Rotations = Vector3.Zero;
 
 
-        public Vector3 Direction = -Vector3.UnitZ;
-        public Matrix4 Modelmatrix => MathHelpers.getRotation(Rotations.X, Rotations.Y, Rotations.Z) * Matrix4.CreateScale(Scales) *
+        public Vector3 Direction = Vector3.UnitZ;
+        public Matrix4 Modelmatrix => MathHelpers.GetRotation(Rotations.X, Rotations.Y, Rotations.Z) * Matrix4.CreateScale(Scales) *
                                       Matrix4.CreateTranslation(Position);
 
 
         protected Model()
         {
-            ID = Model.nextid++;
+            ID = Model._nextId++;
         }
 
         public bool IsReady { get; set; }
@@ -52,8 +51,8 @@ namespace MyEngine
             {
                 if (IsReady)
                 {
-                    GL.DeleteVertexArray(VAO);
-                    GL.DeleteBuffer(VBO);
+                    GL.DeleteVertexArray(Vao);
+                    GL.DeleteBuffer(Vbo);
                     IsReady = false;
                 }
             }
@@ -71,32 +70,32 @@ namespace MyEngine
 
         public void rotateX(float yaw)
         {
-            var rotationMatrix4 = MathHelpers.getRotation(yaw, 0f, 0f);
+            var rotationMatrix4 = MathHelpers.GetRotation(yaw, 0f, 0f);
             this.Direction = Vector3.TransformNormal(Direction, rotationMatrix4);
             Rotations.X += yaw;
         }
 
         public void rotateY(float pitch)
         {
-            var rotationMatrix4 = MathHelpers.getRotation(0f, pitch, 0f);
+            var rotationMatrix4 = MathHelpers.GetRotation(0f, pitch, 0f);
             this.Direction = Vector3.TransformNormal(Direction, rotationMatrix4);
             Rotations.Y += pitch;
         }
         public void rotateZ(float roll)
         {
-            var rotationMatrix4 = MathHelpers.getRotation(0f, 0f, roll);
+            var rotationMatrix4 = MathHelpers.GetRotation(0f, 0f, roll);
             this.Direction = Vector3.TransformNormal(Direction, rotationMatrix4);
             Rotations.Z = roll;
         }
 
         public void rotate(float yaw, float pitch, float roll)
         {
-            var rotationMatrix4 = MathHelpers.getRotation(yaw, pitch, roll);
+            var rotationMatrix4 = MathHelpers.GetRotation(yaw, pitch, roll);
             this.Direction = Vector3.TransformNormal(Direction, rotationMatrix4);
         }
         public void rotate(Vector3 yawpitchroll)
         {
-            var rotationMatrix4 = MathHelpers.getRotation(yawpitchroll.X, yawpitchroll.Y, yawpitchroll.Z);
+            var rotationMatrix4 = MathHelpers.GetRotation(yawpitchroll.X, yawpitchroll.Y, yawpitchroll.Z);
             this.Direction = Vector3.TransformNormal(Direction, rotationMatrix4);
         }
 

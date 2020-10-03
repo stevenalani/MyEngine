@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using MyEngine.Assets.Models;
 using MyEngine.DataStructures;
@@ -11,7 +12,7 @@ namespace MyEngine
 {
     public class BoundingBox : Cube, IEngineModel
     {
-
+        public Surface[] Surfaces = new Surface[6];
         public Vector3 leftlownear;
         public Vector3 rightlownear;
         public Vector3 rightupnear;
@@ -22,12 +23,17 @@ namespace MyEngine
         public Vector3 rightupfar;
         public Vector3 leftupfar;
 
-        public Vector4 color;
-        public new Matrix4 Modelmatrix { get; set; }
+        public Vector4 Color;
+
+        private bool IsInX(Vector3 intersection) => intersection.X >= leftlownear.X && intersection.X <= rightlownear.X;
+        private bool IsInY(Vector3 intersection) => intersection.Y >= leftlownear.Y && intersection.Y <= rightupnear.Y;
+        private bool IsInZ(Vector3 intersection) => leftlownear.Z >= intersection.Z && rightlowfar.Z <= intersection.Z;
+        public string series { get; set; } = "default";
+        public bool purgesiblings { get; set; } = false;
         public BoundingBox(Model model, Vector4 color = default(Vector4))
         {
-            purgesiblings = false;
-            this.color = color == default(Vector4) ? new Vector4(0.1f, 0.7f, 1f, 0.1f) : color;
+            purgesiblings = true;
+            this.Color = color == default(Vector4) ? new Vector4(25.5f, 178f, 255f, 25f) : color;
             if (model is PositionColorModel)
             {
                 update((PositionColorModel)model);
@@ -35,11 +41,14 @@ namespace MyEngine
             }
         }
         private void update(PositionColorModel inmodel)
-        {
+        {                
+            Position = inmodel.Position;
+            Rotations = inmodel.Rotations;
+            Scales = inmodel.Scales;
             if (inmodel.IsReady)
             {
-                var vertices = inmodel.Vertices.Select(x => Vector3.TransformPosition(x.Position, inmodel.Modelmatrix))
-                    .ToArray();
+
+                var vertices = inmodel.Vertices.Select(x => Vector3.TransformPosition(x.Position,inmodel.Modelmatrix));
                 var minY = vertices.Min(x => x.Y);
                 var maxY = vertices.Max(x => x.Y);
                 var minX = vertices.Min(x => x.X);
@@ -48,8 +57,6 @@ namespace MyEngine
                 var maxZ = vertices.Max(x => x.Z);
 
                 var size = new Vector3(maxX - minX, maxY - minY, maxZ - minZ);
-                var center = new Vector3(size.X / 2, size.Y / 2, size.Z / 2);
-                Modelmatrix = Matrix4.CreateTranslation(center);
 
                 leftlownear = new Vector3(minX, minY, maxZ);
                 rightlownear = new Vector3(maxX, minY, maxZ);
@@ -61,10 +68,20 @@ namespace MyEngine
                 rightupfar = new Vector3(maxX, maxY, minZ);
                 leftupfar = new Vector3(minX, maxY, minZ);
 
+                Surfaces = new[]
+                {
+                    new Surface(leftlownear, rightlownear, rightupnear),
+                    new Surface(rightlownear, rightlowfar, rightupfar),
+                    new Surface(rightlowfar, leftlowfar, leftupfar),
+                    new Surface(leftlowfar, leftlownear, leftupnear),
+                    new Surface(leftupnear, rightupnear, rightupfar),
+                    new Surface(leftlownear, rightlownear, rightlowfar),
+                };
+
                 Vertices = ToArray()?.Select(x => new PositionColorVertex()
                 {
-                    Position = x - center,
-                    Color = color
+                    Position = Vector3.TransformPosition(x,inmodel.Modelmatrix.Inverted()),
+                    Color = Color / 255,
                 }).ToArray();
                 IsReady = false;
             }
@@ -86,32 +103,34 @@ namespace MyEngine
             };
         }
 
-        public void TransformBoundingBox(Matrix4 transforMatrix)
+        public Vector3[] ContainsVector(IntersectionResult[] intersectionResults)
         {
-            var edges = Vertices.Select(x => Vector3.TransformPosition(x.Position, transforMatrix));
-            var lowest = edges.Min(x => x.Y);
-            var highest = edges.Max(x => x.Y);
-            var left = edges.Min(x => x.X);
-            var right = edges.Max(x => x.X);
-            var farest = edges.Min(x => x.Z);
-            var nearest = edges.Max(x => x.Z);
-
-            leftlownear = new Vector3(left, lowest, nearest);
-            rightlownear = new Vector3(right, lowest, nearest);
-            rightupnear = new Vector3(right, highest, nearest);
-            leftupnear = new Vector3(left, highest, nearest);
-
-            leftlowfar = new Vector3(left, lowest, farest);
-            rightlowfar = new Vector3(right, lowest, farest);
-            rightupfar = new Vector3(right, highest, farest);
-            leftupfar = new Vector3(left, highest, farest);
-            Vertices = ToArray().Select(x => new PositionColorVertex()
-            { Position = x, Color = color }).ToArray();
-            IsReady = false;
+            //List<Vector3> hits = new List<Vector3>();
+            var hits = intersectionResults.Where(x =>
+                IsInX(x.Intersection) && IsInY(x.Intersection) && IsInZ(x.Intersection)).Select(x => x.Intersection);
+            /*foreach (var intersectionResult in intersectionResults)
+            {
+                var inX = IsInX(intersectionResult.Intersection);
+                var inY = IsInY(intersectionResult.Intersection);
+                var inZ = IsInZ(intersectionResult.Intersection);
+                if (inX && inY && inZ)
+                {
+                    hits.Add(intersectionResult.Intersection);
+                }
+            }*/
+            return hits.ToArray();
         }
+    }
 
-        public string series { get; set; } = "default";
-        public bool purgesiblings { get; set; } = false;
+    public class Surface
+    {
+        public Vector3 Point;
+        public Vector3 Normal;
 
+        public Surface(Vector3 p1, Vector3 p2, Vector3 p3 )
+        {
+            Normal = MathHelpers.GetSurfaceNormal(p1, p2, p3);
+            Point = p1;
+        }
     }
 }

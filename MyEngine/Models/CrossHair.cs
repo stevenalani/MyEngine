@@ -74,7 +74,7 @@ namespace MyEngine.Models
                 shader.SetUniformMatrix4X4("model", modelmat);
                 GL.PointSize(2f);
 
-                GL.BindVertexArray(VAO);
+                GL.BindVertexArray(Vao);
                 GL.DrawElements(BeginMode.Points, Indices.Length, DrawElementsType.UnsignedInt, 0);
             }
         }
