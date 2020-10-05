@@ -18,7 +18,7 @@ namespace MyEngine
             Position = position;
 
         }
-        public const float SPEED = 15f;
+        public const float SPEED = 30f;
         public const float SENSITIVITY = 0.1f;
         public const float ZOOM = 45.0f;
 

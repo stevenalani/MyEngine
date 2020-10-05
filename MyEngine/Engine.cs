@@ -135,7 +135,41 @@ namespace MyEngine
         {
             base.OnMouseDown(e);
         }
-        
+        public RayHitResult[] CheckHit()
+        {
+
+            var hitResults = new List<RayHitResult>();
+            var BoundingBoxes = modelManager.GetModelsAndWorld().Where(x => x is PositionColorModel)
+                .Select(x =>
+                {
+                    var bb = new BoundingBox((PositionColorModel)x) { purgesiblings = true };
+                    return new KeyValuePair<PositionColorModel, BoundingBox>((PositionColorModel)x, bb);
+                });
+
+            foreach (var values in BoundingBoxes)
+            {
+                var boundingbox = values.Value;
+                var vals = boundingbox.Surfaces.Select(x => Math.Round(Vector3.Dot(x.Normal, Camera.ViewDirection)));
+                var sfs = boundingbox.Surfaces.Where(x => Math.Round(Vector3.Dot(x.Normal, Camera.ViewDirection)) != 0.0);
+                var intersections = sfs.Select(x => new IntersectionResult(x,
+                    MathHelpers.GetIntersection2(Camera.ViewDirection, Camera.Position + Camera.ViewDirection, x.Point, x.Normal))).ToArray();
+                var hits = boundingbox.ContainsVector(intersections);
+                if (hits.Length == 0) continue;
+
+                var minLength = hits?.Min(x => (x - Camera.Position).Length);
+                var firsthit = hits.First(x => (x - Camera.Position).Length == minLength);
+                var hininmodelspace = Vector3.TransformPosition(firsthit, values.Key.Modelmatrix.Inverted());
+                var hit = new RayHitResult
+                {
+                    model = values.Key,
+                    HitPositionWorld = firsthit,
+                    RayDirectionWorld = Camera.ViewDirection
+                };
+                hitResults.Add(hit);
+            }
+
+            return hitResults.ToArray();
+        }
         protected override void OnMouseUp(MouseButtonEventArgs e)
         {
             base.OnMouseUp(e);
@@ -143,12 +177,10 @@ namespace MyEngine
             {
                 Color = new Vector4(255, 0, 0, 125)
             };
-            var collisionDetector = new LineModelCollisionDetector(Camera.ViewDirection,Camera.Position+Camera.ViewDirection,modelManager.GetModelsAndWorld());
+            //var collisionDetector = new LineModelCollisionDetector(Camera.ViewDirection,Camera.Position+Camera.ViewDirection,modelManager.GetModelsAndWorld());
             visualray.series = "showray";
             visualray.purgesiblings = true;
             AddModel(visualray);
-            ThreadStart start = new ThreadStart(this.CheckHit);
-            Thread checkhits = new Thread();
             var results = CheckHit();
             var volumes = results.Where(x => x.model is Volume);
 
@@ -303,7 +335,7 @@ namespace MyEngine
             Models = models;
         }
 
-        public void CheckHit()
+        /*public void CheckHit()
         {
 
             var hitResults = new List<RayHitResult>();
@@ -337,7 +369,7 @@ namespace MyEngine
             }
 
             Hits = hitResults.ToArray();
-        }
+        }*/
 
     }
 

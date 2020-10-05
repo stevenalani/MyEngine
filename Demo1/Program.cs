@@ -15,7 +15,7 @@ namespace Demo1
             var width = 800;
             var height = 600;
             var userprofilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            var cam = new Camera(width, height, 0.1f, 100f);
+            var cam = new Camera(width, height, 0.1f, 1000f);
             cam.Position = new Vector3(0, 0, 20);
             var engine = new Engine(width, height, cam);
             engine.enableCrossHair(new Vector4(1f, 1f, 1f, 0.5f));

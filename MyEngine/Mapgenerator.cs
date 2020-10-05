@@ -54,19 +54,125 @@ namespace MyEngine
         public BigColorVolume GenerateMapFromHeightData(short[,] heights)
         {
             var colNRowCnt = (int)(Math.Sqrt(heights.Length) / 10);
-            List<HeightmapImporter.LocationResult> locationResults = new List<HeightmapImporter.LocationResult>();
-            for (int y = 0; y < colNRowCnt; y++)
-                for (int x = 0; x < colNRowCnt; x++)
-                    locationResults.Add(new HeightmapImporter.LocationResult() { latitude = x, longitude = y, elevation = heights[y, x] });
-            int minVal = locationResults.Min(location => location.elevation);
-            var deltaheight = locationResults.Max(location => location.elevation) - minVal;
-            var volume = new BigColorVolume(colNRowCnt, locationResults.Max(location => location.elevation) - minVal, colNRowCnt);
-            var color = new Vector4(200, 200, 200, 255);
-            foreach (var result in locationResults)
+            int maxVal = heights[0,0];
+            int minVal = heights[0,0];
+            for (int y = 1; y < colNRowCnt; y++)
             {
-                for (int i = 0; i < result.elevation - minVal; i++)
-                    volume.SetVoxel((int)result.latitude, i, (int)result.longitude, Color(i, deltaheight));
+                for (int x = 1; x < colNRowCnt; x++)
+                {
+                    if (maxVal < heights[x, y]) maxVal = heights[x, y];
+                    if (minVal > heights[x, y]) minVal = heights[x, y];
+                }
             }
+            var deltaheight = maxVal - minVal;
+            var volume = new BigColorVolume(colNRowCnt, deltaheight, colNRowCnt);
+            for (int y = 0; y < colNRowCnt; y++)
+            {
+                for (int x = 0; x < colNRowCnt; x++)
+                {
+                    int[] neighbours = null;
+                    if(x == 0 && y == 0)
+                    {
+                        neighbours = new int[]
+                        {
+                            heights[x, y + 1],
+                            heights[x + 1, y + 1],
+                            heights[x + 1, y],
+                        };
+                    }else if (x == 0 && y < colNRowCnt-1)
+                    {
+                        neighbours = new int[]
+                        {
+                            heights[x, y + 1],
+                            heights[x + 1, y + 1],
+                            heights[x + 1, y],
+                            heights[x, y - 1],
+                            heights[x + 1, y - 1],
+                        };
+                    }
+                    else if (x == 0 && y == colNRowCnt - 1)
+                    {
+                        neighbours = new int[]
+                        {
+                            heights[x + 1, y],
+                            heights[x, y - 1],
+                            heights[x + 1, y - 1],
+                        };
+                    }
+                    else if (x < colNRowCnt - 1 && y == 0)
+                    {
+                        neighbours = new int[]
+                        {
+                            heights[x, y + 1],
+                            heights[x - 1, y + 1],
+                            heights[x + 1, y + 1],
+                            heights[x - 1, y],
+                            heights[x + 1, y],
+                        };
+                    }
+                    else if (x < colNRowCnt - 1 && y == colNRowCnt - 1)
+                    {
+                        neighbours = new int[]
+                        {
+                            heights[x - 1, y],
+                            heights[x + 1, y],
+                            heights[x, y - 1],
+                            heights[x - 1, y - 1],
+                            heights[x + 1, y - 1],
+                        };
+                    }
+                    else if(x == colNRowCnt -1 && y == 0)
+                    {
+                        neighbours = new int[]
+                        {
+                            heights[x, y + 1],
+                            heights[x - 1, y + 1],
+                            heights[x - 1, y],
+                        };
+                    }
+                    else if( x == colNRowCnt - 1 && y < colNRowCnt - 1)
+                    {
+                        neighbours = new int[]
+                        {
+                            heights[x, y + 1],
+                            heights[x - 1, y + 1],
+                            heights[x - 1, y],
+                            heights[x, y - 1],
+                            heights[x - 1, y - 1],
+
+                        };
+                    }
+                    else if(x == colNRowCnt -1 && y == colNRowCnt -1)
+                    {
+                        neighbours = new int[]
+                        {
+                            heights[x - 1, y],
+                            heights[x, y - 1],
+                            heights[x - 1, y - 1],
+                        };
+                    }
+                    else
+                    {
+                        neighbours = new int[]
+                        {
+                            heights[x, y + 1],
+                            heights[x - 1, y + 1],
+                            heights[x + 1, y + 1],
+                            heights[x - 1, y],
+                            heights[x + 1, y],
+                            heights[x, y - 1],
+                            heights[x - 1, y - 1],
+                            heights[x + 1, y - 1],
+                        };
+                    }
+
+                    var minNeighbour = neighbours.Min();
+                    for (int i = minNeighbour - minVal; i <= heights[x,y] - minVal; i++)
+                        volume.SetVoxel(x, i, y, Color(i, deltaheight));
+                }
+            }
+
+            volume.Position.Y = -minVal;
             return volume;
         }
 

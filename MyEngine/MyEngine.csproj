@@ -125,6 +125,7 @@
     <Compile Include="Helpers\MathHelpers.cs" />
     <Compile Include="Models\ModelManager.cs" />
     <Compile Include="DataStructures\PositionColorVertex.cs" />
+    <Compile Include="Models\Voxel\VoxelIndices.cs" />
     <Compile Include="ShaderImporter\ShaderImporter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

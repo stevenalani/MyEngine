@@ -5,8 +5,8 @@ namespace MyEngine.Models.Voxel
     public abstract class Volume : PositionColorModel
     {
         public Vector3 Dimensions;
-        protected int[,,] VolumeData;
-        protected bool[,,] CheckedInVoxels;
+        public short[,,] VolumeData;
+        public bool[,,] CheckedInVoxels;
         protected Volume(string name = "unnamed") : base(null, null, name) { }
         public int GetVoxel(int x, int y, int z)
         {

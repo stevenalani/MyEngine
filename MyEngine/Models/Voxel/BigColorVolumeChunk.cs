@@ -39,14 +39,14 @@ namespace MyEngine.Models.Voxel
                             continue;
 
                         _checked++;
-                        countX = GetNeighborsX(currentX, currentY, currentZ);
-                        countY = GetNeighborsY(currentX, currentY, currentZ);
-                        countZ = GetNeighborsZ(currentX, currentY, currentZ);
+                        countX = 0;//GetSameNeighborsX(currentX, currentY, currentZ);
+                        countY = 0;//GetSameNeighborsY(currentX, currentY, currentZ);
+                        countZ = 0;//GetSameNeighborsZ(currentX, currentY, currentZ);
                         if (countX >= countY && countX >= countZ)
                             for (var i = currentX; i <= currentX + countX; i++)
                             {
-                                var voxelsAbove = GetNeighborsY(i, currentY, currentZ);
-                                var voxelsInfront = GetNeighborsZ(i, currentY, currentZ);
+                                var voxelsAbove = GetSameNeighborsY(i, currentY, currentZ);
+                                var voxelsInfront = GetSameNeighborsZ(i, currentY, currentZ);
                                 if (voxelsAbove < countY || countY == -1)
                                     countY = voxelsAbove;
                                 if (voxelsInfront < countZ || countZ == -1)
@@ -55,8 +55,8 @@ namespace MyEngine.Models.Voxel
                         else if (countY >= countX && countY >= countZ)
                             for (var i = currentY; i <= currentY + countY; i++)
                             {
-                                var voxelsRight = GetNeighborsX(currentX, i, currentZ);
-                                var voxelsInfront = GetNeighborsZ(currentX, i, currentZ);
+                                var voxelsRight = GetSameNeighborsX(currentX, i, currentZ);
+                                var voxelsInfront = GetSameNeighborsZ(currentX, i, currentZ);
                                 if (voxelsRight < countX || countX == -1)
                                     countX = voxelsRight;
                                 if (voxelsInfront < countZ || countZ == -1)
@@ -65,8 +65,8 @@ namespace MyEngine.Models.Voxel
                         else if (countZ >= countX && countZ >= countY)
                             for (var i = currentZ; i <= currentZ + countZ; i++)
                             {
-                                var voxelsAbove = GetNeighborsY(currentX, currentY, i);
-                                var voxelsRight = GetNeighborsX(currentX, currentY, i);
+                                var voxelsAbove = GetSameNeighborsY(currentX, currentY, i);
+                                var voxelsRight = GetSameNeighborsX(currentX, currentY, i);
                                 if (voxelsAbove < countY || countY == -1)
                                     countY = voxelsAbove;
                                 if (voxelsRight < countX || countX == -1)

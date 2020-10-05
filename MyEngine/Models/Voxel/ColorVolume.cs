@@ -11,18 +11,18 @@ namespace MyEngine.Models.Voxel
         public ColorVolume(int DimensionsX, int DimensionsY, int DimensionsZ) : base()
         {
             Dimensions = new Vector3(DimensionsX, DimensionsY, DimensionsZ);
-            VolumeData = new int[DimensionsX, DimensionsY, DimensionsZ];
+            VolumeData = new short[DimensionsX, DimensionsY, DimensionsZ];
         }
 
         private void InitializeVolumeData()
         {
-            VolumeData = new int[(int)Dimensions.X, (int)Dimensions.Y, (int)Dimensions.Z];
+            VolumeData = new short[(int)Dimensions.X, (int)Dimensions.Y, (int)Dimensions.Z];
             IsReady = false;
         }
 
         public override void SetVoxel(int x, int y, int z, int colorIndex)
         {
-            VolumeData[x, y, z] = colorIndex;
+            VolumeData[x, y, z] = (short)colorIndex;
             IsReady = false;
         }
         public override void SetVoxel(int x, int y, int z, Vector4 color)
@@ -123,18 +123,19 @@ namespace MyEngine.Models.Voxel
                 {
                     for (var currentX = 0; currentX < Dimensions.X; currentX++)
                     {
+                        
                         if (VolumeData[currentX, currentY, currentZ] == 0 || CheckedInVoxels[currentX, currentY, currentZ])
                             continue;
 
                         _checked++;
-                        countX = GetNeighborsX(currentX, currentY, currentZ);
-                        countY = GetNeighborsY(currentX, currentY, currentZ);
-                        countZ = GetNeighborsZ(currentX, currentY, currentZ);
+                        countX = GetSameNeighborsX(currentX, currentY, currentZ);
+                        countY = GetSameNeighborsY(currentX, currentY, currentZ);
+                        countZ = GetSameNeighborsZ(currentX, currentY, currentZ);
                         if (countX >= countY && countX >= countZ)
                             for (var i = currentX; i <= currentX + countX; i++)
                             {
-                                var voxelsAbove = GetNeighborsY(i, currentY, currentZ);
-                                var voxelsInfront = GetNeighborsZ(i, currentY, currentZ);
+                                var voxelsAbove = GetSameNeighborsY(i, currentY, currentZ);
+                                var voxelsInfront = GetSameNeighborsZ(i, currentY, currentZ);
                                 if (voxelsAbove < countY || countY == -1)
                                     countY = voxelsAbove;
                                 if (voxelsInfront < countZ || countZ == -1)
@@ -143,8 +144,8 @@ namespace MyEngine.Models.Voxel
                         else if (countY >= countX && countY >= countZ)
                             for (var i = currentY; i <= currentY + countY; i++)
                             {
-                                var voxelsRight = GetNeighborsX(currentX, i, currentZ);
-                                var voxelsInfront = GetNeighborsZ(currentX, i, currentZ);
+                                var voxelsRight = GetSameNeighborsX(currentX, i, currentZ);
+                                var voxelsInfront = GetSameNeighborsZ(currentX, i, currentZ);
                                 if (voxelsRight < countX || countX == -1)
                                     countX = voxelsRight;
                                 if (voxelsInfront < countZ || countZ == -1)
@@ -153,8 +154,8 @@ namespace MyEngine.Models.Voxel
                         else if (countZ >= countX && countZ >= countY)
                             for (var i = currentZ; i <= currentZ + countZ; i++)
                             {
-                                var voxelsAbove = GetNeighborsY(currentX, currentY, i);
-                                var voxelsRight = GetNeighborsX(currentX, currentY, i);
+                                var voxelsAbove = GetSameNeighborsY(currentX, currentY, i);
+                                var voxelsRight = GetSameNeighborsX(currentX, currentY, i);
                                 if (voxelsAbove < countY || countY == -1)
                                     countY = voxelsAbove;
                                 if (voxelsRight < countX || countX == -1)
@@ -189,6 +190,7 @@ namespace MyEngine.Models.Voxel
                         var end = new Vector3(currentX + countX + 1, currentY + countY + 1,
                             currentZ + countZ + 1);
                         CheckIn(new Vector3(currentX, currentY, currentZ), end);
+                        
                     }
                 }
             }
@@ -231,19 +233,19 @@ namespace MyEngine.Models.Voxel
             }
         }
 
-        protected int GetNeighborsX(int x, int y, int z)
+        protected int GetSameNeighborsX(int x, int y, int z)
         {
             var neighborsX = 0;
             while (x < Dimensions.X - 1 && IsSameColorRight(x, y, z) &&
                    !CheckedInVoxels[x + 1, y, z])
             {
-                neighborsX++;
                 x++;
+                neighborsX++;
             }
 
             return neighborsX;
         }
-        protected int GetNeighborsY(int x, int y, int z)
+        protected int GetSameNeighborsY(int x, int y, int z)
         {
             var neighborsY = 0;
             while (y < Dimensions.Y - 1 && IsSameColorUp(x, y, z) &&
@@ -255,12 +257,11 @@ namespace MyEngine.Models.Voxel
 
             return neighborsY;
         }
-
-        protected int GetNeighborsZ(int x, int y, int z)
+        protected int GetSameNeighborsZ(int x, int y, int z)
         {
             var neighborsZ = 0;
-            while (z < Dimensions.Z - 1 && IsSameColorFront(x, y, z) &&
-                   !CheckedInVoxels[x, y, z + 1])
+            while (z < Dimensions.Z - 1 && IsSameColorUp(x, y, z) &&
+                   !CheckedInVoxels[x, y , z + 1])
             {
                 z++;
                 neighborsZ++;
@@ -268,6 +269,59 @@ namespace MyEngine.Models.Voxel
 
             return neighborsZ;
         }
+        // Check Z Axis if voxel is in front X-1
+        protected bool IsFrontfaceVisible(int x, int y, int z)
+        {
+            if (z == 0 || VolumeData[x, y, z - 1] == 0 || Colors[VolumeData[x,y,z - 1]].W != 1.0f)
+            {
+                return true;
+            }
+            return false;
+        }
+        protected bool IsBackfaceVisible(int x, int y, int z)
+        {
+            if (z == (int)Dimensions.Z - 1 || VolumeData[x, y, z + 1] == 0 || Colors[VolumeData[x, y, z + 1]].W != 1.0f)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        protected bool IsLeftfaceVisible(int x, int y, int z)
+        {
+            if (x == 0 || VolumeData[x - 1, y, z] == 0 || Colors[VolumeData[x - 1, y, z]].W != 1.0f)
+            {
+                return true;
+            }
+            return false;
+        }
+        protected bool IsRightfaceVisible(int x, int y, int z)
+        {
+            if (x == (int)Dimensions.X - 1 || VolumeData[x + 1, y, z] == 0 || Colors[VolumeData[x + 1, y, z]].W != 1.0f)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        protected bool IsBottomfaceVisible(int x, int y, int z)
+        {
+            if (y == 0 || VolumeData[x, y - 1, z] == 0 || Colors[VolumeData[x , y - 1, z]].W != 1.0f)
+            {
+                return true;
+            }
+            return false;
+        }
+        protected bool IsTopfaceVisible(int x, int y, int z)
+        {
+            if (y == (int)Dimensions.Y - 1 || VolumeData[x , y + 1, z] == 0 || Colors[VolumeData[x, y + 1, z]].W != 1.0f)
+            {
+                return true;
+            }
+            return false;
+        }
+
+
 
         public override void InitBuffers()
         {
