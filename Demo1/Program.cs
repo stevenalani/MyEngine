@@ -7,6 +7,7 @@ using MyEngine.HgtImporter;
 using MyEngine.Models;
 using MyEngine.Models.Voxel;
 using OpenTK;
+using PlantGeneration;
 
 namespace Demo1
 {

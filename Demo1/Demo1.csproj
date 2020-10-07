@@ -60,6 +60,10 @@
       <Project>{83d1303e-1664-47fc-a1c1-9c52fdd37160}</Project>
       <Name>MyEngine</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PlantGeneration\PlantGeneration.csproj">
+      <Project>{CEDB327D-0A76-4DA1-8DB5-99F66BDD60B8}</Project>
+      <Name>PlantGeneration</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
