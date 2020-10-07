@@ -1,8 +1,10 @@
 ﻿using System;
+using System.CodeDom;
 using System.IO;
 using System.Linq;
 using MyEngine;
 using MyEngine.HgtImporter;
+using MyEngine.Models;
 using MyEngine.Models.Voxel;
 using OpenTK;
 
@@ -16,27 +18,46 @@ namespace Demo1
             var height = 600;
             var userprofilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             var cam = new Camera(width, height, 0.1f, 1000f);
-            cam.Position = new Vector3(0, 0, 20);
+            cam.Position = new Vector3(0, 0, -20);
             var engine = new Engine(width, height, cam);
+            
             engine.enableCrossHair(new Vector4(1f, 1f, 1f, 0.5f));
             engine.AddShader("Shaders\\DefaultVoxelShader.vs", "Shaders\\DefaultVoxelShader.fs");
 
+            /*ColorVolume volume = new ColorVolume(3,3,3);
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    for (int k = 0; k < 3; k++)
+                    {
+                        volume.SetVoxel(i,j,k, new Vector4(120,120,90,255));
+                    }
+                }
+            }
+            engine.AddModel(volume);
+*/
+            var light = new LightSource(position: new Vector3(180, 400, 180), color: new Vector3(255, 255, 250));
+            engine.AddLight(light);
+            
             Mapgenerator mapgen = new Mapgenerator();
             var hgtdata = new HgtReader().GetElevationData("C:\\Users\\Steven\\Documents\\Eigene Dokumente\\Studium\\Softwaretechnik\\Thesis\\Procedural Generation of Content\\N48E009.hgt");
             var vol = mapgen.GenerateMapFromHeightData(hgtdata);
             vol.Scales.X = 3;
             vol.Scales.Z = 3;
+            vol.CubeScale = 10f;
+            
             engine.AddModel(vol);
-            /*
-            var zero = new ColorVolume(1,1,1);
+            var leaf = new Leaf();
+            /*var zero = new ColorVolume(1,1,1);
             zero.SetVoxel(0,0,0,new Vector4(255,0,0,255));
             engine.AddModel(zero);
             var zero1 = new ColorVolume(1, 1, 1);
             zero1.SetVoxel(0, 0, 0, new Vector4(0, 255, 0, 255));
             zero1.Position.X = 10;
-            engine.AddModel(zero1);
-            engine.UpdateFrame += (sender, eventArgs) => { zero1.rotateX(0.01f); zero1.MoveForward(0.08f); };
-            */
+            engine.AddModel(zero1);*/
+            //engine.UpdateFrame += (sender, eventArgs) => { zero1.rotateX(0.01f); zero1.MoveForward(0.08f); };
+            
             /*
             var colorvol = new BigColorVolume(32, 32, 32);
             

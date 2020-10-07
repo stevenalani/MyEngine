@@ -7,11 +7,12 @@ namespace MyEngine.Models.Voxel
 {
     public class ColorVolume : Volume
     {
-        public List<Vector4> Colors = new List<Vector4>() { Vector4.Zero };
-        public ColorVolume(int DimensionsX, int DimensionsY, int DimensionsZ) : base()
+        
+        public ColorVolume(int DimensionsX, int DimensionsY, int DimensionsZ, float cubeScale = 1f) : base()
         {
             Dimensions = new Vector3(DimensionsX, DimensionsY, DimensionsZ);
             VolumeData = new short[DimensionsX, DimensionsY, DimensionsZ];
+            CubeScale = cubeScale;
         }
 
         private void InitializeVolumeData()
@@ -20,24 +21,28 @@ namespace MyEngine.Models.Voxel
             IsReady = false;
         }
 
-        public override void SetVoxel(int x, int y, int z, int colorIndex)
+        public override void SetVoxel(int x, int y, int z, int materialIndex)
         {
-            VolumeData[x, y, z] = (short)colorIndex;
+            VolumeData[x, y, z] = (short)materialIndex;
             IsReady = false;
         }
-        public override void SetVoxel(int x, int y, int z, Vector4 color)
+        public override void SetVoxel(int x, int y, int z, Material material)
         {
-            if (!Colors.Contains(color))
+            if (!Materials.Contains(material))
             {
-                Colors.Add(color);
+                Materials.Add(material);
             }
-            var colorIndex = Colors.IndexOf(color);
+            var colorIndex = Materials.IndexOf(material);
 
             SetVoxel(x, y, z, colorIndex);
         }
-        public override void SetVoxel(Vector3 position, Vector4 color)
+        public override void SetVoxel(Vector3 position, Material material)
         {
-            SetVoxel((int)position.X, (int)position.Y, (int)position.Z, color);
+            SetVoxel((int)position.X, (int)position.Y, (int)position.Z, material);
+        }
+        public override void SetVoxel(Vector3 position, int materialIndex)
+        {
+            SetVoxel((int)position.X, (int)position.Y, (int)position.Z, materialIndex);
         }
 
         public void ClearVolume()
@@ -51,192 +56,72 @@ namespace MyEngine.Models.Voxel
             VolumeData[x, y, z] = 0;
         }
 
-        protected bool IsSameColorFront(int x, int y, int z)
-        {
-            return VolumeData[x, y, z] == VolumeData[x, y, z + 1];
-        }
 
-        protected bool IsSameColorBack(int x, int y, int z)
-        {
-            return VolumeData[x, y, z] == VolumeData[x, y, z - 1];
-        }
 
-        protected bool IsSameColorRight(int x, int y, int z)
-        {
-            return VolumeData[x, y, z] == VolumeData[x + 1, y, z];
-        }
+ 
 
-        public void AddColor(Vector4 color)
-        {
-            if (!Colors.Contains(color))
-            {
-                Colors.Add(color);
-            }
-        }
-
-        public int GetColorIndex(Vector4 color)
-        {
-            return Colors.IndexOf(color);
-        }
-        public Vector4 GetColor(int x, int y, int z)
-        {
-            return Colors[VolumeData[x, y, z]];
-        }
-        protected bool IsSameColorLeft(int x, int y, int z)
-        {
-            return VolumeData[x, y, z] == VolumeData[x - 1, y, z];
-        }
-
-        protected bool IsSameColorUp(int x, int y, int z)
-        {
-            return VolumeData[x, y, z] == VolumeData[x, y + 1, z];
-        }
-
-        protected bool IsSameColorDown(int x, int y, int z)
-        {
-            return VolumeData[x, y, z] == VolumeData[x, y - 1, z];
-        }
-        public virtual void ComputeIndices()
-        {
-            if (Vertices == null) return;
-
-            var vxlcnt = Vertices.Length / 8;
-            var indices = new List<uint>();
-            for (uint i = 0; i < vxlcnt; i++)
-                indices.AddRange(CubeData.Indices.Select(x => x + i * 8).ToList());
-
-            Indices = indices.ToArray();
-
-        }
         public virtual void ComputeVertices()
         {
-            int countX, countY, countZ;
-            var _checked = 0;
-            var poscolresult = new List<PositionColorVertex>();
+            var poscolresult = new List<PositionColorNormalVertex>();
+            List<uint> indices = new List<uint>();
             CheckedInVoxels = new bool[(int)Dimensions.X, (int)Dimensions.Y, (int)Dimensions.Z];
-
-
-
+            uint cubeCount = 0;
             for (var currentZ = 0; currentZ < Dimensions.Z; currentZ++)
             {
                 for (var currentY = 0; currentY < Dimensions.Y; currentY++)
                 {
                     for (var currentX = 0; currentX < Dimensions.X; currentX++)
                     {
+                        var colorIndex = VolumeData[currentX, currentY, currentZ];
+                        if(colorIndex == 0) continue;
                         
-                        if (VolumeData[currentX, currentY, currentZ] == 0 || CheckedInVoxels[currentX, currentY, currentZ])
-                            continue;
+                        Vector4 color = Materials[colorIndex].Color / 255;
 
-                        _checked++;
-                        countX = GetSameNeighborsX(currentX, currentY, currentZ);
-                        countY = GetSameNeighborsY(currentX, currentY, currentZ);
-                        countZ = GetSameNeighborsZ(currentX, currentY, currentZ);
-                        if (countX >= countY && countX >= countZ)
-                            for (var i = currentX; i <= currentX + countX; i++)
-                            {
-                                var voxelsAbove = GetSameNeighborsY(i, currentY, currentZ);
-                                var voxelsInfront = GetSameNeighborsZ(i, currentY, currentZ);
-                                if (voxelsAbove < countY || countY == -1)
-                                    countY = voxelsAbove;
-                                if (voxelsInfront < countZ || countZ == -1)
-                                    countZ = voxelsInfront;
-                            }
-                        else if (countY >= countX && countY >= countZ)
-                            for (var i = currentY; i <= currentY + countY; i++)
-                            {
-                                var voxelsRight = GetSameNeighborsX(currentX, i, currentZ);
-                                var voxelsInfront = GetSameNeighborsZ(currentX, i, currentZ);
-                                if (voxelsRight < countX || countX == -1)
-                                    countX = voxelsRight;
-                                if (voxelsInfront < countZ || countZ == -1)
-                                    countZ = voxelsInfront;
-                            }
-                        else if (countZ >= countX && countZ >= countY)
-                            for (var i = currentZ; i <= currentZ + countZ; i++)
-                            {
-                                var voxelsAbove = GetSameNeighborsY(currentX, currentY, i);
-                                var voxelsRight = GetSameNeighborsX(currentX, currentY, i);
-                                if (voxelsAbove < countY || countY == -1)
-                                    countY = voxelsAbove;
-                                if (voxelsRight < countX || countX == -1)
-                                    countX = voxelsRight;
-                            }
-
-                        var posxColorVertex = new PositionColorVertex
+                        var offset = new Vector3(currentX,currentY,currentZ);
+                        if (IsFrontfaceVisible(currentX, currentY, currentZ))
                         {
-                            Color = Colors[VolumeData[currentX, currentY, currentZ]] / 255,
-                            Position = new Vector3(currentX, currentY, currentZ)
-                        };
-                        posxColorVertex.Position.Z = currentZ + countZ + 1;
-                        poscolresult.Add(posxColorVertex);
-                        posxColorVertex.Position.X = currentX + countX + 1;
-                        poscolresult.Add(posxColorVertex);
-                        posxColorVertex.Position.Y = currentY + countY + 1;
-                        poscolresult.Add(posxColorVertex);
-                        posxColorVertex.Position.X = currentX;
-                        poscolresult.Add(posxColorVertex);
-
-                        //Backface Vertex
-                        posxColorVertex.Position.X = currentX;
-                        posxColorVertex.Position.Y = currentY;
-                        posxColorVertex.Position.Z = currentZ;
-                        poscolresult.Add(posxColorVertex);
-                        posxColorVertex.Position.X = currentX + countX + 1;
-                        poscolresult.Add(posxColorVertex);
-                        posxColorVertex.Position.Y = currentY + countY + 1;
-                        poscolresult.Add(posxColorVertex);
-                        posxColorVertex.Position.X = currentX;
-                        poscolresult.Add(posxColorVertex);
-                        var end = new Vector3(currentX + countX + 1, currentY + countY + 1,
-                            currentZ + countZ + 1);
-                        CheckIn(new Vector3(currentX, currentY, currentZ), end);
-                        
+                            poscolresult.AddRange(CubeWithNormals.FrontFace(offset,color,CubeScale));
+                        }
+                        if (IsBackfaceVisible(currentX, currentY, currentZ))
+                        {
+                            poscolresult.AddRange(CubeWithNormals.BackFace(offset, color, CubeScale));
+                        }
+                        if (IsLeftfaceVisible(currentX, currentY, currentZ))
+                        {
+                            poscolresult.AddRange(CubeWithNormals.LeftFace(offset, color, CubeScale));
+                        }
+                        if (IsRightfaceVisible(currentX, currentY, currentZ))
+                        {
+                            poscolresult.AddRange(CubeWithNormals.RightFace(offset, color, CubeScale));
+                        }
+                        if (IsBottomfaceVisible(currentX, currentY, currentZ))
+                        {
+                            poscolresult.AddRange(CubeWithNormals.BottomFace(offset, color, CubeScale));
+                        }
+                        if (IsTopfaceVisible(currentX, currentY, currentZ))
+                        {
+                            poscolresult.AddRange(CubeWithNormals.TopFace(offset, color, CubeScale));
+                        }
                     }
                 }
             }
 
-
+            
             if (poscolresult.Count != 0)
             {
-                Vertices = poscolresult.Select(x => new PositionColorVertex
+                for (uint i = 0; i < poscolresult.Count; i++)
                 {
-                    Color = x.Color,
-                    Position = x.Position
-                }).ToArray();
-                /*
-                if (Vertices == null)
-                    Vertices = poscolresult.Select(x => new PositionColorVertex
-                    {
-                        Color = x.Color,
-                        Position = x.Position
-                    }).ToArray();
-                else
-                {
-                    var list1 = new List<PositionColorVertex>(Vertices);
-                    foreach (var positionColorVertex in poscolresult)
-                    {
-                        for (var i = 0; i < Vertices.Length; i++)
-                        {
-                            if (Vertices[i].Position == positionColorVertex.Position)
-                            {
-                                Vertices[i].Color = positionColorVertex.Color;
-                            }
-                        }
-                    }
-                    list1.AddRange(poscolresult.Select(x => new PositionColorVertex
-                    {
-                        Color = x.Color,
-                        Position = x.Position
-                    }));
-                    Vertices = list1.ToArray();
-                }*/
+                    indices.Add(i);
+                }
+                Vertices = poscolresult.ToArray();
+                Indices = indices.ToArray();
             }
         }
 
         protected int GetSameNeighborsX(int x, int y, int z)
         {
             var neighborsX = 0;
-            while (x < Dimensions.X - 1 && IsSameColorRight(x, y, z) &&
+            while (x < Dimensions.X - 1 && IsSameMaterialRight(x, y, z) &&
                    !CheckedInVoxels[x + 1, y, z])
             {
                 x++;
@@ -248,7 +133,7 @@ namespace MyEngine.Models.Voxel
         protected int GetSameNeighborsY(int x, int y, int z)
         {
             var neighborsY = 0;
-            while (y < Dimensions.Y - 1 && IsSameColorUp(x, y, z) &&
+            while (y < Dimensions.Y - 1 && IsSameMaterialUp(x, y, z) &&
                    !CheckedInVoxels[x, y + 1, z])
             {
                 y++;
@@ -260,7 +145,7 @@ namespace MyEngine.Models.Voxel
         protected int GetSameNeighborsZ(int x, int y, int z)
         {
             var neighborsZ = 0;
-            while (z < Dimensions.Z - 1 && IsSameColorUp(x, y, z) &&
+            while (z < Dimensions.Z - 1 && IsSameMaterialUp(x, y, z) &&
                    !CheckedInVoxels[x, y , z + 1])
             {
                 z++;
@@ -272,7 +157,7 @@ namespace MyEngine.Models.Voxel
         // Check Z Axis if voxel is in front X-1
         protected bool IsFrontfaceVisible(int x, int y, int z)
         {
-            if (z == 0 || VolumeData[x, y, z - 1] == 0 || Colors[VolumeData[x,y,z - 1]].W != 1.0f)
+            if (z == 0 || VolumeData[x, y, z - 1] == 0 || Materials[VolumeData[x,y,z - 1]].Color.W != 255.0f)
             {
                 return true;
             }
@@ -280,7 +165,7 @@ namespace MyEngine.Models.Voxel
         }
         protected bool IsBackfaceVisible(int x, int y, int z)
         {
-            if (z == (int)Dimensions.Z - 1 || VolumeData[x, y, z + 1] == 0 || Colors[VolumeData[x, y, z + 1]].W != 1.0f)
+            if (z == (int)Dimensions.Z - 1 || VolumeData[x, y, z + 1] == 0 || Materials[VolumeData[x, y, z + 1]].Color.W != 255.0f)
             {
                 return true;
             }
@@ -289,7 +174,7 @@ namespace MyEngine.Models.Voxel
 
         protected bool IsLeftfaceVisible(int x, int y, int z)
         {
-            if (x == 0 || VolumeData[x - 1, y, z] == 0 || Colors[VolumeData[x - 1, y, z]].W != 1.0f)
+            if (x == 0 || VolumeData[x - 1, y, z] == 0 || Materials[VolumeData[x - 1, y, z]].Color.W != 255.0f)
             {
                 return true;
             }
@@ -297,7 +182,7 @@ namespace MyEngine.Models.Voxel
         }
         protected bool IsRightfaceVisible(int x, int y, int z)
         {
-            if (x == (int)Dimensions.X - 1 || VolumeData[x + 1, y, z] == 0 || Colors[VolumeData[x + 1, y, z]].W != 1.0f)
+            if (x == (int)Dimensions.X - 1 || VolumeData[x + 1, y, z] == 0 || Materials[VolumeData[x + 1, y, z]].Color.W != 255.0f)
             {
                 return true;
             }
@@ -306,7 +191,7 @@ namespace MyEngine.Models.Voxel
 
         protected bool IsBottomfaceVisible(int x, int y, int z)
         {
-            if (y == 0 || VolumeData[x, y - 1, z] == 0 || Colors[VolumeData[x , y - 1, z]].W != 1.0f)
+            if (y == 0 || VolumeData[x, y - 1, z] == 0 || Materials[VolumeData[x , y - 1, z]].Color.W != 255.0f)
             {
                 return true;
             }
@@ -314,7 +199,7 @@ namespace MyEngine.Models.Voxel
         }
         protected bool IsTopfaceVisible(int x, int y, int z)
         {
-            if (y == (int)Dimensions.Y - 1 || VolumeData[x , y + 1, z] == 0 || Colors[VolumeData[x, y + 1, z]].W != 1.0f)
+            if (y == (int)Dimensions.Y - 1 || VolumeData[x , y + 1, z] == 0 || Materials[VolumeData[x, y + 1, z]].Color.W != 255.0f)
             {
                 return true;
             }
@@ -375,7 +260,7 @@ namespace MyEngine.Models.Voxel
         public override void ComputeVerticesAndIndices()
         {
             ComputeVertices();
-            ComputeIndices();
+            //ComputeIndices();
         }
     }
 }

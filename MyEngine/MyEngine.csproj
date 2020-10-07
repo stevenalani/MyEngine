@@ -99,8 +99,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataStructures\IBoundinBox.cs" />
-    <Compile Include="DataStructures\IVertextype.cs" />
     <Compile Include="Helpers\ClickHandlers.cs" />
+    <Compile Include="LightSource.cs" />
+    <Compile Include="Models\CubeWithNormals.cs" />
+    <Compile Include="Models\PositionColorNormalModel.cs" />
     <Compile Include="Models\Voxel\BigColorVolume.cs" />
     <Compile Include="Models\Voxel\BigColorVolumeChunk.cs" />
     <Compile Include="Models\Voxel\ColorVolume.cs" />
@@ -161,6 +163,8 @@
     <None Include="Shaders\DefaultVoxelShader.vs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Shaders\depthShader.fs" />
+    <None Include="Shaders\depthShader.vs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ConsoleLog\" />

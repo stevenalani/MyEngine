@@ -18,6 +18,63 @@ namespace MyEngine.Models
             new Vector3(0.5f,0.5f,-0.5f),
             new Vector3(-0.5f,0.5f,-0.5f),
         };
+        //Eventually no need for this
+        public static uint[] FrontFaceIndices(uint offset = 0)  => new uint[]
+        {
+            0 + 8 * offset,
+            1 + 8 * offset,
+            2 + 8 * offset,
+            2 + 8 * offset,
+            3 + 8 * offset,
+            0 + 8 * offset
+        };
+        public static uint[] BackFaceIndices(uint offset = 0) => new uint[]
+        {
+            7 + 8 * offset,
+            6 + 8 * offset,
+            5 + 8 * offset,
+            5 + 8 * offset,
+            4 + 8 * offset,
+            7 + 8 * offset
+        };
+        public static uint[] LeftFaceIndices(uint offset = 0) => new uint[]
+        {
+            4 + 8 * offset,
+            0 + 8 * offset,
+            3 + 8 * offset,
+            3 + 8 * offset,
+            7 + 8 * offset,
+            4 + 8 * offset
+        };
+        public static uint[] RightFaceIndices(uint offset = 0) => new uint[] { 
+            1 + 8 * offset,
+            5 + 8 * offset,
+            6 + 8 * offset,
+            6 + 8 * offset,
+            2 + 8 * offset,
+            1 + 8 * offset
+
+        };
+        public static uint[] BottomFaceIndices(uint offset = 0) => new uint[]
+        {
+            4 + 8 * offset,
+            5 + 8 * offset,
+            1 + 8 * offset,
+            1 + 8 * offset,
+            0 + 8 * offset,
+            4 + 8 * offset
+        };
+        public static uint[] TopFaceIndices(uint offset = 0) => new uint[]
+        {
+            3 + 8 * offset,
+            2 + 8 * offset,
+            6 + 8 * offset,
+            6 + 8 * offset,
+            7 + 8 * offset,
+            3 + 8 * offset,
+        };
+        
+
         public static readonly uint[] Indices =
         {
             0, 1, 2,

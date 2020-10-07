@@ -203,7 +203,7 @@ namespace MyEngine.Models.Voxel
         {
             
             volume.ComputeVerticesAndIndices();
-            var Vertices = new List<PositionColorVertex>(volume.Vertices);
+            var Vertices = new List<PositionColorNormalVertex>(volume.Vertices);
             foreach (var colorVertex in volume.Vertices)
             {
                 var doubles = Vertices.Where(v => v.Position == colorVertex.Position && v.Color != colorVertex.Color)

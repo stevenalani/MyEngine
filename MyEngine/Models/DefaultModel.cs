@@ -48,7 +48,7 @@ namespace MyEngine.Assets.Models
             GL.BindVertexArray(Vao);
             GL.BindBuffer(BufferTarget.ArrayBuffer, Vbo);
 
-            GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * PositionColorNormalVertex.Size, _vertices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length  *sizeof(float) * 7, _vertices, BufferUsageHint.StaticDraw);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, Ebo);
             GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(int), _indices, BufferUsageHint.StaticDraw);

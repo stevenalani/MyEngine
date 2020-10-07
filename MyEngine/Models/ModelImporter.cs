@@ -31,7 +31,7 @@ namespace MyEngine.Assets
                         for (int i = 0; i < sceneMesh.Vertices.Count; i++)
                         {
                             var cc = sceneMesh.VertexColorChannels;
-                            PositionColorNormalVertex positionColorVertex = new PositionColorNormalVertex(vertices[i], new Color4D(0, 0.5f, 0.7f), normals[i]);
+                            //PositionColorNormalVertex positionColorVertex = new PositionColorNormalVertex(){ Position = vertices[i], Color = new Color4D(0, 0.5f, 0.7f), Normal = normals[i])};
                         }
                     }
                 }

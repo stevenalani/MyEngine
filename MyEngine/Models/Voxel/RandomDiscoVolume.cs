@@ -15,13 +15,13 @@ namespace MyEngine.Models.Voxel
                 for (var j = 0; j < Dimensions.Y; j++)
                     for (var k = 0; k < Dimensions.Z; k++)
                         SetVoxel(new Vector3(i, j, k),
-                            new Vector4(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 200)));
+                            new Material() { Color = new Vector4(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 200))});
             SetVoxel(new Vector3(Dimensions.X - 1, 0, 0),
-                new Vector4(255, 0, 0, 255));
+                new Material() { Color = new Vector4(255, 0, 0, 255)});
             SetVoxel(new Vector3(0, Dimensions.Y - 1, 0),
-                new Vector4(0, 255, 0, 255));
+                    new Material() { Color = new Vector4(0, 255, 0, 255)});
             SetVoxel(new Vector3(0, 0, Dimensions.Z - 1),
-                new Vector4(0, 0, 255, 255));
+                        new Material() { Color = new Vector4(0, 0, 255, 255)});
             Update();
         }
 
@@ -49,7 +49,7 @@ namespace MyEngine.Models.Voxel
             y = rand.Next(0, (int)(Dimensions.Y - 1));
             z = rand.Next(0, (int)(Dimensions.Z - 1));
             SetVoxel(new Vector3(x, y, z),
-                new Vector4(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 200)));
+                new Material(){ Color = new Vector4(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 200))});
             for (var zz = 0; zz < Dimensions.Z; zz++)
             {
                 for (var yy = 0; yy < Dimensions.Y; yy++)
@@ -62,11 +62,11 @@ namespace MyEngine.Models.Voxel
             }
 
             SetVoxel(new Vector3(Dimensions.X - 1, 0, 0),
-                new Vector4(255, 0, 0, 255));
+                new Material() { Color = new Vector4(255, 0, 0, 255)});
             SetVoxel(new Vector3(0, Dimensions.Y - 1, 0),
-                new Vector4(0, 255, 0, 255));
+                    new Material() { Color = new Vector4(0, 255, 0, 255)});
             SetVoxel(new Vector3(0, 0, Dimensions.Z - 1),
-                new Vector4(0, 0, 255, 255));
+                        new Material() { Color = new Vector4(0, 0, 255, 255)});
 
             IsReady = false;
         }

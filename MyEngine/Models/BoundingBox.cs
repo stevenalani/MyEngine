@@ -34,13 +34,13 @@ namespace MyEngine
         {
             purgesiblings = true;
             this.Color = color == default(Vector4) ? new Vector4(25.5f, 178f, 255f, 25f) : color;
-            if (model is PositionColorModel)
+            if (model is PositionColorNormalModel)
             {
-                update((PositionColorModel)model);
-                ((PositionColorModel)model).OnUpdate += update;
+                update((PositionColorNormalModel)model);
+                ((PositionColorNormalModel)model).OnUpdate += update;
             }
         }
-        private void update(PositionColorModel inmodel)
+        private void update(PositionColorNormalModel inmodel)
         {                
             Position = inmodel.Position;
             Rotations = inmodel.Rotations;

@@ -27,7 +27,7 @@ namespace MyEngine
         private double lasttime;
         private DateTime nextWireframeSwitch = DateTime.Now;
         internal ShaderManager shaderManager = new ShaderManager();
-
+        public List<LightSource> Lights { get; set; } = new List<LightSource>(){new LightSource(new Vector3( 0,100,0),Vector3.One)};
 
 
         public Engine(int width, int height, Camera camera = null) : base(
@@ -82,7 +82,7 @@ namespace MyEngine
 
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Front);
-            GL.FrontFace(FrontFaceDirection.Cw);
+            GL.FrontFace(FrontFaceDirection.Ccw);
 
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
@@ -110,8 +110,8 @@ namespace MyEngine
             shader.SetUniformMatrix4X4("projection", projection);
             var view = Camera.GetView();
             shader.SetUniformMatrix4X4("view", view);
-            shader.SetUniformVector3("lightPos", new Vector3(180, 500, 180));
-            shader.SetUniformVector3("lightColor", new Vector3(1, 1, 1));
+            shader.SetUniformVector3("lightPos", Lights.Last().LightPosition);
+            shader.SetUniformVector3("lightColor", Lights.Last().LightColor / 255);
             shader.SetUniformVector3("viewpos", Camera.Position);
             shader.SetUniformFloat("ambientStrength", 1);
             shader.SetUniformFloat("diffuseStrength", 2f);
@@ -139,11 +139,11 @@ namespace MyEngine
         {
 
             var hitResults = new List<RayHitResult>();
-            var BoundingBoxes = modelManager.GetModelsAndWorld().Where(x => x is PositionColorModel)
+            var BoundingBoxes = modelManager.GetModelsAndWorld().Where(x => x is PositionColorNormalModel)
                 .Select(x =>
                 {
-                    var bb = new BoundingBox((PositionColorModel)x) { purgesiblings = true };
-                    return new KeyValuePair<PositionColorModel, BoundingBox>((PositionColorModel)x, bb);
+                    var bb = new BoundingBox((PositionColorNormalModel)x) { purgesiblings = true };
+                    return new KeyValuePair<PositionColorNormalModel, BoundingBox>((PositionColorNormalModel)x, bb);
                 });
 
             foreach (var values in BoundingBoxes)
@@ -201,7 +201,7 @@ namespace MyEngine
                     if (volume.IsValidVoxelPosition((int)ray.X, (int)ray.Y, (int)ray.Z))
                     {
                         volume.SetVoxel((int)ray.X, (int)ray.Y,
-                            (int)ray.Z, new Vector4(colorval, colorval, colorval, 255f));
+                            (int)ray.Z, new Material(){ Color = new Vector4(colorval, colorval, colorval, 255f)});
                         IsVoxelSet = true;
                         volume.IsReady = false;
                         break;
@@ -320,6 +320,13 @@ namespace MyEngine
         {
             return modelManager.GetModel(name);
         }
+
+        public void AddLight(LightSource lightSource)
+        {
+            this.Lights.Add(lightSource);
+        }
+
+        
     }
 
     public class LineModelCollisionDetector

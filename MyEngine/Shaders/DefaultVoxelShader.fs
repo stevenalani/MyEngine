@@ -10,11 +10,18 @@ uniform vec3 viewpos;
 
 in vec4 fragcol;
 in vec3 apos;
+in vec3 anormal;
 
 void main()
 {
     vec3 ambient = lightColor * ambientStrength;
-    vec3 norm = normalize(cross(dFdy(apos.xyz), dFdx(apos.xyz)));
+    vec3 norm;
+    if(anormal.x == 0 && anormal.y == 0 && anormal.z == 0){
+        norm = normalize(cross(dFdy(apos.xyz), dFdx(apos.xyz)));
+    }
+    else{
+        norm = anormal; 
+    }
     vec3 lightDir = normalize(lightPos - apos);
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = diff * lightColor;

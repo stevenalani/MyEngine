@@ -2,7 +2,7 @@
 
 namespace MyEngine.DataStructures
 {
-    public struct PositionColorVertex : IVertextype
+    public struct PositionColorVertex 
     {
         public Vector3 Position;
         public Vector4 Color;

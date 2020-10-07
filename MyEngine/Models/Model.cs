@@ -25,9 +25,13 @@ namespace MyEngine
 
 
         public Vector3 Direction = Vector3.UnitZ;
-        public Matrix4 Modelmatrix => MathHelpers.GetRotation(Rotations.X, Rotations.Y, Rotations.Z) * Matrix4.CreateScale(Scales) *
+        public Matrix4 Modelmatrix => Matrix4.CreateTranslation(-PivotPoint) * 
+                                      MathHelpers.GetRotation(Rotations.X, Rotations.Y, Rotations.Z) * 
+                                      Matrix4.CreateTranslation(PivotPoint) * 
+                                      Matrix4.CreateScale(Scales) *
                                       Matrix4.CreateTranslation(Position);
 
+        public Vector3 PivotPoint = Vector3.Zero;
 
         protected Model()
         {
@@ -85,7 +89,7 @@ namespace MyEngine
         {
             var rotationMatrix4 = MathHelpers.GetRotation(0f, 0f, roll);
             this.Direction = Vector3.TransformNormal(Direction, rotationMatrix4);
-            Rotations.Z = roll;
+            Rotations.Z += roll;
         }
 
         public void rotate(float yaw, float pitch, float roll)

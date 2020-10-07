@@ -58,9 +58,9 @@ namespace MyEngine
                        var color3 = new Vector4(0, 0, 255, 255);
 
                        var volume = new ColorVolume(10, 10, 10);
-                       volume.AddColor(color1);
-                       volume.AddColor(color2);
-                       volume.AddColor(color3);
+                       volume.AddMaterial(color1);
+                       volume.AddMaterial(color2);
+                       volume.AddMaterial(color3);
 
                        //4x2x1 Block
                        volume.SetVoxel(0, 0, 0, 1);
@@ -86,10 +86,10 @@ namespace MyEngine
                        var color12 = new Vector4(0, 255, 0, 75);
                        var color13 = new Vector4(0, 0, 255, 75);
                        var volume2 = new ColorVolume(10, 10, 10);
-                       volume2.AddColor(color11);
-                       volume2.AddColor(color12);
-                       volume2.AddColor(color13);
-                       volume2.AddColor(color10);
+                       volume2.AddMaterial(color11);
+                       volume2.AddMaterial(color12);
+                       volume2.AddMaterial(color13);
+                       volume2.AddMaterial(color10);
 
                        volume2.SetVoxel(0, 0, 0, 4);
 

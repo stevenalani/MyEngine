@@ -44,7 +44,7 @@ namespace MyEngine
             Position = position;
             var target = direction * length;
             purgesiblings = true;
-            Vertices = new PositionColorVertex[]
+            Vertices = new []
             {
                 new PositionColorVertex(){ Position = new Vector3(-0.01f,-0.01f,0),Color = Color },
                 new PositionColorVertex(){ Position = new Vector3(0.01f,-0.01f,0),Color = Color },
